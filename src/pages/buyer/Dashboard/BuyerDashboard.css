@@ -1,0 +1,194 @@
+/* Buyer Dashboard Styles */
+
+.buyer-dashboard {
+  display: flex;
+  min-height: calc(100vh - 70px);
+  background-color: var(--color-gray-50);
+}
+
+/* Sidebar */
+.buyer-sidebar {
+  width: 260px;
+  background-color: var(--color-white);
+  border-right: 1px solid var(--color-gray-200);
+  padding: var(--spacing-6);
+  flex-shrink: 0;
+}
+
+.buyer-sidebar-profile {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  margin-bottom: var(--spacing-6);
+  padding-bottom: var(--spacing-6);
+  border-bottom: 1px solid var(--color-gray-100);
+}
+
+.buyer-sidebar-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--border-radius-full);
+  background-color: var(--color-gray-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-gray-500);
+  overflow: hidden;
+}
+
+.buyer-sidebar-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.buyer-sidebar-info h4 {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gray-900);
+}
+
+.buyer-sidebar-info p {
+  font-size: var(--font-size-xs);
+  color: var(--color-gray-500);
+}
+
+.buyer-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.buyer-sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-3) var(--spacing-4);
+  border-radius: var(--border-radius-lg);
+  text-decoration: none;
+  color: var(--color-gray-600);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  transition: all var(--transition-fast);
+  border: none;
+  background: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+
+.buyer-sidebar-link:hover {
+  background-color: var(--color-gray-50);
+  color: var(--color-gray-900);
+}
+
+.buyer-sidebar-link.active {
+  background-color: var(--color-secondary-light);
+  color: var(--color-secondary-hover);
+}
+
+/* Main Content */
+.buyer-main {
+  flex: 1;
+  padding: var(--spacing-6);
+}
+
+.buyer-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-500);
+  margin-bottom: var(--spacing-4);
+}
+
+.buyer-breadcrumb a {
+  color: var(--color-gray-500);
+  text-decoration: none;
+}
+
+.buyer-breadcrumb a:hover {
+  color: var(--color-gray-700);
+}
+
+.buyer-title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-gray-900);
+  margin-bottom: var(--spacing-6);
+}
+
+/* Orders Table */
+.buyer-orders-table-container {
+  background-color: var(--color-white);
+  border-radius: var(--border-radius-xl);
+  overflow: hidden;
+  border: 1px solid var(--color-gray-200);
+}
+
+.buyer-orders-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.buyer-orders-table th {
+  background-color: var(--color-gray-50);
+  padding: var(--spacing-4);
+  text-align: left;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-gray-500);
+  border-bottom: 1px solid var(--color-gray-200);
+}
+
+.buyer-orders-table td {
+  padding: var(--spacing-4);
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-700);
+  border-bottom: 1px solid var(--color-gray-100);
+}
+
+.buyer-orders-table tr:last-child td {
+  border-bottom: none;
+}
+
+.buyer-orders-table .order-number {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-gray-900);
+}
+
+.order-details-link {
+  color: var(--color-secondary);
+  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+}
+
+.order-details-link:hover {
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .buyer-dashboard {
+    flex-direction: column;
+  }
+
+  .buyer-sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--color-gray-200);
+  }
+
+  .buyer-sidebar-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .buyer-orders-table-container {
+    overflow-x: auto;
+  }
+
+  .buyer-orders-table {
+    min-width: 600px;
+  }
+}
