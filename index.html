@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jour de Marché - Trouvez votre marché local</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🛒 Jour de Marché</h1>
+            <p class="subtitle">Trouvez les jours de marché dans votre région</p>
+        </header>
+
+        <div class="search-section">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Rechercher une ville ou commune...">
+            </div>
+            
+            <div class="filter-section">
+                <h3>Filtrer par jour</h3>
+                <div class="day-filters">
+                    <button class="day-btn" data-day="all">Tous</button>
+                    <button class="day-btn" data-day="lundi">Lundi</button>
+                    <button class="day-btn" data-day="mardi">Mardi</button>
+                    <button class="day-btn" data-day="mercredi">Mercredi</button>
+                    <button class="day-btn" data-day="jeudi">Jeudi</button>
+                    <button class="day-btn" data-day="vendredi">Vendredi</button>
+                    <button class="day-btn" data-day="samedi">Samedi</button>
+                    <button class="day-btn" data-day="dimanche">Dimanche</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="results-section">
+            <div id="resultsCount" class="results-count"></div>
+            <div id="marketList" class="market-list"></div>
+        </div>
+
+        <footer>
+            <p>© 2025 Jour de Marché - Application de recherche de marchés locaux</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
