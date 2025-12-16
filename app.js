@@ -176,12 +176,18 @@ function displayMarkets(marketsToDisplay) {
     marketList.innerHTML = "";
 
     if (marketsToDisplay.length === 0) {
-        marketList.innerHTML = `
-            <div class="no-results">
-                <h2>Aucun marché trouvé</h2>
-                <p>Essayez de modifier vos critères de recherche</p>
-            </div>
-        `;
+        const noResults = document.createElement("div");
+        noResults.className = "no-results";
+        
+        const heading = document.createElement("h2");
+        heading.textContent = "Aucun marché trouvé";
+        noResults.appendChild(heading);
+        
+        const paragraph = document.createElement("p");
+        paragraph.textContent = "Essayez de modifier vos critères de recherche";
+        noResults.appendChild(paragraph);
+        
+        marketList.appendChild(noResults);
         return;
     }
 
@@ -197,15 +203,28 @@ function createMarketCard(market) {
     const card = document.createElement("div");
     card.className = "market-card";
 
-    const daysHTML = market.days
-        .map(day => `<span class="day-tag">${capitalizeFirstLetter(day)}</span>`)
-        .join("");
+    // Create market name element
+    const nameDiv = document.createElement("div");
+    nameDiv.className = "market-name";
+    nameDiv.textContent = market.name;
+    card.appendChild(nameDiv);
 
-    card.innerHTML = `
-        <div class="market-name">${market.name}</div>
-        <div class="market-days">${daysHTML}</div>
-        <div class="market-location">${market.location}</div>
-    `;
+    // Create days container
+    const daysDiv = document.createElement("div");
+    daysDiv.className = "market-days";
+    market.days.forEach(day => {
+        const dayTag = document.createElement("span");
+        dayTag.className = "day-tag";
+        dayTag.textContent = capitalizeFirstLetter(day);
+        daysDiv.appendChild(dayTag);
+    });
+    card.appendChild(daysDiv);
+
+    // Create location element
+    const locationDiv = document.createElement("div");
+    locationDiv.className = "market-location";
+    locationDiv.textContent = market.location;
+    card.appendChild(locationDiv);
 
     return card;
 }
