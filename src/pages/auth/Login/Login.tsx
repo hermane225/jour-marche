@@ -171,7 +171,7 @@ export function Login() {
         alignItems: 'center', 
         justifyContent: 'center',
         padding: '40px 20px'
-      }}>
+      }} className="login-form-container">
         <div style={{ 
           width: '100%', 
           maxWidth: '440px',
@@ -179,30 +179,30 @@ export function Login() {
           borderRadius: '32px',
           padding: '50px 40px',
           boxShadow: '0 25px 80px rgba(0,0,0,0.08)'
-        }}>
+        }} className="login-form-box">
           {/* Mobile Logo */}
-          <div style={{ textAlign: 'center', marginBottom: '32px' }} className="mobile-logo">
+          <div style={{ textAlign: 'center', marginBottom: '24px' }} className="mobile-logo">
             <style>{`
               @media (min-width: 1024px) {
                 .mobile-logo { display: none !important; }
               }
             `}</style>
             <Link to="/">
-              <img src={logoImage} alt="Jour de Marché" style={{ height: '80px', width: 'auto' }} />
+              <img src={logoImage} alt="Jour de Marché" style={{ height: '65px', width: 'auto' }} />
             </Link>
           </div>
 
           {/* Header */}
-          <div style={{ textAlign: 'center', marginBottom: '36px' }}>
+          <div style={{ textAlign: 'center', marginBottom: '28px' }}>
             <h2 style={{ 
-              fontSize: '32px', 
+              fontSize: '28px', 
               fontWeight: 800, 
               color: '#1f2937',
-              marginBottom: '10px'
+              marginBottom: '8px'
             }}>
               Connexion
             </h2>
-            <p style={{ color: '#6b7280', fontSize: '15px' }}>
+            <p style={{ color: '#6b7280', fontSize: '14px' }}>
               Ravi de vous revoir ! Connectez-vous pour continuer.
             </p>
           </div>
@@ -461,6 +461,30 @@ export function Login() {
         }
         input::placeholder {
           color: #9ca3af;
+        }
+        
+        @media (max-width: 768px) {
+          .login-form-container {
+            padding: 20px 16px !important;
+            align-items: flex-start !important;
+          }
+          .login-form-box {
+            padding: 32px 24px !important;
+            border-radius: 24px !important;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.06) !important;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .login-form-container {
+            padding: 16px 12px !important;
+            background: white !important;
+          }
+          .login-form-box {
+            padding: 24px 16px !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+          }
         }
       `}</style>
     </div>
