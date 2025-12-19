@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Card } from '../../../components/ui';
 import { categories, products } from '../../../data/mockData';
@@ -6,12 +5,7 @@ import './Categories.css';
 
 export function Categories() {
   const { slug } = useParams<{ slug: string }>();
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(slug || null);
-
-  // Mettre à jour la catégorie sélectionnée quand l'URL change
-  useEffect(() => {
-    setSelectedCategory(slug || null);
-  }, [slug]);
+  const selectedCategory = slug || null;
 
   const filteredProducts = selectedCategory 
     ? products.filter(p => p.category === selectedCategory)
@@ -27,28 +21,40 @@ export function Categories() {
     <div className="categories-page">
       {/* Hero */}
       <section className="categories-hero">
-        <h1>{currentCategory ? `${currentCategory.icon} ${currentCategory.name}` : 'Toutes les Catégories'}</h1>
-        <p>{currentCategory ? currentCategory.description : 'Explorez notre large sélection de produits par catégorie'}</p>
+        {selectedCategory === 'restaurants' ? (
+          <div style={{
+              background: 'none',
+              borderRadius: 28,
+              padding: '48px 0 36px 0',
+              marginBottom: 28,
+              boxShadow: 'none',
+          }}>
+            <h1 style={{ fontSize: '2.8rem', fontWeight: 900, marginBottom: 14, letterSpacing: '-1px', color: '#fff', textShadow: '0 2px 12px #ea580c' }}>
+              🍽️ Restaurants, Maquis & Plein Air
+            </h1>
+            <p style={{ fontSize: '1.3rem', opacity: 0.98, maxWidth: 700, margin: '0 auto', color: '#fff', fontWeight: 500, textShadow: '0 1px 8px #ea580c' }}>
+              Vivez une expérience culinaire unique : savourez les meilleurs plats ivoiriens dans nos <span style={{ color: '#fbbf24', fontWeight: 700 }}>restaurants</span>, <span style={{ color: '#fbbf24', fontWeight: 700 }}>maquis animés</span> et <span style={{ color: '#fbbf24', fontWeight: 700 }}>espaces plein air</span>. Garba, grillades, spécialités locales, ambiance conviviale et fraîcheur garantie. <span style={{ color: '#10b981', fontWeight: 700 }}>Commandez, partagez, profitez !</span>
+            </p>
+          </div>
+        ) : null}
       </section>
 
       {/* Categories Grid */}
-      <section className="categories-grid-section">
-        <div className="categories-grid">
-          {categories.map(category => (
-            <Link
-              key={category.id}
-              to={selectedCategory === category.slug ? '/categories' : `/category/${category.slug}`}
-              className={`category-card ${selectedCategory === category.slug ? 'active' : ''}`}
-            >
-              <span className="category-card-icon">{category.icon}</span>
-              <span className="category-card-name">{category.name}</span>
-              <span className="category-card-count">
-                {products.filter(p => p.category === category.slug).length} produits
-              </span>
-            </Link>
-          ))}
-        </div>
-      </section>
+      {!selectedCategory && (
+        <section className="categories-grid-section">
+          <div className="categories-grid">
+            {categories.map(category => (
+              <Link to={`/categories/${category.slug}`} key={category.slug} className={`category-card ${selectedCategory === category.slug ? 'active' : ''}`}>
+                <span className="category-card-icon">{category.icon}</span>
+                <span className="category-card-name">{category.name}</span>
+                <span className="category-card-count">
+                  {products.filter(p => p.category === category.slug).length} produits
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Products */}
       <section className="categories-products">
