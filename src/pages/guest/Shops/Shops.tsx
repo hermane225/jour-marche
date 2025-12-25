@@ -68,18 +68,7 @@ export function Shops() {
         <div className="shops-grid">
           {shops.map(shop => (
             <Link to={`/shop/${shop.id}`} key={shop.id} style={{ textDecoration: 'none' }}>
-              <Card className="shop-card" hover style={{
-                borderRadius: 24,
-                boxShadow: '0 8px 32px rgba(16,185,129,0.10)',
-                transition: 'transform 0.2s, box-shadow 0.2s',
-                cursor: 'pointer',
-                minHeight: 320,
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                position: 'relative',
-                overflow: 'hidden',
-              }}>
+              <Card className="shop-card" hover>
                 <div className="shop-card-header" style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '24px 24px 0 24px' }}>
                   <img 
                     src={shop.logo}

@@ -133,7 +133,7 @@ export function SellerDashboard() {
         </div>
 
         {/* Commandes récentes */}
-        <Card className="seller-orders-card" style={{ marginTop: '24px' }}>
+        <Card className="seller-orders-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
             <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: '#1f2937' }}>
               Commandes récentes
@@ -459,7 +459,7 @@ export function SellerDashboard() {
         )}
 
         {/* Performance Chart */}
-        <Card className="seller-chart-card" style={{ marginTop: '24px' }}>
+        <Card className="seller-chart-card">
           <div className="seller-chart-header">
             <h3>Performance des Ventes</h3>
             <div className="seller-chart-filters">

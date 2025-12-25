@@ -34,7 +34,7 @@ export const products: Product[] = [
     status: 'published',
     createdAt: new Date('2023-11-10'),
     isPerishable: true,
-    unit: 'tas',
+    unit: 'piece',
   },
   {
     id: '201',
@@ -49,7 +49,7 @@ export const products: Product[] = [
     status: 'published',
     createdAt: new Date('2023-11-10'),
     isPerishable: true,
-    unit: 'tas',
+    unit: 'piece',
   },
   {
     id: '202',
@@ -64,7 +64,7 @@ export const products: Product[] = [
     status: 'published',
     createdAt: new Date('2023-11-10'),
     isPerishable: true,
-    unit: 'tas',
+    unit: 'piece',
   },
   {
     id: '203',
@@ -79,7 +79,7 @@ export const products: Product[] = [
     status: 'published',
     createdAt: new Date('2023-11-10'),
     isPerishable: true,
-    unit: 'tas',
+    unit: 'piece',
   },
   {
     id: '204',
@@ -110,7 +110,7 @@ export const products: Product[] = [
     status: 'published',
     createdAt: new Date('2023-11-10'),
     isPerishable: true,
-    unit: 'portion',
+    unit: 'piece',
   },
   {
     id: '211',
@@ -125,7 +125,7 @@ export const products: Product[] = [
     status: 'published',
     createdAt: new Date('2023-11-10'),
     isPerishable: true,
-    unit: 'boule',
+    unit: 'piece',
   },
   {
     id: '212',
@@ -140,7 +140,7 @@ export const products: Product[] = [
     status: 'published',
     createdAt: new Date('2023-11-10'),
     isPerishable: true,
-    unit: 'boule',
+    unit: 'piece',
   },
   {
     id: '213',
@@ -186,7 +186,7 @@ export const products: Product[] = [
     status: 'published',
     createdAt: new Date('2023-11-10'),
     isPerishable: true,
-    unit: 'régime',
+    unit: 'piece',
   },
   {
     id: '222',
@@ -247,7 +247,7 @@ export const products: Product[] = [
     status: 'published',
     createdAt: new Date('2023-11-10'),
     isPerishable: false,
-    unit: 'boule',
+    unit: 'piece',
   },
   {
     id: '232',
@@ -308,7 +308,7 @@ export const products: Product[] = [
     status: 'published',
     createdAt: new Date('2023-11-10'),
     isPerishable: true,
-    unit: 'tas',
+    unit: 'piece',
   },
   // === PRODUITS EXISTANTS ===
   {

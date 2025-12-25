@@ -453,7 +453,7 @@ export function ShopDetail() {
         @media (max-width: 768px) {
           .shop-detail-header {
             flex-direction: column;
-            text-align: center;
+            text-align: center; 
           }
         }
       `}</style>
