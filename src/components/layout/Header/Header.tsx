@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import './Header.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   Search, 
@@ -73,10 +74,17 @@ export function Header() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '24px', height: '72px' }}>
             
             {/* Mobile Menu Button */}
-            <button 
+            <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              style={{ display: 'none', padding: '8px', background: 'none', border: 'none', cursor: 'pointer', color: '#374151' }}
               className="mobile-menu-btn"
+              style={{
+                display: 'none', // sera overridé par le CSS responsive
+                padding: '8px',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: '#374151',
+              }}
             >
               {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -591,7 +599,7 @@ export function Header() {
       {/* Navigation Bar */}
       <div style={{ background: '#fafafa', borderBottom: '1px solid #f3f4f6' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0' }}>
+          <div className="main-nav-bar" style={{ display: 'flex', alignItems: 'center', gap: '0' }}>
             <Link to="/" style={{ padding: '16px 20px', color: '#374151', textDecoration: 'none', fontWeight: 500, fontSize: '14px' }}>
               Accueil
             </Link>
@@ -635,8 +643,8 @@ export function Header() {
       {mobileMenuOpen && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'white' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', borderBottom: '1px solid #f3f4f6' }}>
-            <img src={logoImage} alt="Jour de Marché" style={{ height: '70px', width: 'auto' }} />
-            <button 
+            <img src={logoImage} alt="Jour de Marché" className="mobile-logo" />
+            <button
               onClick={() => setMobileMenuOpen(false)}
               style={{ padding: '8px', background: '#f3f4f6', border: 'none', borderRadius: '10px', cursor: 'pointer' }}
             >
@@ -670,13 +678,13 @@ export function Header() {
                     key={cat.id}
                     to={`/category/${cat.slug}`}
                     onClick={() => setMobileMenuOpen(false)}
-                    style={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      gap: '12px', 
-                      padding: '14px', 
-                      background: '#f9fafb', 
-                      borderRadius: '12px', 
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      padding: '14px',
+                      background: '#f9fafb',
+                      borderRadius: '12px',
                       textDecoration: 'none',
                       color: '#1f2937'
                     }}
@@ -686,7 +694,7 @@ export function Header() {
                   </Link>
                 ))}
               </div>
-              <Link 
+              <Link
                 to="/categories"
                 onClick={() => setMobileMenuOpen(false)}
                 style={{ display: 'block', textAlign: 'center', padding: '12px', color: '#059669', fontWeight: 600, fontSize: '14px', textDecoration: 'none', marginTop: '12px' }}
@@ -695,166 +703,69 @@ export function Header() {
               </Link>
             </div>
 
-            {/* Mobile Navigation */}
-            <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: '16px' }}>
-              <Link 
-                to="/"
-                onClick={() => setMobileMenuOpen(false)}
-                style={{ display: 'block', padding: '14px 0', fontSize: '16px', fontWeight: 500, color: '#1f2937', textDecoration: 'none', borderBottom: '1px solid #f3f4f6' }}
-              >
-                Accueil
+            {/* Barre d'accès rapide mobile - après le logo */}
+            <div className="mobile-quick-access" style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: '32px', padding: '16px 0', borderBottom: '1px solid #f3f4f6', background: '#f9fafb' }}>
+              <Link to="/cart" onClick={() => setMobileMenuOpen(false)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textDecoration: 'none', color: '#059669' }}>
+                <ShoppingCart size={28} />
+                <span style={{ fontSize: '12px', fontWeight: 600 }}>Panier</span>
               </Link>
-              <Link 
-                to="/promotions"
-                onClick={() => setMobileMenuOpen(false)}
-                style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '14px 0', fontSize: '16px', fontWeight: 600, color: '#dc2626', textDecoration: 'none', borderBottom: '1px solid #f3f4f6' }}
-              >
-                <Sparkles size={18} />
-                Promotions
-              </Link>
-              <Link 
-                to="/nouveautes"
-                onClick={() => setMobileMenuOpen(false)}
-                style={{ display: 'block', padding: '14px 0', fontSize: '16px', fontWeight: 500, color: '#1f2937', textDecoration: 'none', borderBottom: '1px solid #f3f4f6' }}
-              >
-                Nouveautés
-              </Link>
-              <Link 
-                to="/boutiques"
-                onClick={() => setMobileMenuOpen(false)}
-                style={{ display: 'block', padding: '14px 0', fontSize: '16px', fontWeight: 500, color: '#1f2937', textDecoration: 'none', borderBottom: '1px solid #f3f4f6' }}
-              >
-                Boutiques
-              </Link>
+              {!isAuthenticated && (
+                <button
+                  onClick={() => { navigate('/signup'); setMobileMenuOpen(false); }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#059669',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    cursor: 'pointer',
+                    minWidth: '48px',
+                    maxWidth: '70px',
+                    padding: 0,
+                    whiteSpace: 'nowrap',
+                    overflow: 'visible',
+                    flex: '0 0 auto',
+                  }}
+                >
+                  <Sparkles size={22} />
+                  <span style={{
+                    fontSize: '9px',
+                    fontWeight: 600,
+                    textOverflow: 'unset',
+                    overflow: 'visible',
+                    maxWidth: '100%',
+                    whiteSpace: 'nowrap',
+                    letterSpacing: '0.1px',
+                  }}>Sign up</span>
+                </button>
+              )}
+              {!isAuthenticated && (
+                <button onClick={() => { navigate('/login'); setMobileMenuOpen(false); }} style={{ background: 'none', border: 'none', color: '#374151', display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer', minWidth: '48px', padding: 0 }}>
+                  <User size={28} />
+                  <span style={{ fontSize: '9px', fontWeight: 600, letterSpacing: 0 }}>Login</span>
+                </button>
+              )}
+              {isAuthenticated && (
+                <Link to="/buyer/dashboard" onClick={() => setMobileMenuOpen(false)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textDecoration: 'none', color: '#374151' }}>
+                  <User size={28} />
+                  <span style={{ fontSize: '12px', fontWeight: 600 }}>Mon compte</span>
+                </Link>
+              )}
             </div>
 
-            {/* Mobile Seller Section */}
-            {isAuthenticated && (
-              <div style={{ marginTop: '16px', padding: '16px', background: user?.role === 'seller' ? 'linear-gradient(135deg, #fff7ed, #ffedd5)' : 'linear-gradient(135deg, #f5f3ff, #ede9fe)', borderRadius: '16px' }}>
-                {user?.role === 'seller' ? (
-                  <Link 
-                    to="/seller/dashboard"
-                    onClick={() => setMobileMenuOpen(false)}
-                    style={{ display: 'flex', alignItems: 'center', gap: '14px', textDecoration: 'none', color: '#1f2937' }}
-                  >
-                    <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'linear-gradient(135deg, #f97316, #fb923c)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
-                      <Store size={24} />
-                    </div>
-                    <div>
-                      <p style={{ margin: 0, fontWeight: 700, fontSize: '16px', color: '#ea580c' }}>Ma Boutique</p>
-                      <p style={{ margin: '2px 0 0 0', fontSize: '13px', color: '#9a3412' }}>Gérer mes produits et ventes</p>
-                    </div>
-                  </Link>
-                ) : (
-                  <Link 
-                    to="/seller/create-shop"
-                    onClick={() => setMobileMenuOpen(false)}
-                    style={{ display: 'flex', alignItems: 'center', gap: '14px', textDecoration: 'none', color: '#1f2937' }}
-                  >
-                    <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'linear-gradient(135deg, #8b5cf6, #a78bfa)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
-                      <Sparkles size={24} />
-                    </div>
-                    <div>
-                      <p style={{ margin: 0, fontWeight: 700, fontSize: '16px', color: '#7c3aed' }}>Ouvrir ma boutique gratuitement</p>
-                      <p style={{ margin: '2px 0 0 0', fontSize: '13px', color: '#6d28d9' }}>Vendez vos produits en ligne !</p>
-                    </div>
-                  </Link>
-                )}
-              </div>
-            )}
-
-            {/* Mobile Auth */}
-            {!isAuthenticated && (
-              <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <Link 
-                  to="/seller/create-shop"
-                  onClick={() => setMobileMenuOpen(false)}
-                  style={{ 
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '10px',
-                    width: '100%', 
-                    padding: '16px', 
-                    background: 'linear-gradient(135deg, #8b5cf6, #a78bfa)', 
-                    color: 'white', 
-                    border: 'none', 
-                    borderRadius: '12px', 
-                    fontWeight: 600,
-                    fontSize: '16px',
-                    textDecoration: 'none'
-                  }}
-                >
-                  <Sparkles size={20} />
-                  Ouvrir ma boutique gratuitement
-                </Link>
-                <button 
-                  onClick={() => { navigate('/signup'); setMobileMenuOpen(false); }}
-                  style={{ 
-                    width: '100%', 
-                    padding: '16px', 
-                    background: 'linear-gradient(135deg, #059669, #10b981)', 
-                    color: 'white', 
-                    border: 'none', 
-                    borderRadius: '12px', 
-                    fontWeight: 600,
-                    fontSize: '16px',
-                    cursor: 'pointer'
-                  }}
-                >
-                  S'inscrire gratuitement
-                </button>
-                <button 
-                  onClick={() => { navigate('/login'); setMobileMenuOpen(false); }}
-                  style={{ 
-                    width: '100%', 
-                    padding: '16px', 
-                    background: 'white', 
-                    color: '#374151', 
-                    border: '2px solid #e5e7eb', 
-                    borderRadius: '12px', 
-                    fontWeight: 600,
-                    fontSize: '16px',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Se connecter
-                </button>
-              </div>
-            )}
+            {/* Menu principal mobile - scrollable horizontalement */}
+            <nav className="mobile-main-menu-scroll">
+              <Link to="/" onClick={() => setMobileMenuOpen(false)} style={{ minWidth: '120px', textAlign: 'center', padding: '14px', borderRadius: '10px', color: '#374151', fontWeight: 600, fontSize: '15px', background: '#f3f4f6', textDecoration: 'none', whiteSpace: 'nowrap' }}>Accueil</Link>
+              <Link to="/promotions" onClick={() => setMobileMenuOpen(false)} style={{ minWidth: '120px', textAlign: 'center', padding: '14px', borderRadius: '10px', color: '#dc2626', fontWeight: 700, fontSize: '15px', background: '#fef2f2', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', whiteSpace: 'nowrap' }}><Sparkles size={18} />Promos</Link>
+              <Link to="/nouveautes" onClick={() => setMobileMenuOpen(false)} style={{ minWidth: '120px', textAlign: 'center', padding: '14px', borderRadius: '10px', color: '#374151', fontWeight: 600, fontSize: '15px', background: '#f3f4f6', textDecoration: 'none', whiteSpace: 'nowrap' }}>Nouveautés</Link>
+              <Link to="/boutiques" onClick={() => setMobileMenuOpen(false)} style={{ minWidth: '120px', textAlign: 'center', padding: '14px', borderRadius: '10px', color: '#374151', fontWeight: 600, fontSize: '15px', background: '#f3f4f6', textDecoration: 'none', whiteSpace: 'nowrap' }}>Boutiques</Link>
+              <Link to="/category/restaurants" onClick={() => setMobileMenuOpen(false)} style={{ minWidth: '140px', textAlign: 'center', padding: '14px', borderRadius: '10px', color: '#374151', fontWeight: 600, fontSize: '15px', background: '#f3f4f6', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', whiteSpace: 'nowrap' }}>🍽️ Restaurants</Link>
+              <Link to="/categories" onClick={() => setMobileMenuOpen(false)} style={{ minWidth: '140px', textAlign: 'center', padding: '14px', borderRadius: '10px', color: '#f97316', fontWeight: 700, fontSize: '15px', background: '#fff7ed', textDecoration: 'none', whiteSpace: 'nowrap' }}>Tout voir →</Link>
+            </nav>
           </div>
         </div>
       )}
-
-      <style>{`
-        .header-top-bar { display: flex; }
-        .header-top-right { display: flex; }
-        .header-desktop-nav { display: flex; }
-        .header-desktop-search { display: flex; }
-        .header-desktop-actions { display: flex; }
-        
-        @media (max-width: 1024px) {
-          .mobile-menu-btn { display: flex !important; }
-          .mobile-search { display: block !important; }
-          .header-desktop-nav { display: none !important; }
-          .header-desktop-search { display: none !important; }
-        }
-        
-        @media (max-width: 768px) {
-          .header-top-bar-container { display: none !important; }
-          .header-top-right { display: none !important; }
-          .header-desktop-actions { gap: 8px !important; }
-          .create-shop-btn { padding: 10px 14px !important; gap: 6px !important; }
-          .create-shop-btn-text { display: none !important; }
-          .create-shop-btn-text-short { display: inline !important; }
-        }
-        
-        .create-shop-btn-text-short { display: none; }
-        
-        @media (max-width: 480px) {
-          .header-top-bar { font-size: 11px !important; }
-        }
-      `}</style>
     </header>
   );
 }
