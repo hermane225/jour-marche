@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import './Header.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
@@ -28,6 +29,7 @@ export function Header() {
   const { user, isAuthenticated, logout } = useAuth();
   const { itemCount } = useCart();
   const navigate = useNavigate();
+  const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -50,7 +52,7 @@ export function Header() {
               <MapPin size={14} />
               <span style={{ opacity: 0.9 }}>Livraison à</span>
               <span style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                Abidjan, CI
+                Partout en Cote d'Ivoire
                 <ChevronDown size={12} />
               </span>
             </div>
@@ -276,14 +278,13 @@ export function Header() {
                         borderRadius: '50px', 
                         textDecoration: 'none',
                         fontWeight: 600,
-                        fontSize: '14px',
+                        fontSize: '15px',
                         boxShadow: '0 4px 12px rgba(139, 92, 246, 0.3)',
                         transition: 'all 0.2s'
                       }}
                     >
                       <Sparkles size={16} />
-                      <span className="create-shop-btn-text">Créer ma boutique gratuitement</span>
-                      <span className="create-shop-btn-text-short">Vendre</span>
+                      <span className="create-shop-btn-text py-2 px-4 rounded">Créer ma boutique</span>
                     </Link>
                   )}
 
@@ -754,15 +755,17 @@ export function Header() {
               )}
             </div>
 
-            {/* Menu principal mobile - scrollable horizontalement */}
-            <nav className="mobile-main-menu-scroll">
-              <Link to="/" onClick={() => setMobileMenuOpen(false)} style={{ minWidth: '120px', textAlign: 'center', padding: '14px', borderRadius: '10px', color: '#374151', fontWeight: 600, fontSize: '15px', background: '#f3f4f6', textDecoration: 'none', whiteSpace: 'nowrap' }}>Accueil</Link>
-              <Link to="/promotions" onClick={() => setMobileMenuOpen(false)} style={{ minWidth: '120px', textAlign: 'center', padding: '14px', borderRadius: '10px', color: '#dc2626', fontWeight: 700, fontSize: '15px', background: '#fef2f2', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', whiteSpace: 'nowrap' }}><Sparkles size={18} />Promos</Link>
-              <Link to="/nouveautes" onClick={() => setMobileMenuOpen(false)} style={{ minWidth: '120px', textAlign: 'center', padding: '14px', borderRadius: '10px', color: '#374151', fontWeight: 600, fontSize: '15px', background: '#f3f4f6', textDecoration: 'none', whiteSpace: 'nowrap' }}>Nouveautés</Link>
-              <Link to="/boutiques" onClick={() => setMobileMenuOpen(false)} style={{ minWidth: '120px', textAlign: 'center', padding: '14px', borderRadius: '10px', color: '#374151', fontWeight: 600, fontSize: '15px', background: '#f3f4f6', textDecoration: 'none', whiteSpace: 'nowrap' }}>Boutiques</Link>
-              <Link to="/category/restaurants" onClick={() => setMobileMenuOpen(false)} style={{ minWidth: '140px', textAlign: 'center', padding: '14px', borderRadius: '10px', color: '#374151', fontWeight: 600, fontSize: '15px', background: '#f3f4f6', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', whiteSpace: 'nowrap' }}>🍽️ Restaurants</Link>
-              <Link to="/categories" onClick={() => setMobileMenuOpen(false)} style={{ minWidth: '140px', textAlign: 'center', padding: '14px', borderRadius: '10px', color: '#f97316', fontWeight: 700, fontSize: '15px', background: '#fff7ed', textDecoration: 'none', whiteSpace: 'nowrap' }}>Tout voir →</Link>
-            </nav>
+            {/* Menu principal mobile - scrollable horizontalement (masqué sur /categories) */}
+            {location.pathname !== '/categories' && (
+              <nav className="mobile-main-menu-scroll">
+                <Link to="/" onClick={() => setMobileMenuOpen(false)} style={{ minWidth: '120px', textAlign: 'center', padding: '14px', borderRadius: '10px', color: '#374151', fontWeight: 600, fontSize: '15px', background: '#f3f4f6', textDecoration: 'none', whiteSpace: 'nowrap' }}>Accueil</Link>
+                <Link to="/promotions" onClick={() => setMobileMenuOpen(false)} style={{ minWidth: '120px', textAlign: 'center', padding: '14px', borderRadius: '10px', color: '#dc2626', fontWeight: 700, fontSize: '15px', background: '#fef2f2', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', whiteSpace: 'nowrap' }}><Sparkles size={18} />Promos</Link>
+                <Link to="/nouveautes" onClick={() => setMobileMenuOpen(false)} style={{ minWidth: '120px', textAlign: 'center', padding: '14px', borderRadius: '10px', color: '#374151', fontWeight: 600, fontSize: '15px', background: '#f3f4f6', textDecoration: 'none', whiteSpace: 'nowrap' }}>Nouveautés</Link>
+                <Link to="/boutiques" onClick={() => setMobileMenuOpen(false)} style={{ minWidth: '120px', textAlign: 'center', padding: '14px', borderRadius: '10px', color: '#374151', fontWeight: 600, fontSize: '15px', background: '#f3f4f6', textDecoration: 'none', whiteSpace: 'nowrap' }}>Boutiques</Link>
+                <Link to="/category/restaurants" onClick={() => setMobileMenuOpen(false)} style={{ minWidth: '140px', textAlign: 'center', padding: '14px', borderRadius: '10px', color: '#374151', fontWeight: 600, fontSize: '15px', background: '#f3f4f6', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', whiteSpace: 'nowrap' }}>🍽️ Restaurants</Link>
+                <Link to="/categories" onClick={() => setMobileMenuOpen(false)} style={{ minWidth: '140px', textAlign: 'center', padding: '14px', borderRadius: '10px', color: '#f97316', fontWeight: 700, fontSize: '15px', background: '#fff7ed', textDecoration: 'none', whiteSpace: 'nowrap' }}>Tout voir →</Link>
+              </nav>
+            )}
           </div>
         </div>
       )}

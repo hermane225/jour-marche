@@ -218,7 +218,7 @@ export function CreateShop() {
             {/* Avantages */}
             <div style={{ background: 'linear-gradient(135deg, #8b5cf6, #a78bfa)', borderRadius: '20px', padding: '24px', color: 'white' }}>
               <h3 style={{ margin: '0 0 20px 0', fontSize: '16px', fontWeight: 700 }}>
-                ✨ Pourquoi vendre ici ?
+                ✨ Créer ma boutique gratuitement
               </h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
