@@ -1,3 +1,66 @@
+/* Masquer le bouton S'inscrire sur mobile, afficher sur desktop */
+@media (max-width: 1024px) {
+  .desktop-signup-btn {
+    display: none !important;
+  }
+}
+@media (min-width: 1025px) {
+  .desktop-signup-btn {
+    display: inline-block !important;
+  }
+}
+enlev les iconn/* Masquer le panier desktop sur mobile pour éviter le doublon */
+@media (max-width: 1024px) {
+  .header-cart-desktop {
+    display: none !important;
+  }
+}
+/* Actions mobiles après connexion : nom utilisateur, panier, créer boutique, notifications, favoris */
+@media (max-width: 1024px) {
+  .header-mobile-actions {
+    display: flex !important;
+    align-items: center !important;
+    margin-left: auto !important;
+    gap: 4px !important;
+    flex-wrap: wrap !important;
+    justify-content: flex-end !important;
+    max-width: calc(100vw - 200px) !important; /* Ajuster selon la taille du logo */
+  }
+}
+@media (min-width: 1025px) {
+  .header-mobile-actions {
+    display: none !important;
+  }
+}
+/* Responsive pour écrans très petits */
+@media (max-width: 480px) {
+  .header-mobile-actions {
+    gap: 2px !important;
+    max-width: calc(100vw - 150px) !important;
+  }
+  .header-mobile-actions a,
+  .header-mobile-actions button {
+    padding: 6px !important;
+    font-size: 12px !important;
+  }
+  .header-mobile-actions svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+}
+/* Afficher l'icône utilisateur à côté du panier principal uniquement sur mobile */
+@media (max-width: 1024px) {
+  .header-user-mobile {
+    display: flex !important;
+    align-items: center !important;
+    margin-left: 8px !important;
+  }
+}
+@media (min-width: 1025px) {
+  .header-user-mobile {
+    display: none !important;
+  }
+}
 @media (max-width: 1024px) {
   .mobile-logo {
     height: 38px !important;
@@ -165,5 +228,18 @@
   .main-nav-bar a {
     white-space: nowrap;
     flex-shrink: 0;
+  }
+}
+
+/* Hide the second "create shop" button on mobile */
+@media (max-width: 1024px) {
+  .create-shop-btn {
+    display: none !important;
+  }
+}
+/* Hide the user menu on mobile to prevent duplicate cart icon */
+@media (max-width: 1024px) {
+  .header-user-menu {
+    display: none !important;
   }
 }

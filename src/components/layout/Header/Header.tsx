@@ -1,22 +1,21 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import './Header.css';
 import { Link, useNavigate } from 'react-router-dom';
-import { 
-  Search, 
-  ShoppingCart, 
-  Bell, 
-  User, 
-  Menu, 
-  X, 
-  MapPin, 
+import {
+  Search,
+  ShoppingCart,
+  Bell,
+  User,
+  Menu,
+  X,
+  MapPin,
   ChevronDown,
   Heart,
   Package,
   LogOut,
   Settings,
   Store,
-  Truck,
   Phone,
   Sparkles
 } from 'lucide-react';
@@ -48,7 +47,11 @@ export function Header() {
       <div className="header-top-bar-container" style={{ background: 'linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%)' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem' }}>
           <div className="header-top-bar" style={{ alignItems: 'center', justifyContent: 'space-between', height: '40px', color: 'white', fontSize: '13px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto', paddingRight: '16px' }}>
+              <Link to="/aide" className="header-desktop-help" style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#059669', textDecoration: 'none', fontWeight: 500, fontSize: '15px', padding: '8px 12px', borderRadius: '8px', background: '#f0fdf4' }}>
+                <Phone size={18} />
+                Aide
+              </Link>
               <MapPin size={14} />
               <span style={{ opacity: 0.9 }}>Livraison à</span>
               <span style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -91,14 +94,35 @@ export function Header() {
               {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
 
+
             {/* Logo */}
             <Link to="/" style={{ flexShrink: 0, marginLeft: '-20px' }}>
-              <img 
-                src={logoImage} 
-                alt="Jour de Marché" 
-                style={{ height: '90px', width: 'auto' }}
+              <img
+                src={logoImage}
+                alt="Jour de Marché"
+                style={{ height: '60px', width: 'auto' }}
               />
             </Link>
+
+            {/* Actions mobiles : panier et icône utilisateur pour tous, nom utilisateur si connecté */}
+            <div className="header-mobile-actions">
+              {isAuthenticated ? (
+                <>
+                  <Link to="/cart" style={{ position: 'relative', padding: '12px', background: '#f0fdf4', borderRadius: '50%', color: '#059669', display: 'flex', alignItems: 'center', marginRight: '8px' }}>
+                    <ShoppingCart size={20} />
+                    {itemCount > 0 && (
+                      <span style={{ position: 'absolute', top: '-4px', right: '-4px', minWidth: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 6px', background: 'linear-gradient(135deg, #059669, #10b981)', color: 'white', fontSize: '11px', fontWeight: 700, borderRadius: '50px', border: '2px solid white' }}>
+                        {itemCount > 99 ? '99+' : itemCount}
+                      </span>
+                    )}
+                  </Link>
+                  <button className="desktop-signup-btn" onClick={() => navigate('/signup')} style={{ background: 'linear-gradient(135deg, #059669, #10b981)', border: 'none', borderRadius: '50px', fontWeight: 600, fontSize: '14px', color: 'white', cursor: 'pointer', padding: '8px 16px' }}>
+                    S'inscrire
+                  </button>
+                </>
+              ) : null}
+            </div>
+
 
             {/* Categories Button */}
             <div 
@@ -181,7 +205,7 @@ export function Header() {
             </div>
 
             {/* Search Bar */}
-            <form onSubmit={handleSearch} className="header-desktop-search" style={{ flex: 1, maxWidth: '600px' }}>
+            <form onSubmit={handleSearch} className="header-desktop-search" style={{ flex: 1, maxWidth: '800px', marginRight: '24px' }}>
               <div style={{ 
                 display: 'flex', 
                 alignItems: 'center', 
@@ -199,11 +223,11 @@ export function Header() {
                   placeholder="Rechercher un produit, une boutique..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  style={{ 
-                    flex: 1, 
-                    padding: '14px 0', 
-                    border: 'none', 
-                    background: 'transparent', 
+                  style={{
+                    flex: 1,
+                    padding: '14px 0',
+                    border: 'none',
+                    background: 'transparent',
                     fontSize: '15px',
                     outline: 'none',
                     color: '#1f2937'
@@ -230,6 +254,10 @@ export function Header() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               {isAuthenticated ? (
                 <>
+                  {/* Icône utilisateur connecté avant 'Créer ma boutique' */}
+                  <Link to="/buyer/dashboard" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: '#059669', background: '#f0fdf4', borderRadius: '50%', padding: '10px', marginRight: '8px' }}>
+                    <User size={20} />
+                  </Link>
                   {/* Seller/Create Shop Button */}
                   {user?.role === 'seller' ? (
                     <Link 
@@ -289,35 +317,36 @@ export function Header() {
                   )}
 
                   {/* Notifications */}
-                  <button style={{ 
-                    position: 'relative', 
-                    padding: '12px', 
-                    background: '#f3f4f6', 
-                    border: 'none', 
-                    borderRadius: '50%', 
+                  <button className="header-notifications-desktop" style={{
+                    position: 'relative',
+                    padding: '12px',
+                    background: '#f3f4f6',
+                    border: 'none',
+                    borderRadius: '50%',
                     cursor: 'pointer',
                     color: '#4b5563'
                   }}>
                     <Bell size={20} />
-                    <span style={{ 
-                      position: 'absolute', 
-                      top: '8px', 
-                      right: '8px', 
-                      width: '8px', 
-                      height: '8px', 
-                      background: '#ef4444', 
+                    <span style={{
+                      position: 'absolute',
+                      top: '8px',
+                      right: '8px',
+                      width: '8px',
+                      height: '8px',
+                      background: '#ef4444',
                       borderRadius: '50%',
                       border: '2px solid white'
                     }}></span>
                   </button>
 
                   {/* Favorites */}
-                  <Link 
+                  <Link
                     to="/buyer/favorites"
-                    style={{ 
-                      padding: '12px', 
-                      background: '#f3f4f6', 
-                      borderRadius: '50%', 
+                    className="header-favorites-desktop"
+                    style={{
+                      padding: '12px',
+                      background: '#f3f4f6',
+                      borderRadius: '50%',
                       color: '#4b5563',
                       display: 'flex'
                     }}
@@ -325,44 +354,11 @@ export function Header() {
                     <Heart size={20} />
                   </Link>
 
-                  {/* Cart */}
-                  <Link 
-                    to="/cart" 
-                    style={{ 
-                      position: 'relative',
-                      padding: '12px', 
-                      background: '#f0fdf4', 
-                      borderRadius: '50%', 
-                      color: '#059669',
-                      display: 'flex'
-                    }}
-                  >
-                    <ShoppingCart size={20} />
-                    {itemCount > 0 && (
-                      <span style={{ 
-                        position: 'absolute', 
-                        top: '-4px', 
-                        right: '-4px', 
-                        minWidth: '22px', 
-                        height: '22px', 
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        padding: '0 6px',
-                        background: 'linear-gradient(135deg, #059669, #10b981)', 
-                        color: 'white', 
-                        fontSize: '11px', 
-                        fontWeight: 700,
-                        borderRadius: '50px',
-                        border: '2px solid white'
-                      }}>
-                        {itemCount > 99 ? '99+' : itemCount}
-                      </span>
-                    )}
-                  </Link>
+                  {/* Cart et user mobile déplacés à droite, voir header-mobile-actions (supprimé sur mobile) */}
 
                   {/* User Menu */}
-                  <div 
+                  <div
+                    className="header-user-menu"
                     style={{ position: 'relative' }}
                     onMouseEnter={() => setShowUserMenu(true)}
                     onMouseLeave={() => setShowUserMenu(false)}
@@ -377,42 +373,54 @@ export function Header() {
                       borderRadius: '50px', 
                       cursor: 'pointer'
                     }}>
-                      <div style={{ 
-                        width: '36px', 
-                        height: '36px', 
-                        borderRadius: '50%', 
-                        background: 'linear-gradient(135deg, #f97316, #fbbf24)', 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'center', 
-                        color: 'white'
-                      }}>
-                        {user?.avatar ? (
-                          <img src={user.avatar} alt={user.name} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
-                        ) : (
-                          <User size={18} />
+                      {/* Panier desktop, masqué sur mobile par CSS */}
+                      <Link 
+                        to="/cart" 
+                        className="header-cart-desktop"
+                        style={{ 
+                          position: 'relative',
+                          padding: '12px', 
+                          background: '#f0fdf4', 
+                          borderRadius: '50%', 
+                          color: '#059669',
+                          display: 'flex',
+                          alignItems: 'center'
+                        }}
+                      >
+                        <ShoppingCart size={20} />
+                        {itemCount > 0 && (
+                          <span style={{ 
+                            position: 'absolute', 
+                            top: '-4px', 
+                            right: '-4px', 
+                            minWidth: '22px', 
+                            height: '22px', 
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            padding: '0 6px',
+                            background: 'linear-gradient(135deg, #059669, #10b981)', 
+                            color: 'white', 
+                            fontSize: '11px', 
+                            fontWeight: 700,
+                            borderRadius: '50px',
+                            border: '2px solid white'
+                          }}>
+                            {itemCount > 99 ? '99+' : itemCount}
+                          </span>
                         )}
-                      </div>
-                      <div style={{ textAlign: 'left' }}>
-                        <p style={{ fontSize: '10px', color: '#6b7280', margin: 0 }}>Bonjour 👋</p>
-                        <p style={{ fontSize: '14px', fontWeight: 600, color: '#1f2937', margin: 0 }}>
-                          {user?.name?.split(' ')[0]}
-                        </p>
-                      </div>
-                      <ChevronDown size={16} color="#6b7280" />
+                      </Link>
                     </button>
-
-                    {/* Dropdown */}
                     {showUserMenu && (
-                      <div style={{ 
-                        position: 'absolute', 
-                        right: 0, 
-                        top: '100%', 
+                      <div style={{
+                        position: 'absolute',
+                        left: 0,
+                        top: '100%',
                         marginTop: '8px',
-                        width: '280px', 
-                        background: 'white', 
-                        borderRadius: '16px', 
-                        boxShadow: '0 20px 40px rgba(0,0,0,0.15)', 
+                        width: '320px',
+                        background: 'white',
+                        borderRadius: '16px',
+                        boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
                         border: '1px solid #e5e7eb',
                         overflow: 'hidden',
                         zIndex: 100
@@ -522,72 +530,15 @@ export function Header() {
                 </>
               ) : (
                 <>
-                  {/* Cart for guests */}
-                  <Link 
-                    to="/cart" 
-                    style={{ 
-                      position: 'relative',
-                      padding: '12px', 
-                      background: '#f0fdf4', 
-                      borderRadius: '50%', 
-                      color: '#059669',
-                      display: 'flex'
-                    }}
-                  >
+                  <Link to="/cart" className="header-cart-desktop" style={{ position: 'relative', padding: '12px', background: '#f0fdf4', borderRadius: '50%', color: '#059669', display: 'flex', alignItems: 'center', marginRight: '8px' }}>
                     <ShoppingCart size={20} />
                     {itemCount > 0 && (
-                      <span style={{ 
-                        position: 'absolute', 
-                        top: '-4px', 
-                        right: '-4px', 
-                        minWidth: '22px', 
-                        height: '22px', 
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        padding: '0 6px',
-                        background: 'linear-gradient(135deg, #059669, #10b981)', 
-                        color: 'white', 
-                        fontSize: '11px', 
-                        fontWeight: 700,
-                        borderRadius: '50px',
-                        border: '2px solid white'
-                      }}>
-                        {itemCount}
+                      <span style={{ position: 'absolute', top: '-4px', right: '-4px', minWidth: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 6px', background: 'linear-gradient(135deg, #059669, #10b981)', color: 'white', fontSize: '11px', fontWeight: 700, borderRadius: '50px', border: '2px solid white' }}>
+                        {itemCount > 99 ? '99+' : itemCount}
                       </span>
                     )}
                   </Link>
-
-                  {/* Auth Buttons */}
-                  <button 
-                    onClick={() => navigate('/login')}
-                    style={{ 
-                      padding: '12px 24px', 
-                      background: 'none', 
-                      border: '2px solid #e5e7eb', 
-                      borderRadius: '50px', 
-                      fontWeight: 600,
-                      fontSize: '14px',
-                      color: '#374151',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Connexion
-                  </button>
-                  <button 
-                    onClick={() => navigate('/signup')}
-                    style={{ 
-                      padding: '12px 24px', 
-                      background: 'linear-gradient(135deg, #059669, #10b981)', 
-                      border: 'none', 
-                      borderRadius: '50px', 
-                      fontWeight: 600,
-                      fontSize: '14px',
-                      color: 'white',
-                      cursor: 'pointer',
-                      boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)'
-                    }}
-                  >
+                  <button onClick={() => navigate('/login')} style={{ padding: '12px 20px', background: 'linear-gradient(135deg, #059669, #10b981)', color: 'white', border: 'none', borderRadius: '12px', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
                     S'inscrire
                   </button>
                 </>
@@ -704,56 +655,7 @@ export function Header() {
               </Link>
             </div>
 
-            {/* Barre d'accès rapide mobile - après le logo */}
-            <div className="mobile-quick-access" style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: '32px', padding: '16px 0', borderBottom: '1px solid #f3f4f6', background: '#f9fafb' }}>
-              <Link to="/cart" onClick={() => setMobileMenuOpen(false)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textDecoration: 'none', color: '#059669' }}>
-                <ShoppingCart size={28} />
-                <span style={{ fontSize: '12px', fontWeight: 600 }}>Panier</span>
-              </Link>
-              {!isAuthenticated && (
-                <button
-                  onClick={() => { navigate('/signup'); setMobileMenuOpen(false); }}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: '#059669',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    cursor: 'pointer',
-                    minWidth: '48px',
-                    maxWidth: '70px',
-                    padding: 0,
-                    whiteSpace: 'nowrap',
-                    overflow: 'visible',
-                    flex: '0 0 auto',
-                  }}
-                >
-                  <Sparkles size={22} />
-                  <span style={{
-                    fontSize: '9px',
-                    fontWeight: 600,
-                    textOverflow: 'unset',
-                    overflow: 'visible',
-                    maxWidth: '100%',
-                    whiteSpace: 'nowrap',
-                    letterSpacing: '0.1px',
-                  }}>Sign up</span>
-                </button>
-              )}
-              {!isAuthenticated && (
-                <button onClick={() => { navigate('/login'); setMobileMenuOpen(false); }} style={{ background: 'none', border: 'none', color: '#374151', display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer', minWidth: '48px', padding: 0 }}>
-                  <User size={28} />
-                  <span style={{ fontSize: '9px', fontWeight: 600, letterSpacing: 0 }}>Login</span>
-                </button>
-              )}
-              {isAuthenticated && (
-                <Link to="/buyer/dashboard" onClick={() => setMobileMenuOpen(false)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textDecoration: 'none', color: '#374151' }}>
-                  <User size={28} />
-                  <span style={{ fontSize: '12px', fontWeight: 600 }}>Mon compte</span>
-                </Link>
-              )}
-            </div>
+            {/* Barre d'accès rapide mobile - après le logo (supprimée, plus d'icônes panier/utilisateur ici) */}
 
             {/* Menu principal mobile - scrollable horizontalement (masqué sur /categories) */}
             {location.pathname !== '/categories' && (

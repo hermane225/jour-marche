@@ -448,40 +448,42 @@ export function Home() {
                       transform: hoveredProduct === product.id ? 'translateY(0)' : 'translateY(20px)',
                       transition: 'all 0.3s ease'
                     }}>
-                      <button style={{
-                        width: '100%',
-                        padding: '14px',
-                        background: addedProductId === product.id 
-                          ? 'linear-gradient(135deg, #10b981, #34d399)' 
-                          : 'linear-gradient(135deg, #059669, #10b981)',
-                        border: 'none',
-                        borderRadius: '14px',
-                        color: 'white',
-                        fontWeight: 700,
-                        fontSize: '14px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '8px',
-                        boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)',
-                        transform: addedProductId === product.id ? 'scale(1.02)' : 'scale(1)',
-                        transition: 'all 0.3s ease'
-                      }}
-                      onClick={(e) => handleAddToCart(e, product)}
-                      >
-                        {addedProductId === product.id ? (
-                          <>
-                            <Check size={18} />
-                            Ajouté !
-                          </>
-                        ) : (
-                          <>
-                            <ShoppingCart size={18} />
-                            Ajouter au panier
-                          </>
-                        )}
-                      </button>
+                      <div onClick={(e) => e.stopPropagation()}>
+                        <button style={{
+                          width: '100%',
+                          padding: '14px',
+                          background: addedProductId === product.id
+                            ? 'linear-gradient(135deg, #10b981, #34d399)'
+                            : 'linear-gradient(135deg, #059669, #10b981)',
+                          border: 'none',
+                          borderRadius: '14px',
+                          color: 'white',
+                          fontWeight: 700,
+                          fontSize: '14px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '8px',
+                          boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)',
+                          transform: addedProductId === product.id ? 'scale(1.02)' : 'scale(1)',
+                          transition: 'all 0.3s ease'
+                        }}
+                        onClick={(e) => handleAddToCart(e, product)}
+                        >
+                          {addedProductId === product.id ? (
+                            <>
+                              <Check size={18} />
+                              Ajouté !
+                            </>
+                          ) : (
+                            <>
+                              <ShoppingCart size={18} />
+                              Ajouter au panier
+                            </>
+                          )}
+                        </button>
+                      </div>
                     </div>
                   </div>
 
@@ -554,28 +556,30 @@ export function Home() {
                           </span>
                         )}
                       </div>
-                      <button 
-                        onClick={(e) => handleAddToCart(e, product)}
-                        style={{
-                          width: '48px',
-                          height: '48px',
-                          borderRadius: '14px',
-                          background: addedProductId === product.id 
-                            ? 'linear-gradient(135deg, #10b981, #34d399)' 
-                            : 'linear-gradient(135deg, #059669, #10b981)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: 'white',
-                          boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)',
-                          border: 'none',
-                          cursor: 'pointer',
-                          transform: addedProductId === product.id ? 'scale(1.15)' : 'scale(1)',
-                          transition: 'all 0.3s ease'
-                        }}
-                      >
-                        {addedProductId === product.id ? <Check size={20} /> : <ShoppingCart size={20} />}
-                      </button>
+                      <div onClick={(e) => e.stopPropagation()}>
+                        <button
+                          onClick={(e) => handleAddToCart(e, product)}
+                          style={{
+                            width: '48px',
+                            height: '48px',
+                            borderRadius: '14px',
+                            background: addedProductId === product.id
+                              ? 'linear-gradient(135deg, #10b981, #34d399)'
+                              : 'linear-gradient(135deg, #059669, #10b981)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'white',
+                            boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)',
+                            border: 'none',
+                            cursor: 'pointer',
+                            transform: addedProductId === product.id ? 'scale(1.15)' : 'scale(1)',
+                            transition: 'all 0.3s ease'
+                          }}
+                        >
+                          {addedProductId === product.id ? <Check size={20} /> : <ShoppingCart size={20} />}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
