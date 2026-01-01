@@ -9,7 +9,7 @@
     display: inline-block !important;
   }
 }
-enlev les iconn/* Masquer le panier desktop sur mobile pour éviter le doublon */
+/* Masquer le panier desktop sur mobile pour éviter le doublon */
 @media (max-width: 1024px) {
   .header-cart-desktop {
     display: none !important;

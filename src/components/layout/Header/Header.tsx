@@ -356,6 +356,42 @@ export function Header() {
 
                   {/* Cart et user mobile déplacés à droite, voir header-mobile-actions (supprimé sur mobile) */}
 
+                  {/* Cart Link */}
+                  <Link
+                    to="/cart"
+                    className="header-cart-desktop"
+                    style={{
+                      position: 'relative',
+                      padding: '12px',
+                      color: '#059669',
+                      display: 'flex',
+                      alignItems: 'center'
+                    }}
+                  >
+                    <ShoppingCart size={20} />
+                    {itemCount > 0 && (
+                      <span style={{
+                        position: 'absolute',
+                        top: '-4px',
+                        right: '-4px',
+                        minWidth: '22px',
+                        height: '22px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '0 6px',
+                        background: 'linear-gradient(135deg, #059669, #10b981)',
+                        color: 'white',
+                        fontSize: '11px',
+                        fontWeight: 700,
+                        borderRadius: '50px',
+                        border: '2px solid white'
+                      }}>
+                        {itemCount > 99 ? '99+' : itemCount}
+                      </span>
+                    )}
+                  </Link>
+
                   {/* User Menu */}
                   <div
                     className="header-user-menu"
@@ -363,53 +399,18 @@ export function Header() {
                     onMouseEnter={() => setShowUserMenu(true)}
                     onMouseLeave={() => setShowUserMenu(false)}
                   >
-                    <button style={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      gap: '10px', 
-                      padding: '8px 16px 8px 8px', 
-                      background: '#f3f4f6', 
-                      border: 'none', 
-                      borderRadius: '50px', 
+                    <button style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      padding: '8px 16px 8px 8px',
+                      background: '#f3f4f6',
+                      border: 'none',
+                      borderRadius: '50px',
                       cursor: 'pointer'
                     }}>
-                      {/* Panier desktop, masqué sur mobile par CSS */}
-                      <Link 
-                        to="/cart" 
-                        className="header-cart-desktop"
-                        style={{ 
-                          position: 'relative',
-                          padding: '12px', 
-                          background: '#f0fdf4', 
-                          borderRadius: '50%', 
-                          color: '#059669',
-                          display: 'flex',
-                          alignItems: 'center'
-                        }}
-                      >
-                        <ShoppingCart size={20} />
-                        {itemCount > 0 && (
-                          <span style={{ 
-                            position: 'absolute', 
-                            top: '-4px', 
-                            right: '-4px', 
-                            minWidth: '22px', 
-                            height: '22px', 
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            padding: '0 6px',
-                            background: 'linear-gradient(135deg, #059669, #10b981)', 
-                            color: 'white', 
-                            fontSize: '11px', 
-                            fontWeight: 700,
-                            borderRadius: '50px',
-                            border: '2px solid white'
-                          }}>
-                            {itemCount > 99 ? '99+' : itemCount}
-                          </span>
-                        )}
-                      </Link>
+                      <span style={{ fontSize: '14px', fontWeight: 500, color: '#374151' }}>{user?.name}</span>
+                      <ChevronDown size={16} />
                     </button>
                     {showUserMenu && (
                       <div style={{

@@ -423,7 +423,11 @@ export function ShopDetail() {
                     </span>
                     
                     <button
-                      onClick={() => addToCart(product)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        addToCart(product);
+                      }}
                       style={{
                         padding: '12px',
                         background: 'linear-gradient(135deg, #059669, #10b981)',
