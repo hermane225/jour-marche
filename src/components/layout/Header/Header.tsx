@@ -53,7 +53,7 @@ export function Header() {
                 Aide
               </Link>
               <MapPin size={14} />
-              <span style={{ opacity: 0.9 }}>Livraison à</span>
+              <span style={{ opacity: 0.9 }}>Livraison </span>
               <span style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
                 Partout en Cote d'Ivoire
                 <ChevronDown size={12} />

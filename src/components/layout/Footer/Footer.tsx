@@ -56,7 +56,7 @@ export function Footer() {
         </div>
 
         <div className="footer-bottom">
-          <p>© 2024 Jour de Marché. Tous droits réservés.</p>
+          <p>© 2026 Jour de Marché. Tous droits réservés.</p>
         </div>
       </div>
     </footer>

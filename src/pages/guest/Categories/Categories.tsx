@@ -23,18 +23,41 @@ export function Categories() {
       <section className="categories-hero">
         {selectedCategory === 'restaurants' ? (
           <div style={{
-              background: 'none',
+              position: 'relative',
+              overflow: 'hidden',
               borderRadius: 28,
-              padding: '48px 0 36px 0',
+              padding: '48px 24px 36px 24px',
               marginBottom: 28,
-              boxShadow: 'none',
+              boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
           }}>
-            <h1 style={{ fontSize: '2.8rem', fontWeight: 900, marginBottom: 14, letterSpacing: '-1px', color: '#fff', textShadow: '0 2px 12px #ea580c' }}>
-              🍽️ Restaurants, Maquis & Plein Air
-            </h1>
-            <p style={{ fontSize: '1.3rem', opacity: 0.98, maxWidth: 700, margin: '0 auto', color: '#fff', fontWeight: 500, textShadow: '0 1px 8px #ea580c' }}>
-              Vivez une expérience culinaire unique : savourez les meilleurs plats ivoiriens dans nos <span style={{ color: '#fbbf24', fontWeight: 700 }}>restaurants</span>, <span style={{ color: '#fbbf24', fontWeight: 700 }}>maquis animés</span> et <span style={{ color: '#fbbf24', fontWeight: 700 }}>espaces plein air</span>. Garba, grillades, spécialités locales, ambiance conviviale et fraîcheur garantie. <span style={{ color: '#10b981', fontWeight: 700 }}>Commandez, partagez, profitez !</span>
-            </p>
+            {/* Pattern décoratif */}
+            <div style={{
+              position: 'absolute',
+              top: '-50px',
+              right: '-50px',
+              width: '200px',
+              height: '200px',
+              borderRadius: '50%',
+              background: 'rgba(255,255,255,0.1)'
+            }} />
+            <div style={{
+              position: 'absolute',
+              bottom: '-75px',
+              left: '-75px',
+              width: '250px',
+              height: '250px',
+              borderRadius: '50%',
+              background: 'rgba(255,255,255,0.05)'
+            }} />
+
+            <div style={{ maxWidth: '800px', margin: '0 auto', position: 'relative', textAlign: 'center' }}>
+              <h1 style={{ fontSize: '2.8rem', fontWeight: 900, marginBottom: 14, letterSpacing: '-1px', color: '#fff', fontFamily: 'Inter, sans-serif' }}>
+                🍽️ Restaurants, Maquis & Plein Air
+              </h1>
+              <p style={{ fontSize: '1.3rem', opacity: 0.98, maxWidth: 700, margin: '0 auto', color: '#fff', fontWeight: 500, fontFamily: 'Inter, sans-serif', lineHeight: 1.6 }}>
+                Vivez une expérience culinaire unique : savourez les meilleurs plats ivoiriens dans nos <span style={{ fontWeight: 700 }}>restaurants</span>, <span style={{ fontWeight: 700 }}>maquis animés</span> et <span style={{ fontWeight: 700 }}>espaces plein air</span>. Garba, grillades, spécialités locales, ambiance conviviale et fraîcheur garantie. <span style={{ fontWeight: 700 }}>Commandez, partagez, profitez !</span>
+              </p>
+            </div>
           </div>
         ) : null}
       </section>
