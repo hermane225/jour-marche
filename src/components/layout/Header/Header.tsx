@@ -106,21 +106,17 @@ export function Header() {
 
             {/* Actions mobiles : panier et icône utilisateur pour tous, nom utilisateur si connecté */}
             <div className="header-mobile-actions">
-              {isAuthenticated ? (
-                <>
-                  <Link to="/cart" style={{ position: 'relative', padding: '12px', background: '#f0fdf4', borderRadius: '50%', color: '#059669', display: 'flex', alignItems: 'center', marginRight: '8px' }}>
-                    <ShoppingCart size={20} />
-                    {itemCount > 0 && (
-                      <span style={{ position: 'absolute', top: '-4px', right: '-4px', minWidth: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 6px', background: 'linear-gradient(135deg, #059669, #10b981)', color: 'white', fontSize: '11px', fontWeight: 700, borderRadius: '50px', border: '2px solid white' }}>
-                        {itemCount > 99 ? '99+' : itemCount}
-                      </span>
-                    )}
-                  </Link>
-                  <button className="desktop-signup-btn" onClick={() => navigate('/signup')} style={{ background: 'linear-gradient(135deg, #059669, #10b981)', border: 'none', borderRadius: '50px', fontWeight: 600, fontSize: '14px', color: 'white', cursor: 'pointer', padding: '8px 16px' }}>
-                    S'inscrire
-                  </button>
-                </>
-              ) : null}
+              <Link to="/cart" style={{ position: 'relative', padding: '12px', background: '#f0fdf4', borderRadius: '50%', color: '#059669', display: 'flex', alignItems: 'center', marginRight: '8px' }}>
+                <ShoppingCart size={20} />
+                {itemCount > 0 && (
+                  <span style={{ position: 'absolute', top: '-4px', right: '-4px', minWidth: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 6px', background: 'linear-gradient(135deg, #059669, #10b981)', color: 'white', fontSize: '11px', fontWeight: 700, borderRadius: '50px', border: '2px solid white' }}>
+                    {itemCount > 99 ? '99+' : itemCount}
+                  </span>
+                )}
+              </Link>
+              <button className="desktop-signup-btn" onClick={() => navigate('/signup')} style={{ background: 'linear-gradient(135deg, #059669, #10b981)', border: 'none', borderRadius: '50px', fontWeight: 600, fontSize: '14px', color: 'white', cursor: 'pointer', padding: '8px 16px' }}>
+                S'inscrire
+              </button>
             </div>
 
 

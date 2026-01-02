@@ -4,6 +4,7 @@ import { ArrowRight, Sparkles, Store, Truck, Shield, Clock, Star, ChevronLeft, C
 import { products, categories, shops } from '../../../data/mockData';
 import { useCart } from '../../../context/CartContext';
 import type { Product } from '../../../types';
+import { useLocation } from 'react-router-dom';
 
 // Extension du type Product pour inclure originalPrice
 type ProductWithPromo = Product & { originalPrice?: number };
