@@ -57,7 +57,7 @@ export function Header() {
               <span style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
                 Partout en Cote d'Ivoire
                 <ChevronDown size={12} />
-              </span>
+              </span> <p style={{ fontWeight: 'bold', fontSize: '15px', fontStyle: 'italic', fontFamily: 'serif', textTransform: 'capitalize', letterSpacing: '0.5px' }}>La marketplace à l'ivoirienne</p>
             </div>
             <div className="header-top-right" style={{ alignItems: 'center', gap: '24px' }}>
               <Link to="/aide" style={{ color: 'white', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px', opacity: 0.9 }}>
