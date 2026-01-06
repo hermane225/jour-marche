@@ -5,3 +5,4 @@ export { Categories } from './Categories';
 export { Shops, ShopDetail } from './Shops';
 export { Promotions } from './Promotions';
 export { Search } from './Search';
+export { default as MobileMoneyPayment } from './Payment/MobileMoneyPayment';

@@ -8,7 +8,7 @@ import { Header, Footer } from './components/layout';
 import { Login, Signup } from './pages/auth';
 
 // Guest Pages
-import { Home, ProductDetail, Cart, Categories, Shops, ShopDetail, Promotions, Search } from './pages/guest';
+import { Home, ProductDetail, Cart, Categories, Shops, ShopDetail, Promotions, Search, MobileMoneyPayment } from './pages/guest';
 
 // Buyer Pages
 import { BuyerDashboard, Profile } from './pages/buyer';
@@ -113,7 +113,10 @@ function AppRoutes() {
         <Route path="/search" element={<Search />} />
         <Route path="/alimentation" element={<Categories />} />
         <Route path="/nouveautes" element={<Home />} />
-        
+
+        {/* Page de paiement Mobile Money */}
+        <Route path="/payment/mobile-money" element={<MobileMoneyPayment />} />
+
         {/* Création de boutique - nécessite d'être connecté */}
         <Route element={<AuthRoute />}>
           <Route path="/seller/create-shop" element={<CreateShop />} />

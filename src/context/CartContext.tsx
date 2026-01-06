@@ -6,6 +6,7 @@ interface CartContextType {
   addToCart: (product: Product, quantity?: number, variants?: { size?: string; color?: string }) => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
+  setDeliveryFee: (fee: number) => void;
   clearCart: () => void;
   itemCount: number;
 }
@@ -35,8 +36,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
   }, [cart]);
 
-  const calculateTotal = (items: CartItem[]): number => {
-    return items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+  const calculateTotal = (items: CartItem[], deliveryFee: number = 0): number => {
+    return items.reduce((sum, item) => sum + item.product.price * item.quantity, 0) + deliveryFee;
   };
 
   const addToCart = (
@@ -65,7 +66,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
       return {
         items: newItems,
-        total: calculateTotal(newItems),
+        total: calculateTotal(newItems, prevCart.deliveryFee || 0),
       };
     });
   };
@@ -75,7 +76,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const newItems = prevCart.items.filter(item => item.product.id !== productId);
       return {
         items: newItems,
-        total: calculateTotal(newItems),
+        total: calculateTotal(newItems, prevCart.deliveryFee || 0),
       };
     });
   };
@@ -92,9 +93,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
       );
       return {
         items: newItems,
-        total: calculateTotal(newItems),
+        total: calculateTotal(newItems, prevCart.deliveryFee || 0),
       };
     });
+  };
+
+  const setDeliveryFee = (fee: number) => {
+    setCart(prevCart => ({
+      ...prevCart,
+      deliveryFee: fee,
+      total: calculateTotal(prevCart.items, fee),
+    }));
   };
 
   const clearCart = () => {
@@ -110,6 +119,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         addToCart,
         removeFromCart,
         updateQuantity,
+        setDeliveryFee,
         clearCart,
         itemCount,
       }}

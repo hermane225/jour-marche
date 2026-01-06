@@ -91,6 +91,7 @@ export interface CartItem {
 export interface Cart {
   items: CartItem[];
   total: number;
+  deliveryFee?: number;
 }
 
 export type OrderStatus = 'pending' | 'confirmed' | 'preparing' | 'ready_for_pickup' | 'in_delivery' | 'delivered' | 'cancelled';

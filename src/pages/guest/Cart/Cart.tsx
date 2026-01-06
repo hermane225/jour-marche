@@ -33,6 +33,13 @@ export function Cart() {
     e.preventDefault();
     setIsSubmitting(true);
 
+    if (paymentMethod === 'mobile_money') {
+      // Rediriger vers la page de paiement Mobile Money
+      navigate('/payment/mobile-money');
+      setIsSubmitting(false);
+      return;
+    }
+
     // Créer la commande
     const shopId = cart.items[0]?.product.shopId || 'shop_1';
     const shopName = cart.items[0]?.product.shopName || 'Boutique';
