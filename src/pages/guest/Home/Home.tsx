@@ -4,7 +4,6 @@ import { ArrowRight, Sparkles, Store, Truck, Shield, Clock, Star, ChevronLeft, C
 import { products, categories, shops } from '../../../data/mockData';
 import { useCart } from '../../../context/CartContext';
 import type { Product } from '../../../types';
-import { useLocation } from 'react-router-dom';
 
 // Extension du type Product pour inclure originalPrice
 type ProductWithPromo = Product & { originalPrice?: number };
@@ -324,31 +323,34 @@ export function Home() {
 
           <div className="products-grid">
             {trendingProducts.map((product) => (
-              <Link 
-                key={product.id} 
-                to={`/product/${product.id}`} 
+              <Link
+                key={product.id}
+                to={`/product/${product.id}`}
                 style={{ textDecoration: 'none' }}
-                onMouseEnter={() => setHoveredProduct(product.id)}
-                onMouseLeave={() => setHoveredProduct(null)}
               >
-                <div style={{
-                  background: 'white',
-                  borderRadius: '24px',
-                  overflow: 'hidden',
-                  boxShadow: hoveredProduct === product.id 
-                    ? '0 25px 50px rgba(0,0,0,0.15)' 
-                    : '0 4px 20px rgba(0,0,0,0.08)',
-                  transform: hoveredProduct === product.id ? 'translateY(-12px) scale(1.02)' : 'translateY(0)',
-                  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                  position: 'relative'
-                }}>
-                  {/* Image Container */}
-                  <div style={{ 
-                    aspectRatio: '1', 
-                    overflow: 'hidden', 
+                <div
+                  style={{
+                    background: 'white',
+                    borderRadius: '24px',
+                    overflow: 'hidden',
+                    boxShadow: hoveredProduct === product.id
+                      ? '0 25px 50px rgba(0,0,0,0.15)'
+                      : '0 4px 20px rgba(0,0,0,0.08)',
+                    transform: hoveredProduct === product.id ? 'translateY(-12px) scale(1.02)' : 'translateY(0)',
+                    transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
                     position: 'relative',
-                    background: 'linear-gradient(135deg, #f8fafc, #f1f5f9)'
-                  }}>
+                    cursor: 'pointer'
+                  }}
+                  onMouseEnter={() => setHoveredProduct(product.id)}
+                  onMouseLeave={() => setHoveredProduct(null)}
+                >
+                {/* Image Container */}
+                <div style={{
+                  aspectRatio: '1',
+                  overflow: 'hidden',
+                  position: 'relative',
+                  background: 'linear-gradient(135deg, #f8fafc, #f1f5f9)'
+                }}>
                     <img 
                       src={product.images[0]} 
                       alt={product.title} 
