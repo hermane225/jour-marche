@@ -243,3 +243,22 @@
     display: none !important;
   }
 }
+
+/* User menu responsive width */
+@media (min-width: 1025px) and (max-width: 1200px) {
+  .header-user-menu div[style*="width: 400px"] {
+    width: 350px !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .header-user-menu div[style*="width: 400px"] {
+    width: 300px !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .header-user-menu div[style*="width: 400px"] {
+    width: 280px !important;
+  }
+}

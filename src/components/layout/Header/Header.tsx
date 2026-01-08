@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import './Header.css';
 import { Link, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import {
   Search,
   ShoppingCart,
@@ -10,14 +11,11 @@ import {
   Menu,
   X,
   MapPin,
-  ChevronDown,
   Heart,
-  Package,
-  LogOut,
-  Settings,
   Store,
   Phone,
-  Sparkles
+  Sparkles,
+  ChevronDown
 } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { useCart } from '../../../context/CartContext';
@@ -25,13 +23,13 @@ import { categories } from '../../../data/mockData';
 import logoImage from '../../../assets/jour_marché.png';
 
 export function Header() {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const { itemCount } = useCart();
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
-  const [showUserMenu, setShowUserMenu] = useState(false);
+
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearch = (e: React.FormEvent) => {
@@ -40,6 +38,20 @@ export function Header() {
       navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
     }
   };
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [mobileMenuOpen]);
 
   return (
     <header className="sticky top-0 z-50">
@@ -387,143 +399,6 @@ export function Header() {
                       </span>
                     )}
                   </Link>
-
-                  {/* User Menu */}
-                  <div
-                    className="header-user-menu"
-                    style={{ position: 'relative' }}
-                    onMouseEnter={() => setShowUserMenu(true)}
-                    onMouseLeave={() => setShowUserMenu(false)}
-                  >
-                    <button style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '10px',
-                      padding: '8px 16px 8px 8px',
-                      background: '#f3f4f6',
-                      border: 'none',
-                      borderRadius: '50px',
-                      cursor: 'pointer'
-                    }}>
-                      <span style={{ fontSize: '14px', fontWeight: 500, color: '#374151' }}>{user?.name}</span>
-                      <ChevronDown size={16} />
-                    </button>
-                    {showUserMenu && (
-                      <div style={{
-                        position: 'absolute',
-                        left: 0,
-                        top: '100%',
-                        marginTop: '8px',
-                        width: '320px',
-                        background: 'white',
-                        borderRadius: '16px',
-                        boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
-                        border: '1px solid #e5e7eb',
-                        overflow: 'hidden',
-                        zIndex: 100
-                      }}>
-                        <div style={{ padding: '20px', borderBottom: '1px solid #f3f4f6', background: 'linear-gradient(135deg, #f0fdf4, #dcfce7)' }}>
-                          <p style={{ fontWeight: 600, fontSize: '16px', color: '#1f2937', margin: '0 0 4px 0' }}>{user?.name}</p>
-                          <p style={{ fontSize: '13px', color: '#6b7280', margin: 0 }}>{user?.email}</p>
-                        </div>
-                        <div style={{ padding: '8px' }}>
-                          <Link 
-                            to={user?.role === 'seller' ? '/seller/dashboard' : '/buyer/dashboard'}
-                            style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '10px', textDecoration: 'none', color: '#374151' }}
-                            onMouseEnter={(e) => e.currentTarget.style.background = '#f3f4f6'}
-                            onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                          >
-                            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#059669' }}>
-                              <User size={18} />
-                            </div>
-                            <span style={{ fontWeight: 500 }}>Mon compte</span>
-                          </Link>
-                          <Link 
-                            to="/buyer/orders"
-                            style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '10px', textDecoration: 'none', color: '#374151' }}
-                            onMouseEnter={(e) => e.currentTarget.style.background = '#f3f4f6'}
-                            onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                          >
-                            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#dbeafe', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563eb' }}>
-                              <Package size={18} />
-                            </div>
-                            <span style={{ fontWeight: 500 }}>Mes commandes</span>
-                          </Link>
-                          <Link 
-                            to="/buyer/favorites"
-                            style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '10px', textDecoration: 'none', color: '#374151' }}
-                            onMouseEnter={(e) => e.currentTarget.style.background = '#f3f4f6'}
-                            onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                          >
-                            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#fee2e2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#dc2626' }}>
-                              <Heart size={18} />
-                            </div>
-                            <span style={{ fontWeight: 500 }}>Mes favoris</span>
-                          </Link>
-                          <Link 
-                            to="/settings"
-                            style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '10px', textDecoration: 'none', color: '#374151' }}
-                            onMouseEnter={(e) => e.currentTarget.style.background = '#f3f4f6'}
-                            onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                          >
-                            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4b5563' }}>
-                              <Settings size={18} />
-                            </div>
-                            <span style={{ fontWeight: 500 }}>Paramètres</span>
-                          </Link>
-                        </div>
-                        
-                        {/* Seller Section */}
-                        <div style={{ padding: '8px', borderTop: '1px solid #f3f4f6' }}>
-                          {user?.role === 'seller' ? (
-                            <Link 
-                              to="/seller/dashboard"
-                              style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '10px', textDecoration: 'none', color: '#374151', background: 'linear-gradient(135deg, #fff7ed, #ffedd5)' }}
-                              onMouseEnter={(e) => e.currentTarget.style.background = 'linear-gradient(135deg, #ffedd5, #fed7aa)'}
-                              onMouseLeave={(e) => e.currentTarget.style.background = 'linear-gradient(135deg, #fff7ed, #ffedd5)'}
-                            >
-                              <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'linear-gradient(135deg, #f97316, #fb923c)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
-                                <Store size={18} />
-                              </div>
-                              <div>
-                                <span style={{ fontWeight: 600, color: '#ea580c' }}>Ma Boutique</span>
-                                <p style={{ margin: 0, fontSize: '11px', color: '#9a3412' }}>Gérer mes produits et ventes</p>
-                              </div>
-                            </Link>
-                          ) : (
-                            <Link 
-                              to="/seller/create-shop"
-                              style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '10px', textDecoration: 'none', color: '#374151', background: 'linear-gradient(135deg, #f5f3ff, #ede9fe)' }}
-                              onMouseEnter={(e) => e.currentTarget.style.background = 'linear-gradient(135deg, #ede9fe, #ddd6fe)'}
-                              onMouseLeave={(e) => e.currentTarget.style.background = 'linear-gradient(135deg, #f5f3ff, #ede9fe)'}
-                            >
-                              <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'linear-gradient(135deg, #8b5cf6, #a78bfa)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
-                                <Sparkles size={18} />
-                              </div>
-                              <div>
-                                <span style={{ fontWeight: 600, color: '#7c3aed' }}>Ouvrir ma boutique gratuitement</span>
-                                <p style={{ margin: 0, fontSize: '11px', color: '#6d28d9' }}>Vendez vos produits en ligne</p>
-                              </div>
-                            </Link>
-                          )}
-                        </div>
-
-                        <div style={{ padding: '8px', borderTop: '1px solid #f3f4f6' }}>
-                          <button 
-                            onClick={logout}
-                            style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', borderRadius: '10px', width: '100%', background: 'none', border: 'none', cursor: 'pointer', color: '#dc2626' }}
-                            onMouseEnter={(e) => e.currentTarget.style.background = '#fef2f2'}
-                            onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                          >
-                            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#fee2e2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                              <LogOut size={18} />
-                            </div>
-                            <span style={{ fontWeight: 500 }}>Déconnexion</span>
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
                 </>
               ) : (
                 <>
