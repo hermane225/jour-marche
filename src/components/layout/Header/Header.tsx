@@ -161,15 +161,16 @@ export function Header() {
 
               {/* Mega Menu */}
               {showCategories && (
-                <div style={{ 
-                  position: 'absolute', 
-                  left: 0, 
-                  top: '100%', 
+                <div style={{
+                  position: 'absolute',
+                  left: 0,
+                  top: '100%',
                   marginTop: '8px',
-                  width: '700px', 
-                  background: 'white', 
-                  borderRadius: '16px', 
-                  boxShadow: '0 20px 40px rgba(0,0,0,0.15)', 
+                  width: 'min(700px, 90vw)',
+                  maxWidth: '700px',
+                  background: 'white',
+                  borderRadius: '16px',
+                  boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
                   border: '1px solid #e5e7eb',
                   padding: '24px',
                   zIndex: 100

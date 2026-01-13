@@ -164,17 +164,18 @@ export function Home() {
             <div className="hero-image-container" style={{ position: 'relative' }}>
               <div style={{
                 width: '100%',
-                height: '400px',
+                maxWidth: '500px',
+                height: 'clamp(300px, 50vw, 400px)',
                 borderRadius: '24px',
                 overflow: 'hidden',
                 boxShadow: '0 30px 60px rgba(0,0,0,0.3)'
               }}>
-                <img 
+                <img
                   src={heroSlides[currentSlide].image}
                   alt=""
-                  style={{ 
-                    width: '100%', 
-                    height: '100%', 
+                  style={{
+                    width: '100%',
+                    height: '100%',
                     objectFit: 'cover',
                     transition: 'transform 0.5s'
                   }}
@@ -770,7 +771,7 @@ export function Home() {
           </div>
 
           <div className="cta-image" style={{ display: 'flex', justifyContent: 'center' }}>
-            <div style={{ width: '400px', height: '400px', borderRadius: '30px', background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', padding: '30px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div style={{ width: '100%', maxWidth: '400px', height: 'clamp(300px, 80vw, 400px)', borderRadius: '30px', background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', padding: 'clamp(20px, 5vw, 30px)', display: 'flex', flexDirection: 'column', gap: '20px' }}>
               <div style={{ background: 'white', borderRadius: '16px', padding: '20px', flex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
                   <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'linear-gradient(135deg, #8b5cf6, #a78bfa)' }} />
