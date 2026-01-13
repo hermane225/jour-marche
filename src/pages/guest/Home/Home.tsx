@@ -283,7 +283,7 @@ export function Home() {
 
       {/* Produits - Juste après le hero */}
       <section style={{ padding: '60px 0', background: 'white' }}>
-        <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 24px' }}>
+        <div className="container" style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 24px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px', flexWrap: 'wrap', gap: '16px' }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
@@ -661,7 +661,7 @@ export function Home() {
 
       {/* Categories */}
       <section style={{ padding: '60px 0' }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px' }}>
+        <div className="container" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px' }}>
           <div style={{ textAlign: 'center', marginBottom: '40px' }}>
             <h2 style={{ fontSize: '36px', fontWeight: 800, color: '#1f2937', margin: '0 0 12px 0' }}>
               Explorez nos catégories
@@ -802,7 +802,7 @@ export function Home() {
 
       {/* Featured Shops - Design amélioré */}
       <section style={{ padding: '80px 0', background: 'linear-gradient(180deg, #fafafa 0%, #f0fdf4 100%)' }}>
-        <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 24px' }}>
+        <div className="container" style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 24px' }}>
           <div style={{ textAlign: 'center', marginBottom: '50px' }}>
             <div style={{ 
               display: 'inline-flex', 
@@ -1041,7 +1041,7 @@ export function Home() {
 
       {/* Section Tous les Produits */}
       <section style={{ padding: '80px 0', background: 'white' }}>
-        <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 24px' }}>
+        <div className="container" style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 24px' }}>
           <div style={{ textAlign: 'center', marginBottom: '50px' }}>
             <div style={{ 
               display: 'inline-flex', 
@@ -1269,7 +1269,7 @@ export function Home() {
 
       {/* Trust Badges */}
       <section style={{ background: 'white', padding: '60px 0', borderTop: '1px solid #f3f4f6' }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px' }}>
+        <div className="container" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px' }}>
           <div className="trust-grid">
             {[
               { icon: <Truck size={32} />, title: 'Livraison rapide', desc: 'Partout à Abidjan sous 24h', color: '#059669' },
@@ -1304,26 +1304,28 @@ export function Home() {
         }
         
         @media (max-width: 1024px) {
-          .hero-grid { grid-template-columns: 1fr; text-align: center; padding: 40px 24px !important; min-height: auto !important; }
+          .hero-grid { grid-template-columns: 1fr; text-align: center; padding: 40px 0 !important; min-height: auto !important; }
           .hero-title { font-size: 36px; }
-          .hero-image-container { display: none; }
+          .hero-image-container { display: block !important; }
           .hero-nav-btn { display: none !important; }
           .categories-grid, .shops-grid { grid-template-columns: repeat(2, 1fr); }
           .products-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
           .trust-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
           .cta-grid { grid-template-columns: 1fr; text-align: center; }
-          .cta-image { display: none !important; }
+          .cta-image { display: block !important; }
+          .hero-grid, .stats-grid, .cta-grid, .container { padding-left: 0 !important; padding-right: 0 !important; max-width: 100vw !important; }
         }
         
         @media (max-width: 640px) {
           .hero-title { font-size: 28px; }
-          .hero-grid { padding: 32px 16px !important; }
+          .hero-grid { padding: 32px 0 !important; }
           .stats-grid { justify-content: flex-start; }
           .categories-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
           .products-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
           .shops-grid { grid-template-columns: 1fr; }
           .trust-grid { grid-template-columns: 1fr; }
           .floating-stat, .floating-stat-2 { display: none !important; }
+          .container { padding-left: 0 !important; padding-right: 0 !important; max-width: 100vw !important; }
         }
       `}</style>
     </div>
