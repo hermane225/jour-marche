@@ -100,7 +100,6 @@ export function Home() {
                 <Sparkles size={16} />
                 La marketplace à l'ivoirienne
               </div>
-              
               <h1 className="hero-title" style={{ 
                 fontWeight: 800, 
                 lineHeight: 1.1, 
@@ -110,7 +109,6 @@ export function Home() {
                 <br />
                 <span style={{ opacity: 0.9 }}>{heroSlides[currentSlide].subtitle}</span>
               </h1>
-              
               <p style={{ 
                 fontSize: '18px', 
                 opacity: 0.9, 
@@ -122,122 +120,68 @@ export function Home() {
               </p>
 
               <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                <Link 
-                  to={heroSlides[currentSlide].link}
-                  style={{ 
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    padding: '16px 32px', 
-                    background: 'white', 
-                    color: '#1f2937',
-                    borderRadius: '50px',
-                    fontWeight: 700,
-                    fontSize: '16px',
-                    textDecoration: 'none',
-                    boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
-                    transition: 'transform 0.2s'
-                  }}
-                >
-                  {heroSlides[currentSlide].cta}
-                  <ArrowRight size={20} />
-                </Link>
+                {heroSlides[currentSlide].description}
               </div>
-
-              <div style={{ display: 'flex', gap: '12px', marginTop: '40px' }}>
-                {heroSlides.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentSlide(index)}
-                    style={{
-                      width: currentSlide === index ? '40px' : '12px',
-                      height: '12px',
-                      borderRadius: '6px',
-                      border: 'none',
-                      background: currentSlide === index ? 'white' : 'rgba(255,255,255,0.4)',
-                      cursor: 'pointer',
-                      transition: 'all 0.3s'
-                    }}
-                  />
-                ))}
+              <Link to={heroSlides[currentSlide].link} style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', padding: '18px 36px', background: 'white', color: '#059669', borderRadius: '50px', fontWeight: 700, fontSize: '17px', textDecoration: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.2)' }}>
+                {heroSlides[currentSlide].cta}
+                <ArrowRight size={20} />
+              </Link>
+            </div>
+            <div className="hero-image-container" style={{ display: 'flex', justifyContent: 'center' }}>
+              <img src={heroSlides[currentSlide].image} alt="Hero" style={{ width: '100%', maxWidth: '420px', borderRadius: '30px', boxShadow: '0 10px 40px rgba(0,0,0,0.15)' }} />
+            </div>
+            {/* Floating stats */}
+            <div className="floating-stat" style={{
+              position: 'absolute',
+              bottom: '30px',
+              left: '-20px',
+              background: 'white',
+              padding: '16px 20px',
+              borderRadius: '14px',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px'
+            }}>
+              <div style={{ 
+                width: '50px', 
+                height: '50px', 
+                borderRadius: '12px', 
+                background: 'linear-gradient(135deg, #10b981, #34d399)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white'
+              }}>
+                <TrendingUp size={24} />
+              </div>
+              <div>
+                <p style={{ margin: 0, fontWeight: 800, fontSize: '24px', color: '#1f2937' }}>2,500+</p>
+                <p style={{ margin: 0, fontSize: '13px', color: '#6b7280' }}>Vendeurs actifs</p>
               </div>
             </div>
-
-            <div className="hero-image-container" style={{ position: 'relative' }}>
-              <div style={{
-                width: '100%',
-                maxWidth: '500px',
-                height: 'clamp(300px, 50vw, 400px)',
-                borderRadius: '24px',
-                overflow: 'hidden',
-                boxShadow: '0 30px 60px rgba(0,0,0,0.3)'
-              }}>
-                <img
-                  src={heroSlides[currentSlide].image}
-                  alt=""
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    transition: 'transform 0.5s'
-                  }}
-                />
+            <div className="floating-stat-2" style={{
+              position: 'absolute',
+              top: '20px',
+              right: '-20px',
+              background: 'white',
+              padding: '16px 20px',
+              borderRadius: '14px',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px'
+            }}>
+              <div style={{ display: 'flex' }}>
+                {[1,2,3,4,5].map(i => (
+                  <Star key={i} size={16} fill="#fbbf24" color="#fbbf24" />
+                ))}
               </div>
-              
-              <div className="floating-stat" style={{
-                position: 'absolute',
-                bottom: '-20px',
-                left: '-20px',
-                background: 'white',
-                padding: '20px 24px',
-                borderRadius: '16px',
-                boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '16px'
-              }}>
-                <div style={{ 
-                  width: '50px', 
-                  height: '50px', 
-                  borderRadius: '12px', 
-                  background: 'linear-gradient(135deg, #10b981, #34d399)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'white'
-                }}>
-                  <TrendingUp size={24} />
-                </div>
-                <div>
-                  <p style={{ margin: 0, fontWeight: 800, fontSize: '24px', color: '#1f2937' }}>2,500+</p>
-                  <p style={{ margin: 0, fontSize: '13px', color: '#6b7280' }}>Vendeurs actifs</p>
-                </div>
-              </div>
-
-              <div className="floating-stat-2" style={{
-                position: 'absolute',
-                top: '20px',
-                right: '-20px',
-                background: 'white',
-                padding: '16px 20px',
-                borderRadius: '14px',
-                boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px'
-              }}>
-                <div style={{ display: 'flex' }}>
-                  {[1,2,3,4,5].map(i => (
-                    <Star key={i} size={16} fill="#fbbf24" color="#fbbf24" />
-                  ))}
-                </div>
-                <span style={{ fontWeight: 600, color: '#1f2937' }}>4.9/5</span>
-              </div>
+              <span style={{ fontWeight: 600, color: '#1f2937' }}>4.9/5</span>
             </div>
           </div>
         </div>
-
-        <button 
+        <button type="button"
           onClick={() => setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length)}
           className="hero-nav-btn"
           style={{
@@ -259,7 +203,7 @@ export function Home() {
         >
           <ChevronLeft size={24} color="#374151" />
         </button>
-        <button 
+        <button type="button"
           onClick={() => setCurrentSlide((prev) => (prev + 1) % heroSlides.length)}
           className="hero-nav-btn"
           style={{
@@ -282,6 +226,7 @@ export function Home() {
           <ChevronRight size={24} color="#374151" />
         </button>
       </section>
+
 
       {/* Produits - Juste après le hero */}
       <section style={{ padding: '60px 0', background: 'white' }}>
@@ -323,13 +268,14 @@ export function Home() {
               Voir tout <ArrowRight size={18} />
             </Link>
           </div>
-
           <div className="products-grid">
             {trendingProducts.map((product) => (
               <Link
                 key={product.id}
                 to={`/product/${product.id}`}
                 style={{ textDecoration: 'none' }}
+                onMouseEnter={() => setHoveredProduct(product.id)}
+                onMouseLeave={() => setHoveredProduct(null)}
               >
                 <div
                   style={{
@@ -344,28 +290,25 @@ export function Home() {
                     position: 'relative',
                     cursor: 'pointer'
                   }}
-                  onMouseEnter={() => setHoveredProduct(product.id)}
-                  onMouseLeave={() => setHoveredProduct(null)}
                 >
-                {/* Image Container */}
-                <div style={{
-                  aspectRatio: '1',
-                  overflow: 'hidden',
-                  position: 'relative',
-                  background: 'linear-gradient(135deg, #f8fafc, #f1f5f9)'
-                }}>
-                    <img 
-                      src={product.images[0]} 
-                      alt={product.title} 
-                      style={{ 
-                        width: '100%', 
-                        height: '100%', 
-                        objectFit: 'cover', 
+                  {/* Image Container */}
+                  <div style={{
+                    aspectRatio: '1',
+                    overflow: 'hidden',
+                    position: 'relative',
+                    background: 'linear-gradient(135deg, #f8fafc, #f1f5f9)'
+                  }}>
+                    <img
+                      src={product.images[0]}
+                      alt={product.title}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
                         transition: 'transform 0.5s ease',
                         transform: hoveredProduct === product.id ? 'scale(1.1)' : 'scale(1)'
-                      }} 
+                      }}
                     />
-                    
                     {/* Badges */}
                     <div style={{ position: 'absolute', top: '12px', left: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                       {product.originalPrice && (
@@ -394,7 +337,6 @@ export function Home() {
                         </span>
                       )}
                     </div>
-
                     {/* Action Buttons - apparaissent au hover */}
                     <div style={{
                       position: 'absolute',
@@ -407,7 +349,7 @@ export function Home() {
                       transform: hoveredProduct === product.id ? 'translateX(0)' : 'translateX(20px)',
                       transition: 'all 0.3s ease'
                     }}>
-                      <button style={{
+                      <button type="button" style={{
                         width: '44px',
                         height: '44px',
                         borderRadius: '50%',
@@ -420,11 +362,11 @@ export function Home() {
                         justifyContent: 'center',
                         transition: 'all 0.2s'
                       }}
-                      onClick={(e) => { e.preventDefault(); }}
+                        onClick={(e) => { e.preventDefault(); }}
                       >
                         <Heart size={20} color="#ef4444" />
                       </button>
-                      <button style={{
+                      <button type="button" style={{
                         width: '44px',
                         height: '44px',
                         borderRadius: '50%',
@@ -436,12 +378,11 @@ export function Home() {
                         alignItems: 'center',
                         justifyContent: 'center'
                       }}
-                      onClick={(e) => { e.preventDefault(); }}
+                        onClick={(e) => { e.preventDefault(); }}
                       >
                         <Eye size={20} color="#6b7280" />
                       </button>
                     </div>
-
                     {/* Quick Add Button */}
                     <div style={{
                       position: 'absolute',
@@ -455,7 +396,7 @@ export function Home() {
                       transition: 'all 0.3s ease'
                     }}>
                       <div onClick={(e) => e.stopPropagation()}>
-                        <button style={{
+                        <button type="button" style={{
                           width: '100%',
                           padding: '14px',
                           background: addedProductId === product.id
@@ -475,7 +416,7 @@ export function Home() {
                           transform: addedProductId === product.id ? 'scale(1.02)' : 'scale(1)',
                           transition: 'all 0.3s ease'
                         }}
-                        onClick={(e) => handleAddToCart(e, product)}
+                          onClick={(e) => handleAddToCart(e, product)}
                         >
                           {addedProductId === product.id ? (
                             <>
@@ -492,7 +433,6 @@ export function Home() {
                       </div>
                     </div>
                   </div>
-
                   {/* Product Info */}
                   <div style={{ padding: '20px' }}>
                     {/* Shop name with badge */}
@@ -516,7 +456,6 @@ export function Home() {
                         <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: 600 }}>4.8</span>
                       </div>
                     </div>
-
                     {/* Title */}
                     <h3 style={{ 
                       margin: '0 0 12px 0', 
@@ -532,7 +471,6 @@ export function Home() {
                     }}>
                       {product.title}
                     </h3>
-
                     {/* Price Section */}
                     <div style={{ 
                       display: 'flex', 
@@ -563,7 +501,7 @@ export function Home() {
                         )}
                       </div>
                       <div onClick={(e) => e.stopPropagation()}>
-                        <button
+                        <button type="button"
                           onClick={(e) => handleAddToCart(e, product)}
                           style={{
                             width: '48px',
@@ -592,7 +530,6 @@ export function Home() {
               </Link>
             ))}
           </div>
-          
           {/* Load More Button */}
           <div style={{ textAlign: 'center', marginTop: '48px' }}>
             <Link 
@@ -1136,7 +1073,7 @@ export function Home() {
                       transform: hoveredProduct === product.id ? 'translateX(0)' : 'translateX(15px)',
                       transition: 'all 0.3s ease'
                     }}>
-                      <button style={{
+                      <button type="button" style={{
                         width: '36px',
                         height: '36px',
                         borderRadius: '50%',
@@ -1150,7 +1087,7 @@ export function Home() {
                       }}>
                         <Heart size={16} color="#ef4444" />
                       </button>
-                      <button style={{
+                      <button type="button" style={{
                         width: '36px',
                         height: '36px',
                         borderRadius: '50%',
@@ -1209,7 +1146,7 @@ export function Home() {
                           </span>
                         )}
                       </div>
-                      <button 
+                      <button type="button" 
                         onClick={(e) => handleAddToCart(e, product)}
                         style={{
                           width: '38px',

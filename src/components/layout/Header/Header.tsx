@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link, useNavigate, useParams } from 'react-router-dom';
 import './Header.css';
-import { Link, useNavigate } from 'react-router-dom';
-import { useParams } from 'react-router-dom';
 import {
   Search,
   ShoppingCart,
@@ -24,7 +22,9 @@ import logoImage from '../../../assets/jour_marché.png';
 
 export function Header() {
   const { user, isAuthenticated } = useAuth();
-  const { itemCount } = useCart();
+  const { cart, itemCount, removeFromCart, updateQuantity } = useCart();
+  const [showCartDrawer, setShowCartDrawer] = useState(false);
+  const [showPaymentOptions, setShowPaymentOptions] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -85,13 +85,68 @@ export function Header() {
         </div>
       </div>
 
+      {/* Cart Drawer */}
+      {showCartDrawer && (
+        <div style={{ position: 'fixed', top: 0, right: 0, height: '100vh', width: '380px', background: 'white', boxShadow: '-20px 0 40px rgba(2,6,23,0.08)', zIndex: 1100, display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid #f3f4f6' }}>
+            <h3 style={{ margin: 0, fontWeight: 800 }}>Mon Panier</h3>
+            <button type="button" onClick={() => setShowCartDrawer(false)} style={{ border: 'none', background: '#f3f4f6', padding: '8px', borderRadius: '8px', cursor: 'pointer' }}>
+              <X />
+            </button>
+          </div>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '16px' }}>
+            {cart.items.length === 0 ? (
+              <div style={{ textAlign: 'center', color: '#6b7280' }}>Votre panier est vide</div>
+            ) : (
+              cart.items.map((it, idx) => (
+                <div key={it.product.id + '-' + idx} style={{ display: 'flex', gap: '12px', marginBottom: '14px', alignItems: 'center' }}>
+                  <img src={it.product.images?.[0]} alt={it.product.title} style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 8 }} />
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontWeight: 700 }}>{it.product.title}</div>
+                    <div style={{ fontSize: 13, color: '#6b7280' }}>{it.quantity} × {new Intl.NumberFormat('fr-FR').format(it.product.price)} FCFA</div>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    <button type="button" onClick={() => updateQuantity(it.product.id, it.quantity - 1)} style={{ border: 'none', background: '#f3f4f6', padding: '6px', borderRadius: 8 }}>−</button>
+                    <button type="button" onClick={() => updateQuantity(it.product.id, it.quantity + 1)} style={{ border: 'none', background: '#f3f4f6', padding: '6px', borderRadius: 8 }}>+</button>
+                    <button type="button" onClick={() => removeFromCart(it.product.id)} style={{ border: 'none', background: 'transparent', color: '#ef4444', padding: 0 }}>Suppr</button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+          <div style={{ padding: '16px', borderTop: '1px solid #f3f4f6' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
+              <div style={{ color: '#6b7280' }}>Total</div>
+              <div style={{ fontWeight: 800 }}>{new Intl.NumberFormat('fr-FR').format(cart.total || 0)} FCFA</div>
+            </div>
+            {!showPaymentOptions ? (
+              <div style={{ display: 'flex', gap: 8 }}>
+                <Link to="/cart" onClick={() => setShowCartDrawer(false)} style={{ flex: 1, textAlign: 'center', padding: '12px', borderRadius: 12, background: '#fff', border: '1px solid #059669', color: '#059669', textDecoration: 'none', fontWeight: 700 }}>Voir le panier</Link>
+                <button type="button" onClick={() => setShowPaymentOptions(true)} style={{ flex: 1, textAlign: 'center', padding: '12px', borderRadius: 12, background: 'linear-gradient(135deg, #059669, #10b981)', color: 'white', border: 'none', fontWeight: 700, cursor: 'pointer' }}>Payer</button>
+              </div>
+            ) : (
+              <div>
+                <div style={{ marginBottom: 16 }}>
+                  <h4 style={{ margin: '0 0 12px 0', fontSize: '16px', fontWeight: 700 }}>Choisir le mode de paiement</h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    <Link to="/payment/mobile-money" onClick={() => { setShowCartDrawer(false); setShowPaymentOptions(false); }} style={{ padding: '12px', borderRadius: 12, background: 'linear-gradient(135deg, #059669, #10b981)', color: 'white', textDecoration: 'none', fontWeight: 700, textAlign: 'center' }}>Mobile Money</Link>
+                    <button type="button" onClick={() => { setShowCartDrawer(false); setShowPaymentOptions(false); navigate('/payment/cash-on-delivery'); }} style={{ padding: '12px', borderRadius: 12, background: '#fff', border: '1px solid #059669', color: '#059669', fontWeight: 700, cursor: 'pointer' }}>Paiement à la livraison</button>
+                  </div>
+                </div>
+                <button type="button" onClick={() => setShowPaymentOptions(false)} style={{ width: '100%', padding: '8px', borderRadius: 8, background: '#f3f4f6', border: 'none', color: '#6b7280', fontWeight: 600, cursor: 'pointer' }}>Retour</button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Main Header */}
       <div style={{ background: 'white', borderBottom: '1px solid #f3f4f6', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '24px', height: '72px' }}>
             
             {/* Mobile Menu Button */}
-            <button
+            <button type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="mobile-menu-btn"
               style={{
@@ -118,15 +173,15 @@ export function Header() {
 
             {/* Actions mobiles : panier et icône utilisateur pour tous, nom utilisateur si connecté */}
             <div className="header-mobile-actions">
-              <Link to="/cart" style={{ position: 'relative', padding: '12px', background: '#f0fdf4', borderRadius: '50%', color: '#059669', display: 'flex', alignItems: 'center', marginRight: '8px' }}>
+              <button type="button" onClick={() => setShowCartDrawer(true)} style={{ position: 'relative', padding: '12px', background: '#f0fdf4', borderRadius: '50%', color: '#059669', display: 'flex', alignItems: 'center', marginRight: '8px' }}>
                 <ShoppingCart size={20} />
                 {itemCount > 0 && (
                   <span style={{ position: 'absolute', top: '-4px', right: '-4px', minWidth: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 6px', background: 'linear-gradient(135deg, #059669, #10b981)', color: 'white', fontSize: '11px', fontWeight: 700, borderRadius: '50px', border: '2px solid white' }}>
                     {itemCount > 99 ? '99+' : itemCount}
                   </span>
                 )}
-              </Link>
-              <button className="desktop-signup-btn" onClick={() => navigate('/signup')} style={{ background: 'linear-gradient(135deg, #059669, #10b981)', border: 'none', borderRadius: '50px', fontWeight: 600, fontSize: '14px', color: 'white', cursor: 'pointer', padding: '8px 16px' }}>
+              </button>
+              <button type="button" className="desktop-signup-btn" onClick={() => navigate('/signup')} style={{ background: 'linear-gradient(135deg, #059669, #10b981)', border: 'none', borderRadius: '50px', fontWeight: 600, fontSize: '14px', color: 'white', cursor: 'pointer', padding: '8px 16px' }}>
                 S'inscrire
               </button>
             </div>
@@ -139,7 +194,7 @@ export function Header() {
               onMouseEnter={() => setShowCategories(true)}
               onMouseLeave={() => setShowCategories(false)}
             >
-              <button style={{ 
+              <button type="button" style={{ 
                 display: 'flex', 
                 alignItems: 'center', 
                 gap: '8px', 
@@ -326,7 +381,7 @@ export function Header() {
                   )}
 
                   {/* Notifications */}
-                  <button className="header-notifications-desktop" style={{
+                  <button type="button" className="header-notifications-desktop" style={{
                     position: 'relative',
                     padding: '12px',
                     background: '#f3f4f6',
@@ -366,17 +421,7 @@ export function Header() {
                   {/* Cart et user mobile déplacés à droite, voir header-mobile-actions (supprimé sur mobile) */}
 
                   {/* Cart Link */}
-                  <Link
-                    to="/cart"
-                    className="header-cart-desktop"
-                    style={{
-                      position: 'relative',
-                      padding: '12px',
-                      color: '#059669',
-                      display: 'flex',
-                      alignItems: 'center'
-                    }}
-                  >
+                  <button type="button" onClick={() => setShowCartDrawer(true)} className="header-cart-desktop" style={{ position: 'relative', padding: '12px', color: '#059669', display: 'flex', alignItems: 'center' }}>
                     <ShoppingCart size={20} />
                     {itemCount > 0 && (
                       <span style={{
@@ -399,19 +444,19 @@ export function Header() {
                         {itemCount > 99 ? '99+' : itemCount}
                       </span>
                     )}
-                  </Link>
+                  </button>
                 </>
               ) : (
                 <>
-                  <Link to="/cart" className="header-cart-desktop" style={{ position: 'relative', padding: '12px', background: '#f0fdf4', borderRadius: '50%', color: '#059669', display: 'flex', alignItems: 'center', marginRight: '8px' }}>
+                  <button type="button" onClick={() => setShowCartDrawer(true)} className="header-cart-desktop" style={{ position: 'relative', padding: '12px', background: '#f0fdf4', borderRadius: '50%', color: '#059669', display: 'flex', alignItems: 'center', marginRight: '8px', border: 'none', cursor: 'pointer' }}>
                     <ShoppingCart size={20} />
                     {itemCount > 0 && (
                       <span style={{ position: 'absolute', top: '-4px', right: '-4px', minWidth: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 6px', background: 'linear-gradient(135deg, #059669, #10b981)', color: 'white', fontSize: '11px', fontWeight: 700, borderRadius: '50px', border: '2px solid white' }}>
                         {itemCount > 99 ? '99+' : itemCount}
                       </span>
                     )}
-                  </Link>
-                  <button onClick={() => navigate('/login')} style={{ padding: '12px 20px', background: 'linear-gradient(135deg, #059669, #10b981)', color: 'white', border: 'none', borderRadius: '12px', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
+                  </button>
+                  <button type="button" onClick={() => navigate('/login')} style={{ padding: '12px 20px', background: 'linear-gradient(135deg, #059669, #10b981)', color: 'white', border: 'none', borderRadius: '12px', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
                     S'inscrire
                   </button>
                 </>
@@ -469,7 +514,7 @@ export function Header() {
         <div style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'white' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', borderBottom: '1px solid #f3f4f6' }}>
             <img src={logoImage} alt="Jour de Marché" className="mobile-logo" />
-            <button
+            <button type="button"
               onClick={() => setMobileMenuOpen(false)}
               style={{ padding: '8px', background: '#f3f4f6', border: 'none', borderRadius: '10px', cursor: 'pointer' }}
             >
