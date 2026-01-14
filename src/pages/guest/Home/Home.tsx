@@ -5,6 +5,7 @@ import { products, categories, shops } from '../../../data/mockData';
 import { useCart } from '../../../context/CartContext';
 import type { Product } from '../../../types';
 
+
 // Extension du type Product pour inclure originalPrice
 type ProductWithPromo = Product & { originalPrice?: number };
 
@@ -21,6 +22,7 @@ export function Home() {
     setTimeout(() => setAddedProductId(null), 1500);
   };
   
+
   const heroSlides = [
     {
       title: "Le marché de Côte d'Ivoire",
@@ -709,6 +711,7 @@ export function Home() {
               </Link>
             ))}
           </div>
+
 
           <div style={{ textAlign: 'center', marginTop: '32px' }}>
             <Link 

@@ -100,7 +100,7 @@ export function Cart() {
 
   return (
     <div className="cart-page">
-      <h1 className="cart-title">Panier / Checkout</h1>
+      <h1 className="cart-title">Panier </h1>
 
       <div className="cart-layout">
         {/* Cart Items */}
