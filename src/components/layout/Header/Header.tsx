@@ -54,11 +54,11 @@ export function Header() {
   }, [mobileMenuOpen]);
 
   return (
-    <header className="sticky top-0 z-50">
+    <header className="sticky top-0 z-50" style={{ overflow: 'hidden' }}>
       {/* Top Bar - Announcement */}
-      <div className="header-top-bar-container" style={{ background: 'linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%)' }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem' }}>
-          <div className="header-top-bar" style={{ alignItems: 'center', justifyContent: 'space-between', height: '40px', color: 'white', fontSize: '13px' }}>
+      <div className="header-top-bar-container" style={{ background: 'linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%)', width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
+        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem', width: '100%', boxSizing: 'border-box' }}>
+          <div className="header-top-bar" style={{ alignItems: 'center', justifyContent: 'space-between', height: '40px', color: 'white', fontSize: '13px', width: '100%', boxSizing: 'border-box' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto', paddingRight: '16px' }}>
               <Link to="/aide" className="header-desktop-help" style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#059669', textDecoration: 'none', fontWeight: 500, fontSize: '15px', padding: '8px 12px', borderRadius: '8px', background: '#f0fdf4' }}>
                 <Phone size={18} />
@@ -87,7 +87,7 @@ export function Header() {
 
       {/* Cart Drawer */}
       {showCartDrawer && (
-        <div style={{ position: 'fixed', top: 0, right: 0, height: '100vh', width: '380px', background: 'white', boxShadow: '-20px 0 40px rgba(2,6,23,0.08)', zIndex: 1100, display: 'flex', flexDirection: 'column' }}>
+        <div style={{ position: 'fixed', top: 0, right: 0, height: '100vh', width: 'min(380px, 100vw)', background: 'white', boxShadow: '-20px 0 40px rgba(2,6,23,0.08)', zIndex: 1100, display: 'flex', flexDirection: 'column' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid #f3f4f6' }}>
             <h3 style={{ margin: 0, fontWeight: 800 }}>Mon Panier</h3>
             <button type="button" onClick={() => setShowCartDrawer(false)} style={{ border: 'none', background: '#f3f4f6', padding: '8px', borderRadius: '8px', cursor: 'pointer' }}>
@@ -141,9 +141,9 @@ export function Header() {
       )}
 
       {/* Main Header */}
-      <div style={{ background: 'white', borderBottom: '1px solid #f3f4f6', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '24px', height: '72px' }}>
+      <div style={{ background: 'white', borderBottom: '1px solid #f3f4f6', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
+        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem', width: '100%', boxSizing: 'border-box' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', height: '72px', width: '100%', boxSizing: 'border-box', overflowX: 'auto', overflowY: 'hidden', scrollbarWidth: 'none' }}>
             
             {/* Mobile Menu Button */}
             <button type="button"
@@ -163,7 +163,7 @@ export function Header() {
 
 
             {/* Logo */}
-            <Link to="/" style={{ flexShrink: 0, marginLeft: '-20px' }}>
+            <Link to="/" style={{ flexShrink: 0, marginLeft: '-8px' }}>
               <img
                 src={logoImage}
                 alt="Jour de Marché"
@@ -269,7 +269,7 @@ export function Header() {
             </div>
 
             {/* Search Bar */}
-            <form onSubmit={handleSearch} className="header-desktop-search" style={{ flex: 1, maxWidth: '800px', marginRight: '24px' }}>
+            <form onSubmit={handleSearch} className="header-desktop-search" style={{ flex: 1, maxWidth: '800px', marginRight: '12px' }}>
               <div style={{ 
                 display: 'flex', 
                 alignItems: 'center', 
@@ -315,7 +315,7 @@ export function Header() {
             </form>
 
             {/* Right Actions */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
               {isAuthenticated ? (
                 <>
                   {/* Icône utilisateur connecté avant 'Créer ma boutique' */}
