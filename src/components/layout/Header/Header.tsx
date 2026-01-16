@@ -87,57 +87,436 @@ export function Header() {
 
       {/* Cart Drawer */}
       {showCartDrawer && (
-        <div style={{ position: 'fixed', top: 0, right: 0, height: '100vh', width: 'min(380px, 100vw)', background: 'white', boxShadow: '-20px 0 40px rgba(2,6,23,0.08)', zIndex: 1100, display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid #f3f4f6' }}>
-            <h3 style={{ margin: 0, fontWeight: 800 }}>Mon Panier</h3>
-            <button type="button" onClick={() => setShowCartDrawer(false)} style={{ border: 'none', background: '#f3f4f6', padding: '8px', borderRadius: '8px', cursor: 'pointer' }}>
-              <X />
-            </button>
-          </div>
-          <div style={{ flex: 1, overflowY: 'auto', padding: '16px' }}>
-            {cart.items.length === 0 ? (
-              <div style={{ textAlign: 'center', color: '#6b7280' }}>Votre panier est vide</div>
-            ) : (
-              cart.items.map((it, idx) => (
-                <div key={it.product.id + '-' + idx} style={{ display: 'flex', gap: '12px', marginBottom: '14px', alignItems: 'center' }}>
-                  <img src={it.product.images?.[0]} alt={it.product.title} style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 8 }} />
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 700 }}>{it.product.title}</div>
-                    <div style={{ fontSize: 13, color: '#6b7280' }}>{it.quantity} × {new Intl.NumberFormat('fr-FR').format(it.product.price)} FCFA</div>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                    <button type="button" onClick={() => updateQuantity(it.product.id, it.quantity - 1)} style={{ border: 'none', background: '#f3f4f6', padding: '6px', borderRadius: 8 }}>−</button>
-                    <button type="button" onClick={() => updateQuantity(it.product.id, it.quantity + 1)} style={{ border: 'none', background: '#f3f4f6', padding: '6px', borderRadius: 8 }}>+</button>
-                    <button type="button" onClick={() => removeFromCart(it.product.id)} style={{ border: 'none', background: 'transparent', color: '#ef4444', padding: 0 }}>Suppr</button>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-          <div style={{ padding: '16px', borderTop: '1px solid #f3f4f6' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
-              <div style={{ color: '#6b7280' }}>Total</div>
-              <div style={{ fontWeight: 800 }}>{new Intl.NumberFormat('fr-FR').format(cart.total || 0)} FCFA</div>
-            </div>
-            {!showPaymentOptions ? (
-              <div style={{ display: 'flex', gap: 8 }}>
-                <Link to="/cart" onClick={() => setShowCartDrawer(false)} style={{ flex: 1, textAlign: 'center', padding: '12px', borderRadius: 12, background: '#fff', border: '1px solid #059669', color: '#059669', textDecoration: 'none', fontWeight: 700 }}>Voir le panier</Link>
-                <button type="button" onClick={() => setShowPaymentOptions(true)} style={{ flex: 1, textAlign: 'center', padding: '12px', borderRadius: 12, background: 'linear-gradient(135deg, #059669, #10b981)', color: 'white', border: 'none', fontWeight: 700, cursor: 'pointer' }}>Payer</button>
-              </div>
-            ) : (
+        <>
+          {/* Backdrop */}
+          <div 
+            onClick={() => setShowCartDrawer(false)}
+            style={{ 
+              position: 'fixed', 
+              top: 0, 
+              left: 0, 
+              right: 0, 
+              bottom: 0, 
+              background: 'rgba(0, 0, 0, 0.5)', 
+              zIndex: 1099,
+              animation: 'fadeIn 0.3s ease'
+            }} 
+          />
+          
+          {/* Cart Sidebar */}
+          <div style={{ 
+            position: 'fixed', 
+            top: 0, 
+            right: 0, 
+            height: '100vh', 
+            width: 'min(420px, 100vw)', 
+            background: 'white', 
+            boxShadow: '-10px 0 40px rgba(0, 0, 0, 0.15)', 
+            zIndex: 1100, 
+            display: 'flex', 
+            flexDirection: 'column',
+            animation: 'slideInRight 0.3s ease'
+          }}>
+            {/* Header */}
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'space-between', 
+              padding: '1.5rem', 
+              borderBottom: '2px solid #f3f4f6',
+              background: 'linear-gradient(135deg, #f9fafb, #f3f4f6)'
+            }}>
               <div>
-                <div style={{ marginBottom: 16 }}>
-                  <h4 style={{ margin: '0 0 12px 0', fontSize: '16px', fontWeight: 700 }}>Choisir le mode de paiement</h4>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    <Link to="/payment/mobile-money" onClick={() => { setShowCartDrawer(false); setShowPaymentOptions(false); }} style={{ padding: '12px', borderRadius: 12, background: 'linear-gradient(135deg, #059669, #10b981)', color: 'white', textDecoration: 'none', fontWeight: 700, textAlign: 'center' }}>Mobile Money</Link>
-                    <button type="button" onClick={() => { setShowCartDrawer(false); setShowPaymentOptions(false); navigate('/payment/cash-on-delivery'); }} style={{ padding: '12px', borderRadius: 12, background: '#fff', border: '1px solid #059669', color: '#059669', fontWeight: 700, cursor: 'pointer' }}>Paiement à la livraison</button>
+                <h3 style={{ 
+                  margin: 0, 
+                  fontWeight: 700,
+                  fontSize: '1.3rem',
+                  color: '#1f2937'
+                }}>Mon Panier</h3>
+                <p style={{ 
+                  margin: '0.3rem 0 0 0', 
+                  fontSize: '0.85rem',
+                  color: '#6b7280'
+                }}>{cart.items.length} article{cart.items.length !== 1 ? 's' : ''}</p>
+              </div>
+              <button 
+                type="button" 
+                onClick={() => setShowCartDrawer(false)} 
+                style={{ 
+                  border: 'none', 
+                  background: '#e5e7eb', 
+                  padding: '10px', 
+                  borderRadius: '8px', 
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  transition: 'all 0.3s ease',
+                  color: '#374151'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = '#d1d5db';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = '#e5e7eb';
+                }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Items Container */}
+            <div style={{ 
+              flex: 1, 
+              overflowY: 'auto', 
+              padding: '1.5rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.75rem'
+            }}>
+              {cart.items.length === 0 ? (
+                <div style={{ 
+                  textAlign: 'center', 
+                  color: '#6b7280',
+                  padding: '3rem 1rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  height: '100%'
+                }}>
+                  <ShoppingCart size={48} style={{ color: '#d1d5db', marginBottom: '1rem' }} />
+                  <p style={{ margin: 0, fontSize: '1rem', fontWeight: 500 }}>Votre panier est vide</p>
+                  <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.85rem' }}>Ajoutez des articles pour commencer</p>
+                </div>
+              ) : (
+                cart.items.map((it, idx) => (
+                  <div 
+                    key={it.product.id + '-' + idx} 
+                    style={{ 
+                      display: 'flex', 
+                      gap: '1rem', 
+                      padding: '1rem',
+                      background: '#f9fafb',
+                      borderRadius: '10px',
+                      border: '1px solid #e5e7eb',
+                      alignItems: 'flex-start',
+                      transition: 'all 0.3s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = '#f0fdf4';
+                      e.currentTarget.style.borderColor = '#d1d5db';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = '#f9fafb';
+                      e.currentTarget.style.borderColor = '#e5e7eb';
+                    }}
+                  >
+                    {/* Image */}
+                    <img 
+                      src={it.product.images?.[0]} 
+                      alt={it.product.title} 
+                      style={{ 
+                        width: 80, 
+                        height: 80, 
+                        objectFit: 'cover', 
+                        borderRadius: 8,
+                        flexShrink: 0,
+                        border: '1px solid #e5e7eb'
+                      }} 
+                    />
+
+                    {/* Info */}
+                    <div style={{ flex: 1 }}>
+                      <div style={{ 
+                        fontWeight: 600,
+                        color: '#1f2937',
+                        marginBottom: '0.3rem',
+                        fontSize: '0.95rem',
+                        lineHeight: 1.3
+                      }}>
+                        {it.product.title}
+                      </div>
+                      <div style={{ 
+                        fontSize: '0.85rem', 
+                        color: '#6b7280',
+                        marginBottom: '0.5rem'
+                      }}>
+                        {it.quantity} × {new Intl.NumberFormat('fr-FR').format(it.product.price)} FCFA
+                      </div>
+                      <div style={{ 
+                        fontSize: '1rem',
+                        fontWeight: 700,
+                        color: '#059669'
+                      }}>
+                        {new Intl.NumberFormat('fr-FR').format(it.quantity * it.product.price)} FCFA
+                      </div>
+                    </div>
+
+                    {/* Controls */}
+                    <div style={{ 
+                      display: 'flex', 
+                      flexDirection: 'column', 
+                      gap: 6,
+                      flexShrink: 0
+                    }}>
+                      <button 
+                        type="button" 
+                        onClick={() => updateQuantity(it.product.id, it.quantity + 1)} 
+                        style={{ 
+                          border: '1px solid #d1d5db', 
+                          background: 'white', 
+                          padding: '6px 8px', 
+                          borderRadius: 6,
+                          cursor: 'pointer',
+                          fontWeight: 600,
+                          color: '#059669',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = '#f0fdf4';
+                          e.currentTarget.style.borderColor = '#059669';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'white';
+                          e.currentTarget.style.borderColor = '#d1d5db';
+                        }}
+                      >
+                        +
+                      </button>
+                      <span style={{ 
+                        textAlign: 'center', 
+                        fontWeight: 600,
+                        color: '#1f2937'
+                      }}>
+                        {it.quantity}
+                      </span>
+                      <button 
+                        type="button" 
+                        onClick={() => updateQuantity(it.product.id, it.quantity - 1)} 
+                        style={{ 
+                          border: '1px solid #d1d5db', 
+                          background: 'white', 
+                          padding: '6px 8px', 
+                          borderRadius: 6,
+                          cursor: 'pointer',
+                          fontWeight: 600,
+                          color: '#059669',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = '#f0fdf4';
+                          e.currentTarget.style.borderColor = '#059669';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'white';
+                          e.currentTarget.style.borderColor = '#d1d5db';
+                        }}
+                      >
+                        −
+                      </button>
+                      <button 
+                        type="button" 
+                        onClick={() => removeFromCart(it.product.id)} 
+                        style={{ 
+                          border: 'none', 
+                          background: '#fee2e2', 
+                          color: '#dc2626', 
+                          padding: '6px 8px',
+                          borderRadius: 6,
+                          fontSize: '0.75rem',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          marginTop: '2px',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = '#fecaca';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = '#fee2e2';
+                        }}
+                      >
+                        Suppr
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Footer */}
+            {cart.items.length > 0 && (
+              <div style={{ 
+                padding: '1.5rem', 
+                borderTop: '2px solid #f3f4f6',
+                background: 'linear-gradient(135deg, #f9fafb, #f3f4f6)'
+              }}>
+                {/* Total */}
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  alignItems: 'center',
+                  marginBottom: '1.5rem',
+                  padding: '1rem',
+                  background: 'white',
+                  borderRadius: '10px',
+                  border: '1px solid #e5e7eb'
+                }}>
+                  <div style={{ color: '#6b7280', fontWeight: 500 }}>Total</div>
+                  <div style={{ 
+                    fontWeight: 800,
+                    fontSize: '1.3rem',
+                    color: '#059669'
+                  }}>
+                    {new Intl.NumberFormat('fr-FR').format(cart.total || 0)} FCFA
                   </div>
                 </div>
-                <button type="button" onClick={() => setShowPaymentOptions(false)} style={{ width: '100%', padding: '8px', borderRadius: 8, background: '#f3f4f6', border: 'none', color: '#6b7280', fontWeight: 600, cursor: 'pointer' }}>Retour</button>
+
+                {/* Buttons */}
+                {!showPaymentOptions ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    <button 
+                      type="button" 
+                      onClick={() => setShowPaymentOptions(true)} 
+                      style={{ 
+                        textAlign: 'center', 
+                        padding: '1rem', 
+                        borderRadius: 10, 
+                        background: 'linear-gradient(135deg, #10b981, #059669)', 
+                        color: 'white', 
+                        border: 'none', 
+                        fontWeight: 700,
+                        fontSize: '1rem',
+                        cursor: 'pointer',
+                        boxShadow: '0 4px 12px rgba(5, 150, 105, 0.3)',
+                        transition: 'all 0.3s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        e.currentTarget.style.boxShadow = '0 6px 20px rgba(5, 150, 105, 0.4)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(5, 150, 105, 0.3)';
+                      }}
+                    >
+                      Passer la commande
+                    </button>
+                    <Link 
+                      to="/cart" 
+                      onClick={() => setShowCartDrawer(false)} 
+                      style={{ 
+                        textAlign: 'center', 
+                        padding: '1rem', 
+                        borderRadius: 10, 
+                        background: 'white', 
+                        border: '1.5px solid #059669', 
+                        color: '#059669', 
+                        textDecoration: 'none', 
+                        fontWeight: 700,
+                        fontSize: '1rem',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = '#f0fdf4';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'white';
+                      }}
+                    >
+                      Modifier le panier
+                    </Link>
+                  </div>
+                ) : (
+                  <div>
+                    <div style={{ marginBottom: '1rem' }}>
+                      <h4 style={{ 
+                        margin: '0 0 1rem 0', 
+                        fontSize: '1rem', 
+                        fontWeight: 700,
+                        color: '#1f2937'
+                      }}>
+                        Choisir le mode de paiement
+                      </h4>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                        <Link 
+                          to="/payment/mobile-money" 
+                          onClick={() => { setShowCartDrawer(false); setShowPaymentOptions(false); }} 
+                          style={{ 
+                            padding: '1rem', 
+                            borderRadius: 10, 
+                            background: 'linear-gradient(135deg, #10b981, #059669)', 
+                            color: 'white', 
+                            textDecoration: 'none', 
+                            fontWeight: 700,
+                            textAlign: 'center',
+                            transition: 'all 0.3s ease'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = 'translateY(-2px)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = 'translateY(0)';
+                          }}
+                        >
+                          💳 Mobile Money
+                        </Link>
+                        <button 
+                          type="button" 
+                          onClick={() => { setShowCartDrawer(false); setShowPaymentOptions(false); navigate('/payment/cash-on-delivery'); }} 
+                          style={{ 
+                            padding: '1rem', 
+                            borderRadius: 10, 
+                            background: 'white', 
+                            border: '1.5px solid #059669', 
+                            color: '#059669', 
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                            transition: 'all 0.3s ease',
+                            textAlign: 'center',
+                            fontSize: '1rem'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = '#f0fdf4';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = 'white';
+                          }}
+                        >
+                          💰 À la livraison
+                        </button>
+                      </div>
+                    </div>
+                    <button 
+                      type="button" 
+                      onClick={() => setShowPaymentOptions(false)} 
+                      style={{ 
+                        width: '100%', 
+                        padding: '0.75rem', 
+                        borderRadius: 8, 
+                        background: '#e5e7eb', 
+                        border: 'none', 
+                        color: '#374151', 
+                        fontWeight: 600, 
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = '#d1d5db';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = '#e5e7eb';
+                      }}
+                    >
+                      ← Retour
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
-        </div>
+        </>
       )}
 
       {/* Main Header */}

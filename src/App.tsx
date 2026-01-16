@@ -11,7 +11,7 @@ import { Login, Signup } from './pages/auth';
 import { Home, ProductDetail, Cart, Categories, Shops, ShopDetail, Promotions, Search, MobileMoneyPayment } from './pages/guest';
 
 // Buyer Pages
-import { BuyerDashboard, Profile } from './pages/buyer';
+import { BuyerDashboard, Profile, OrderDetail } from './pages/buyer';
 
 // Seller Pages
 import { SellerDashboard, CreateShop, ShopPage, CreateProduct } from './pages/seller';
@@ -126,6 +126,7 @@ function AppRoutes() {
         <Route element={<BuyerRoute />}>
           <Route path="/buyer/dashboard" element={<BuyerDashboard />} />
           <Route path="/buyer/orders" element={<BuyerDashboard />} />
+          <Route path="/buyer/orders/:id" element={<OrderDetail />} />
           <Route path="/buyer/profile" element={<Profile />} />
         </Route>
       </Route>

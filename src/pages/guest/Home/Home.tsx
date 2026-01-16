@@ -1012,10 +1012,9 @@ export function Home() {
 
           <div className="all-products-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(clamp(140px, 50vw, 240px), 1fr))', gap: 'clamp(12px, 3vw, 24px)' }}>
             {(products as ProductWithPromo[]).map((product) => (
-              <Link 
-                key={product.id} 
-                to={`/product/${product.id}`} 
-                style={{ textDecoration: 'none' }}
+              <div 
+                key={product.id}
+                style={{ position: 'relative' }}
                 onMouseEnter={() => setHoveredProduct(product.id)}
                 onMouseLeave={() => setHoveredProduct(null)}
               >
@@ -1028,8 +1027,16 @@ export function Home() {
                     : '0 4px 15px rgba(0,0,0,0.06)',
                   transform: hoveredProduct === product.id ? 'translateY(-8px)' : 'translateY(0)',
                   transition: 'all 0.3s ease',
-                  border: '1px solid #f3f4f6'
+                  border: '1px solid #f3f4f6',
+                  position: 'relative',
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column'
                 }}>
+                  <Link 
+                    to={`/product/${product.id}`} 
+                    style={{ textDecoration: 'none', display: 'block', flex: 1 }}
+                  >
                   {/* Image */}
                   <div style={{ 
                     aspectRatio: '1', 
@@ -1108,6 +1115,7 @@ export function Home() {
                       </button>
                     </div>
                   </div>
+                  </Link>
                   
                   {/* Contenu */}
                   <div style={{ padding: '16px' }}>
@@ -1116,22 +1124,27 @@ export function Home() {
                       <span style={{ fontSize: '12px', color: '#6b7280' }}>{product.shopName}</span>
                     </div>
                     
-                    <h3 style={{ 
-                      margin: '0 0 10px 0', 
-                      fontSize: '14px', 
-                      fontWeight: 600, 
-                      color: '#1f2937',
-                      lineHeight: 1.4,
-                      display: '-webkit-box',
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden',
-                      minHeight: '40px'
-                    }}>
-                      {product.title}
-                    </h3>
+                    <Link 
+                      to={`/product/${product.id}`} 
+                      style={{ textDecoration: 'none', display: 'block' }}
+                    >
+                      <h3 style={{ 
+                        margin: '0 0 10px 0', 
+                        fontSize: '14px', 
+                        fontWeight: 600, 
+                        color: '#1f2937',
+                        lineHeight: 1.4,
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        minHeight: '40px'
+                      }}>
+                        {product.title}
+                      </h3>
+                    </Link>
                     
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto' }}>
                       <div>
                         <span style={{ 
                           fontSize: '18px', 
@@ -1151,31 +1164,41 @@ export function Home() {
                           </span>
                         )}
                       </div>
-                      <button type="button" 
-                        onClick={(e) => handleAddToCart(e, product)}
-                        style={{
-                          width: '38px',
-                          height: '38px',
-                          borderRadius: '10px',
-                          background: addedProductId === product.id 
-                            ? 'linear-gradient(135deg, #10b981, #34d399)' 
-                            : 'linear-gradient(135deg, #059669, #10b981)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: 'white',
-                          border: 'none',
-                          cursor: 'pointer',
-                          transform: addedProductId === product.id ? 'scale(1.15)' : 'scale(1)',
-                          transition: 'all 0.3s ease'
-                        }}
-                      >
-                        {addedProductId === product.id ? <Check size={16} /> : <ShoppingCart size={16} />}
-                      </button>
                     </div>
                   </div>
+                  <button 
+                    type="button"
+                    data-action="add-to-cart"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleAddToCart(e, product);
+                    }}
+                    style={{
+                      position: 'absolute',
+                      bottom: '16px',
+                      right: '16px',
+                      width: '38px',
+                      height: '38px',
+                      borderRadius: '10px',
+                      background: addedProductId === product.id 
+                        ? 'linear-gradient(135deg, #10b981, #34d399)' 
+                        : 'linear-gradient(135deg, #059669, #10b981)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'white',
+                      border: 'none',
+                      cursor: 'pointer',
+                      transform: addedProductId === product.id ? 'scale(1.15)' : 'scale(1)',
+                      transition: 'all 0.3s ease',
+                      zIndex: 10
+                    }}
+                  >
+                    {addedProductId === product.id ? <Check size={16} /> : <ShoppingCart size={16} />}
+                  </button>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
 
