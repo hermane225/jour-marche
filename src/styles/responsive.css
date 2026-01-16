@@ -1,0 +1,85 @@
+/* Responsive Design Standards for jour-marche */
+
+/* Standard container padding for all viewports */
+:root {
+  /* Desktop container padding */
+  --container-padding-lg: 1rem;
+  /* Tablet container padding */
+  --container-padding-md: 1rem;
+  /* Mobile container padding */
+  --container-padding-sm: 0.75rem;
+}
+
+/* All containers with max-width should follow these padding standards */
+header,
+main,
+footer {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Tablet and below: Use consistent padding */
+@media (max-width: 1024px) {
+  header [style*="maxWidth"],
+  main [style*="maxWidth"],
+  footer [style*="maxWidth"],
+  [class*="container"] {
+    padding-left: var(--container-padding-md) !important;
+    padding-right: var(--container-padding-md) !important;
+  }
+}
+
+/* Mobile devices */
+@media (max-width: 768px) {
+  header [style*="maxWidth"],
+  main [style*="maxWidth"],
+  footer [style*="maxWidth"],
+  [class*="container"] {
+    padding-left: var(--container-padding-md) !important;
+    padding-right: var(--container-padding-md) !important;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  header [style*="maxWidth"],
+  main [style*="maxWidth"],
+  footer [style*="maxWidth"],
+  [class*="container"] {
+    padding-left: var(--container-padding-sm) !important;
+    padding-right: var(--container-padding-sm) !important;
+  }
+}
+
+/* Prevent content from being squeezed on very narrow viewports */
+@media (max-width: 375px) {
+  html {
+    font-size: 14px;
+  }
+  
+  header [style*="maxWidth"],
+  main [style*="maxWidth"],
+  footer [style*="maxWidth"],
+  [class*="container"] {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+}
+
+/* Ensure main content takes full width appropriately */
+main {
+  flex: 1;
+}
+
+/* Prevent overflow on mobile */
+body,
+html {
+  overflow-x: hidden;
+}
+
+/* Smooth transitions for responsive changes */
+@media (max-width: 1024px) {
+  * {
+    transition: padding 0.2s ease, margin 0.2s ease;
+  }
+}
