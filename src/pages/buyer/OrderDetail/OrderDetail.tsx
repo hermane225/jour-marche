@@ -1,13 +1,20 @@
-import React from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import { buyerOrders } from '../../../data/mockData';
-import { Package, MapPin, CreditCard, Calendar, Phone, CheckCircle, Clock, AlertCircle, Truck } from 'lucide-react';
+import { Package, MapPin, CreditCard, Phone, CheckCircle, Clock, AlertCircle, Truck, Download, RotateCcw, Star, MessageCircle, X, Upload } from 'lucide-react';
 import './OrderDetail.css';
 
 export function OrderDetail() {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const order = buyerOrders.find(o => o.id === id);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [showContactForm, setShowContactForm] = useState(false);
+  const [showReturnForm, setShowReturnForm] = useState(false);
+
+  // Scroll vers le haut quand la commande change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
 
   if (!order) {
     return (
@@ -62,23 +69,31 @@ export function OrderDetail() {
     return labels[status] || status;
   };
 
-  const getStatusColor = (status: string) => {
-    const colors: Record<string, string> = {
-      pending: '#f59e0b',
-      in_progress: '#3b82f6',
-      delivered: '#10b981',
-      cancelled: '#ef4444'
-    };
-    return colors[status] || '#6b7280';
-  };
+  // Timeline dynamique selon le statut
+  const getTimeline = () => {
+    const baseTimeline = [
+      { status: 'pending', label: 'Commande reçue', date: order.createdAt, completed: true },
+    ];
 
-  // Timeline des statuts
-  const timeline = [
-    { status: 'pending', label: 'Commande reçue', date: order.createdAt, completed: true },
-    { status: 'in_progress', label: 'Préparation en cours', date: new Date(order.createdAt.getTime() + 3600000), completed: order.status !== 'pending' },
-    { status: 'in_progress', label: 'En livraison', date: new Date(order.createdAt.getTime() + 7200000), completed: order.status === 'in_progress' || order.status === 'delivered' },
-    { status: 'delivered', label: 'Livrée', date: new Date(order.createdAt.getTime() + 10800000), completed: order.status === 'delivered' }
-  ];
+    if (order.status !== 'cancelled') {
+      baseTimeline.push(
+        { status: 'in_progress', label: 'Préparation', date: new Date(order.createdAt.getTime() + 3600000), completed: order.status !== 'pending' },
+        { status: 'in_progress', label: 'En livraison', date: new Date(order.createdAt.getTime() + 7200000), completed: order.status === 'in_progress' || order.status === 'delivered' }
+      );
+    } else {
+      baseTimeline.push(
+        { status: 'cancelled', label: 'Commande annulée', date: new Date(order.createdAt.getTime() + 1800000), completed: true }
+      );
+    }
+
+    if (order.status === 'delivered') {
+      baseTimeline.push(
+        { status: 'delivered', label: 'Livrée', date: new Date(order.createdAt.getTime() + 10800000), completed: true }
+      );
+    }
+
+    return baseTimeline;
+  };
 
   return (
     <div className="order-detail-container">
@@ -96,38 +111,42 @@ export function OrderDetail() {
       </div>
 
       <div className="order-detail-grid">
-        {/* Timeline */}
-        <section className="order-section order-timeline">
-          <h2>Suivi de votre commande</h2>
-          <div className="timeline">
-            {timeline.map((item, index) => (
-              <div key={index} className={`timeline-item ${item.completed ? 'completed' : ''}`}>
-                <div className="timeline-marker">
-                  <div className={`timeline-dot status-${item.status}`}></div>
-                  {index < timeline.length - 1 && <div className={`timeline-line ${item.completed ? 'completed' : ''}`}></div>}
+        {/* Timeline - Visible pour toutes les commandes sauf annulées */}
+        {order.status !== 'cancelled' && (
+          <section className="order-section order-timeline">
+            <h2>Suivi de votre commande</h2>
+            <div className="timeline">
+              {getTimeline().map((item, index) => (
+                <div key={index} className={`timeline-item ${item.completed ? 'completed' : ''}`}>
+                  <div className="timeline-marker">
+                    <div className={`timeline-dot status-${item.status}`}></div>
+                    {index < getTimeline().length - 1 && <div className={`timeline-line ${item.completed ? 'completed' : ''}`}></div>}
+                  </div>
+                  <div className="timeline-content">
+                    <h4>{item.label}</h4>
+                    <p>{new Intl.DateTimeFormat('fr-FR', { month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' }).format(item.date)}</p>
+                  </div>
                 </div>
-                <div className="timeline-content">
-                  <h4>{item.label}</h4>
-                  <p>{new Intl.DateTimeFormat('fr-FR', { month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' }).format(item.date)}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Infos pratiques */}
         <section className="order-section order-info">
-          {/* Adresse de livraison */}
-          <div className="info-block">
-            <div className="info-header">
-              <MapPin size={20} />
-              <h3>Adresse de livraison</h3>
+          {/* Adresse de livraison - Non visible si annulée */}
+          {order.status !== 'cancelled' && (
+            <div className="info-block">
+              <div className="info-header">
+                <MapPin size={20} />
+                <h3>Adresse de livraison</h3>
+              </div>
+              <div className="info-content">
+                <p className="address-main">Cocody, Abidjan</p>
+                <p className="address-detail">Côte d'Ivoire</p>
+              </div>
             </div>
-            <div className="info-content">
-              <p className="address-main">Cocody, Abidjan</p>
-              <p className="address-detail">Côte d'Ivoire</p>
-            </div>
-          </div>
+          )}
 
           {/* Moyen de paiement */}
           <div className="info-block">
@@ -137,22 +156,41 @@ export function OrderDetail() {
             </div>
             <div className="info-content">
               <p className="payment-method">Mobile Money - Orange</p>
-              <p className="payment-status">✓ Payé</p>
+              <p className={`payment-status ${order.status === 'cancelled' ? 'cancelled' : 'paid'}`}>
+                {order.status === 'cancelled' ? '✗ Remboursé' : '✓ Payé'}
+              </p>
             </div>
           </div>
 
-          {/* Contact vendeur */}
-          <div className="info-block">
-            <div className="info-header">
-              <Phone size={20} />
-              <h3>Contacter le vendeur</h3>
+          {/* Contact vendeur - Visible sauf si annulée */}
+          {order.status !== 'cancelled' && (
+            <div className="info-block">
+              <div className="info-header">
+                <Phone size={20} />
+                <h3>Besoin d'aide ?</h3>
+              </div>
+              <div className="info-content">
+                <button className="btn btn-secondary btn-sm">
+                  <MessageCircle size={16} />
+                  Contacter le vendeur
+                </button>
+              </div>
             </div>
-            <div className="info-content">
-              <button className="btn btn-secondary btn-sm">
-                Envoyer un message
-              </button>
+          )}
+
+          {/* Raison annulation - Visible si annulée */}
+          {order.status === 'cancelled' && (
+            <div className="info-block cancelled-info">
+              <div className="info-header">
+                <AlertCircle size={20} color="#ef4444" />
+                <h3>Commande annulée</h3>
+              </div>
+              <div className="info-content">
+                <p className="cancellation-reason">Raison : Annulation par le client</p>
+                <p className="cancellation-date">{formatDate(order.createdAt)}</p>
+              </div>
             </div>
-          </div>
+          )}
         </section>
       </div>
 
@@ -201,28 +239,351 @@ export function OrderDetail() {
         </div>
       </section>
 
-      {/* Actions */}
+      {/* Actions dynamiques selon le statut */}
       <section className="order-section order-actions">
         <div className="actions-grid">
-          {order.status !== 'cancelled' && order.status !== 'delivered' && (
-            <button className="btn btn-secondary">
-              Annuler la commande
-            </button>
-          )}
-          {order.status === 'delivered' && (
+          {/* Actions pour commandes en attente */}
+          {order.status === 'pending' && (
             <>
+              <div className="action-info">
+                <Clock size={20} color="#f59e0b" />
+                <div>
+                  <p className="action-title">Votre commande est confirmée</p>
+                  <p className="action-desc">Elle sera traitée dans les prochaines 24h</p>
+                </div>
+              </div>
               <button className="btn btn-secondary">
-                Retourner l'article
-              </button>
-              <button className="btn btn-secondary">
-                Laisser un avis
+                Annuler la commande
               </button>
             </>
           )}
+
+          {/* Actions pour commandes en cours */}
+          {order.status === 'in_progress' && (
+            <>
+              <div className="action-info">
+                <Truck size={20} color="#3b82f6" />
+                <div>
+                  <p className="action-title">Votre commande est en cours de livraison</p>
+                  <p className="action-desc">Livraison estimée dans 2-3 jours ouvrables</p>
+                </div>
+              </div>
+              <button className="btn btn-secondary" onClick={() => setShowContactForm(!showContactForm)}>
+                <MessageCircle size={16} />
+                Contacter le livreur
+              </button>
+            </>
+          )}
+
+          {/* Actions pour commandes livrées */}
+          {order.status === 'delivered' && (
+            <>
+              <div className="action-info success">
+                <CheckCircle size={20} color="#10b981" />
+                <div>
+                  <p className="action-title">Commande livrée avec succès</p>
+                  <p className="action-desc">Merci pour votre confiance ! Partagez votre avis pour aider d'autres clients</p>
+                </div>
+              </div>
+              <button className="btn btn-secondary" onClick={() => setShowReviewForm(!showReviewForm)}>
+                <Star size={16} />
+                Donner votre avis
+              </button>
+              <button className="btn btn-secondary" onClick={() => setShowReturnForm(!showReturnForm)}>
+                <RotateCcw size={16} />
+                Retourner cet article
+              </button>
+              <button className="btn btn-secondary" onClick={() => setShowContactForm(!showContactForm)}>
+                <MessageCircle size={16} />
+                Contacter le vendeur
+              </button>
+            </>
+          )}
+
+          {/* Actions pour commandes annulées */}
+          {order.status === 'cancelled' && (
+            <>
+              <div className="action-info cancelled">
+                <AlertCircle size={20} color="#ef4444" />
+                <div>
+                  <p className="action-title">Commande annulée</p>
+                  <p className="action-desc">Un remboursement a été initié</p>
+                </div>
+              </div>
+              <button className="btn btn-secondary">
+                <Download size={16} />
+                Télécharger la facture
+              </button>
+            </>
+          )}
+
           <Link to="/buyer/dashboard" className="btn btn-primary">
             Retour aux commandes
           </Link>
         </div>
+
+        {/* Formulaire d'avis - Visible si livré et ouvert */}
+        {order.status === 'delivered' && showReviewForm && (
+          <div className="review-form-container">
+            <div className="review-header">
+              <h3>Partagez votre avis</h3>
+              <p className="review-subtitle">Votre avis aidera d'autres clients à faire le bon choix</p>
+            </div>
+            <div className="review-form">
+              {/* Produits à évaluer */}
+              <div className="review-products">
+                <h4>Évaluer les articles</h4>
+                {order.items && order.items.length > 0 ? (
+                  order.items.map((item, index) => (
+                    <div key={index} className="review-product-item">
+                      <div className="product-name">{item.name || 'Produit'}</div>
+                      <div className="form-group">
+                        <label>Note sur {item.name}</label>
+                        <div className="star-rating">
+                          {[1, 2, 3, 4, 5].map(star => (
+                            <button key={star} className="star-btn" title={`${star} étoile(s)`}>
+                              <Star size={24} fill="#fbbf24" color="#fbbf24" />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : null}
+              </div>
+
+              {/* Évaluation globale */}
+              <div className="form-group">
+                <label>Note globale de la commande</label>
+                <div className="star-rating large">
+                  {[1, 2, 3, 4, 5].map(star => (
+                    <button key={star} className="star-btn" title={`${star} étoile(s)`}>
+                      <Star size={32} fill="#fbbf24" color="#fbbf24" />
+                    </button>
+                  ))}
+                </div>
+                <p className="star-hint">Cliquez sur une étoile pour donner votre note</p>
+              </div>
+
+              {/* Commentaire */}
+              <div className="form-group">
+                <label>Votre commentaire</label>
+                <p className="comment-hint">Décrivez votre expérience d'achat (qualité, livraison, service client...)</p>
+                <textarea 
+                  placeholder="Partagez les détails de votre expérience avec les autres clients. Soyez honnête et constructif." 
+                  rows={5}
+                  maxLength={1000}
+                ></textarea>
+                <p className="char-count">0/1000 caractères</p>
+              </div>
+
+              {/* Avis sur la livraison */}
+              <div className="form-group">
+                <label>Avis sur la livraison</label>
+                <div className="delivery-feedback">
+                  <button className="feedback-btn" data-feedback="on-time">
+                    ✓ À l'heure
+                  </button>
+                  <button className="feedback-btn" data-feedback="late">
+                    ✗ En retard
+                  </button>
+                  <button className="feedback-btn" data-feedback="fast">
+                    ⚡ Plus rapide que prévu
+                  </button>
+                </div>
+              </div>
+
+              {/* Avis sur l'emballage */}
+              <div className="form-group">
+                <label>État de l'emballage</label>
+                <div className="delivery-feedback">
+                  <button className="feedback-btn" data-feedback="good">
+                    ✓ Très bien
+                  </button>
+                  <button className="feedback-btn" data-feedback="acceptable">
+                    ~ Acceptable
+                  </button>
+                  <button className="feedback-btn" data-feedback="damaged">
+                    ✗ Endommagé
+                  </button>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="form-actions">
+                <button className="btn btn-primary">Publier mon avis</button>
+                <button className="btn btn-secondary" onClick={() => setShowReviewForm(false)}>Annuler</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Formulaire de contact - Visible si ouvert */}
+        {showContactForm && (
+          <div className="contact-form-container">
+            <div className="modal-header">
+              <h3>{order.status === 'delivered' ? 'Contacter le vendeur' : 'Contacter le livreur'}</h3>
+              <button className="close-btn" onClick={() => setShowContactForm(false)}>
+                <X size={24} />
+              </button>
+            </div>
+            <div className="contact-form">
+              {/* Sujets prédéfinis */}
+              <div className="form-group">
+                <label>Sujet de votre message</label>
+                <select className="form-select">
+                  <option value="">-- Sélectionnez un sujet --</option>
+                  {order.status === 'delivered' ? (
+                    <>
+                      <option value="product-issue">Produit défectueux ou endommagé</option>
+                      <option value="quality">Qualité non conforme</option>
+                      <option value="wrong-item">Mauvais produit reçu</option>
+                      <option value="missing-item">Article manquant</option>
+                      <option value="other">Autre</option>
+                    </>
+                  ) : (
+                    <>
+                      <option value="delivery-status">Statut de la livraison</option>
+                      <option value="delivery-address">Problème d'adresse</option>
+                      <option value="delivery-delay">Retard de livraison</option>
+                      <option value="other">Autre</option>
+                    </>
+                  )}
+                </select>
+              </div>
+
+              {/* Message */}
+              <div className="form-group">
+                <label>Votre message</label>
+                <textarea 
+                  placeholder="Décrivez votre problème ou votre question en détail..." 
+                  rows={5}
+                  maxLength={500}
+                ></textarea>
+                <p className="char-count">0/500 caractères</p>
+              </div>
+
+              {/* Pièces jointes */}
+              {order.status === 'delivered' && (
+                <div className="form-group">
+                  <label>Pièces jointes (photos, vidéos)</label>
+                  <p className="upload-hint">Vous pouvez ajouter des photos pour mieux expliquer votre problème</p>
+                  <div className="file-upload-area">
+                    <Upload size={32} color="#059669" />
+                    <p>Cliquez ou glissez-déposez vos fichiers ici</p>
+                    <p className="file-hint">PNG, JPG, MP4 (max 10MB chacun)</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Actions */}
+              <div className="form-actions">
+                <button className="btn btn-primary">Envoyer le message</button>
+                <button className="btn btn-secondary" onClick={() => setShowContactForm(false)}>Annuler</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Formulaire de retour - Visible si ouvert */}
+        {showReturnForm && (
+          <div className="return-form-container">
+            <div className="modal-header">
+              <h3>Demander un retour</h3>
+              <button className="close-btn" onClick={() => setShowReturnForm(false)}>
+                <X size={24} />
+              </button>
+            </div>
+            <div className="return-form">
+              {/* Articles à retourner */}
+              <div className="form-group">
+                <label>Articles à retourner</label>
+                {order.items && order.items.length > 0 && (
+                  <div className="return-items">
+                    {order.items.map((item, index) => (
+                      <div key={index} className="return-item">
+                        <label className="checkbox-label">
+                          <input type="checkbox" defaultChecked />
+                          <span>{item.name} x{item.quantity || 1}</span>
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Raison du retour */}
+              <div className="form-group">
+                <label>Raison du retour</label>
+                <select className="form-select">
+                  <option value="">-- Sélectionnez une raison --</option>
+                  <option value="defective">Produit défectueux</option>
+                  <option value="damaged">Produit endommagé</option>
+                  <option value="not-as-described">Non conforme à la description</option>
+                  <option value="wrong-item">Mauvais produit reçu</option>
+                  <option value="quality">Qualité insatisfaisante</option>
+                  <option value="changed-mind">J'ai changé d'avis</option>
+                  <option value="other">Autre raison</option>
+                </select>
+              </div>
+
+              {/* Détails du problème */}
+              <div className="form-group">
+                <label>Décrivez le problème</label>
+                <textarea 
+                  placeholder="Expliquez pourquoi vous souhaitez retourner ce(s) article(s)..." 
+                  rows={4}
+                  maxLength={500}
+                ></textarea>
+              </div>
+
+              {/* Photos */}
+              <div className="form-group">
+                <label>Photos du produit (obligatoire)</label>
+                <p className="upload-hint">Joignez des photos claires montrant le défaut ou le problème</p>
+                <div className="file-upload-area">
+                  <Upload size={32} color="#059669" />
+                  <p>Cliquez ou glissez-déposez vos photos ici</p>
+                  <p className="file-hint">PNG, JPG (max 10MB chacune)</p>
+                </div>
+              </div>
+
+              {/* Mode de retour */}
+              <div className="form-group">
+                <label>Mode de retour souhaité</label>
+                <div className="return-mode-options">
+                  <button className="option-btn">
+                    <div className="option-title">Retrait à domicile</div>
+                    <p className="option-desc">Gratuit - Nous venons chercher le colis</p>
+                  </button>
+                  <button className="option-btn">
+                    <div className="option-title">Dépôt en point relais</div>
+                    <p className="option-desc">Gratuit - Déposez le colis au point relais</p>
+                  </button>
+                </div>
+              </div>
+
+              {/* Conditions */}
+              <div className="form-group checkbox-group">
+                <label className="checkbox-label">
+                  <input type="checkbox" />
+                  <span>Je certifie que le produit est dans son emballage d'origine non ouvert (sauf défaut)</span>
+                </label>
+              </div>
+
+              {/* Actions */}
+              <div className="form-actions">
+                <button className="btn btn-primary">Demander un retour</button>
+                <button className="btn btn-secondary" onClick={() => setShowReturnForm(false)}>Annuler</button>
+              </div>
+
+              {/* Info retour */}
+              <div className="return-info">
+                <p><strong>Politique de retour :</strong> Les retours sont acceptés sous 30 jours à compter de la livraison. Une fois approuvé, vous avez 7 jours pour retourner l'article.</p>
+              </div>
+            </div>
+          </div>
+        )}
       </section>
     </div>
   );
