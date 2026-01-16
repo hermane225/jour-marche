@@ -39,6 +39,8 @@ export function Search() {
 
   useEffect(() => {
     setSearchInput(query);
+    // Scroll vers le haut quand la recherche change
+    window.scrollTo(0, 0);
   }, [query]);
 
   const handleSearch = (e: React.FormEvent) => {

@@ -1,4 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
+import { useEffect } from 'react';
 import { MapPin, Star, Phone, Clock, Truck, Package, ArrowLeft, ShoppingCart, Heart, Store, MessageCircle, Share2 } from 'lucide-react';
 import { shops, products } from '../../../data/mockData';
 import { useCart } from '../../../context/CartContext';
@@ -6,6 +7,11 @@ import { useCart } from '../../../context/CartContext';
 export function ShopDetail() {
   const { id } = useParams<{ id: string }>();
   const { addToCart } = useCart();
+  
+  // Scroll vers le haut quand la boutique change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
   
   const shop = shops.find(s => s.id === id);
   const shopProducts = products.filter(p => p.shopId === id);

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Clock } from 'lucide-react';
 import { Card } from '../../../components/ui';
@@ -16,6 +16,11 @@ const createPromoProducts = () => products.map((product, index) => ({
 
 export function Promotions() {
   const promoProducts = useMemo(() => createPromoProducts(), []);
+  
+  // Scroll vers le haut au chargement
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('fr-FR').format(price) + ' FCFA';

@@ -1,4 +1,5 @@
 import { Link, useParams } from 'react-router-dom';
+import { useEffect } from 'react';
 import { Card } from '../../../components/ui';
 import { categories, products } from '../../../data/mockData';
 import './Categories.css';
@@ -6,6 +7,11 @@ import './Categories.css';
 export function Categories() {
   const { slug } = useParams<{ slug: string }>();
   const selectedCategory = slug || null;
+
+  // Scroll vers le haut quand la catégorie change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [slug]);
 
   const filteredProducts = selectedCategory 
     ? products.filter(p => p.category === selectedCategory)
