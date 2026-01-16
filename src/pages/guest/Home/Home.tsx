@@ -1037,97 +1037,92 @@ export function Home() {
                     to={`/product/${product.id}`} 
                     style={{ textDecoration: 'none', display: 'block', flex: 1 }}
                   >
-                  {/* Image */}
-                  <div style={{ 
-                    aspectRatio: '1', 
-                    overflow: 'hidden', 
-                    position: 'relative',
-                    background: '#f8fafc'
-                  }}>
-                    <img 
-                      src={product.images[0]} 
-                      alt={product.title} 
-                      style={{ 
-                        width: '100%', 
-                        height: '100%', 
-                        objectFit: 'cover', 
-                        transition: 'transform 0.4s ease',
-                        transform: hoveredProduct === product.id ? 'scale(1.08)' : 'scale(1)'
-                      }} 
-                    />
-                    
-                    {/* Badge promo */}
-                    {product.originalPrice && (
-                      <span style={{ 
+                    {/* Image */}
+                    <div style={{ 
+                      aspectRatio: '1', 
+                      overflow: 'hidden', 
+                      position: 'relative',
+                      background: '#f8fafc'
+                    }}>
+                      <img 
+                        src={product.images[0]} 
+                        alt={product.title} 
+                        style={{ 
+                          width: '100%', 
+                          height: '100%', 
+                          objectFit: 'cover', 
+                          transition: 'transform 0.4s ease',
+                          transform: hoveredProduct === product.id ? 'scale(1.08)' : 'scale(1)'
+                        }} 
+                      />
+                      
+                      {/* Badge promo */}
+                      {product.originalPrice && (
+                        <span style={{ 
+                          position: 'absolute',
+                          top: '10px',
+                          left: '10px',
+                          padding: '5px 12px', 
+                          background: '#dc2626', 
+                          color: 'white', 
+                          fontSize: '11px', 
+                          fontWeight: 700, 
+                          borderRadius: '50px'
+                        }}>
+                          -{Math.round((1 - product.price / product.originalPrice) * 100)}%
+                        </span>
+                      )}
+                      
+                      {/* Actions rapides */}
+                      <div style={{
                         position: 'absolute',
                         top: '10px',
-                        left: '10px',
-                        padding: '5px 12px', 
-                        background: '#dc2626', 
-                        color: 'white', 
-                        fontSize: '11px', 
-                        fontWeight: 700, 
-                        borderRadius: '50px'
-                      }}>
-                        -{Math.round((1 - product.price / product.originalPrice) * 100)}%
-                      </span>
-                    )}
-                    
-                    {/* Actions rapides */}
-                    <div style={{
-                      position: 'absolute',
-                      top: '10px',
-                      right: '10px',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '6px',
-                      opacity: hoveredProduct === product.id ? 1 : 0,
-                      transform: hoveredProduct === product.id ? 'translateX(0)' : 'translateX(15px)',
-                      transition: 'all 0.3s ease'
-                    }}>
-                      <button type="button" style={{
-                        width: '36px',
-                        height: '36px',
-                        borderRadius: '50%',
-                        border: 'none',
-                        background: 'white',
-                        boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-                        cursor: 'pointer',
+                        right: '10px',
                         display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
+                        flexDirection: 'column',
+                        gap: '6px',
+                        opacity: hoveredProduct === product.id ? 1 : 0,
+                        transform: hoveredProduct === product.id ? 'translateX(0)' : 'translateX(15px)',
+                        transition: 'all 0.3s ease'
                       }}>
-                        <Heart size={16} color="#ef4444" />
-                      </button>
-                      <button type="button" style={{
-                        width: '36px',
-                        height: '36px',
-                        borderRadius: '50%',
-                        border: 'none',
-                        background: 'white',
-                        boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}>
-                        <Eye size={16} color="#059669" />
-                      </button>
+                        <button type="button" style={{
+                          width: '36px',
+                          height: '36px',
+                          borderRadius: '50%',
+                          border: 'none',
+                          background: 'white',
+                          boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}>
+                          <Heart size={16} color="#ef4444" />
+                        </button>
+                        <button type="button" style={{
+                          width: '36px',
+                          height: '36px',
+                          borderRadius: '50%',
+                          border: 'none',
+                          background: 'white',
+                          boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}>
+                          <Eye size={16} color="#059669" />
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                  </Link>
-                  
-                  {/* Contenu */}
-                  <div style={{ padding: '16px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
-                      <Store size={12} color="#6b7280" />
-                      <span style={{ fontSize: '12px', color: '#6b7280' }}>{product.shopName}</span>
-                    </div>
-                    
-                    <Link 
-                      to={`/product/${product.id}`} 
-                      style={{ textDecoration: 'none', display: 'block' }}
-                    >
+
+                    {/* Contenu */}
+                    <div style={{ padding: '16px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                        <Store size={12} color="#6b7280" />
+                        <span style={{ fontSize: '12px', color: '#6b7280' }}>{product.shopName}</span>
+                      </div>
+                      
                       <h3 style={{ 
                         margin: '0 0 10px 0', 
                         fontSize: '14px', 
@@ -1142,30 +1137,32 @@ export function Home() {
                       }}>
                         {product.title}
                       </h3>
-                    </Link>
-                    
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto' }}>
-                      <div>
-                        <span style={{ 
-                          fontSize: '18px', 
-                          fontWeight: 800, 
-                          color: '#059669'
-                        }}>
-                          {formatPrice(product.price)}
-                        </span>
-                        {product.originalPrice && (
+                      
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto' }}>
+                        <div>
                           <span style={{ 
-                            display: 'block',
-                            fontSize: '12px', 
-                            color: '#9ca3af', 
-                            textDecoration: 'line-through' 
+                            fontSize: '18px', 
+                            fontWeight: 800, 
+                            color: '#059669'
                           }}>
-                            {formatPrice(product.originalPrice)}
+                            {formatPrice(product.price)}
                           </span>
-                        )}
+                          {product.originalPrice && (
+                            <span style={{ 
+                              display: 'block',
+                              fontSize: '12px', 
+                              color: '#9ca3af', 
+                              textDecoration: 'line-through' 
+                            }}>
+                              {formatPrice(product.originalPrice)}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </Link>
+
+                  {/* Add to cart button outside link */}
                   <button 
                     type="button"
                     data-action="add-to-cart"

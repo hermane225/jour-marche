@@ -41,15 +41,38 @@ function BuyerRoute() {
   const { user, isAuthenticated, isLoading } = useAuth();
   
   if (isLoading) {
-    return <div>Chargement...</div>;
+    return (
+      <div style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        height: '100vh',
+        background: 'linear-gradient(135deg, #f9fafb, #f3f4f6)',
+        fontSize: '1.1rem',
+        color: '#6b7280'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{
+            width: '50px',
+            height: '50px',
+            border: '3px solid #e5e7eb',
+            borderTop: '3px solid #059669',
+            borderRadius: '50%',
+            animation: 'spin 0.8s linear infinite',
+            margin: '0 auto 1rem'
+          }} />
+          Chargement de votre compte...
+        </div>
+      </div>
+    );
   }
   
   if (!isAuthenticated) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" replace />;
   }
   
   if (user?.role === 'seller') {
-    return <Navigate to="/seller/dashboard" />;
+    return <Navigate to="/seller/dashboard" replace />;
   }
   
   return <Outlet />;
@@ -60,16 +83,28 @@ function SellerRoute() {
   const { user, isAuthenticated, isLoading } = useAuth();
   
   if (isLoading) {
-    return <div>Chargement...</div>;
+    return (
+      <div style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        height: '100vh',
+        background: '#f9fafb',
+        fontSize: '1.1rem',
+        color: '#6b7280'
+      }}>
+        Chargement...
+      </div>
+    );
   }
   
   if (!isAuthenticated) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" replace />;
   }
   
   // Les sellers ont accès direct, les buyers non
   if (user?.role !== 'seller') {
-    return <Navigate to="/buyer/dashboard" />;
+    return <Navigate to="/buyer/dashboard" replace />;
   }
   
   return <Outlet />;
