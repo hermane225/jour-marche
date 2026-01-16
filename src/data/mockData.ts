@@ -802,8 +802,11 @@ export const buyerOrders = [
   {
     id: '1',
     orderNumber: '#30542',
-    items: [],
-    total: 25000,
+    items: [
+      { name: 'T-shirt Premium', quantity: 2, price: 12500 },
+      { name: 'Pantalon Bleu', quantity: 1, price: 25000 }
+    ],
+    total: 50000,
     status: 'delivered' as const,
     customerName: 'Amara Koné',
     customerPhone: '+225 07 12 34 56',
@@ -817,7 +820,9 @@ export const buyerOrders = [
   {
     id: '2',
     orderNumber: '#30511',
-    items: [],
+    items: [
+      { name: 'Laptop', quantity: 1, price: 150000 }
+    ],
     total: 150000,
     status: 'in_progress' as const,
     customerName: 'Amara Koné',
@@ -832,7 +837,9 @@ export const buyerOrders = [
   {
     id: '3',
     orderNumber: '#30498',
-    items: [],
+    items: [
+      { name: 'Robe Africaine', quantity: 1, price: 12500 }
+    ],
     total: 12500,
     status: 'pending' as const,
     customerName: 'Amara Koné',
@@ -847,7 +854,9 @@ export const buyerOrders = [
   {
     id: '4',
     orderNumber: '#30450',
-    items: [],
+    items: [
+      { name: 'Panier Gourmet', quantity: 1, price: 35000 }
+    ],
     total: 35000,
     status: 'cancelled' as const,
     customerName: 'Amara Koné',
