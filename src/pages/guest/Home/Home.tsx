@@ -1005,7 +1005,7 @@ export function Home() {
             </p>
           </div>
 
-          <div className="all-products-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '24px' }}>
+          <div className="all-products-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(clamp(140px, 50vw, 240px), 1fr))', gap: 'clamp(12px, 3vw, 24px)' }}>
             {(products as ProductWithPromo[]).map((product) => (
               <Link 
                 key={product.id} 

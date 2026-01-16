@@ -281,7 +281,7 @@ export function Search() {
             marginBottom: '24px',
             boxShadow: '0 4px 20px rgba(0,0,0,0.08)'
           }}>
-            <div className="filter-panel-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px' }}>
+            <div className="filter-panel-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(clamp(200px, 50vw, 250px), 1fr))', gap: 'clamp(12px, 3vw, 24px)' }}>
               {/* Catégorie */}
               <div>
                 <label style={{ 
@@ -368,8 +368,8 @@ export function Search() {
         {filteredProducts.length > 0 ? (
           <div className="search-results-grid" style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-            gap: '24px'
+            gridTemplateColumns: 'repeat(auto-fill, minmax(clamp(140px, 50vw, 280px), 1fr))',
+            gap: 'clamp(12px, 3vw, 24px)'
           }}>
             {filteredProducts.map((product) => (
               <div

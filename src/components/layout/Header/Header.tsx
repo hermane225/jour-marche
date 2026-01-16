@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, Link, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, Link, useNavigate } from 'react-router-dom';
 import './Header.css';
 import {
   Search,
