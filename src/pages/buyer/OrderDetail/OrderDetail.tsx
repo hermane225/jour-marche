@@ -95,6 +95,137 @@ export function OrderDetail() {
     return baseTimeline;
   };
 
+  const downloadInvoice = () => {
+    // Créer le contenu HTML de la facture
+    const invoiceContent = `
+      <!DOCTYPE html>
+      <html lang="fr">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Facture ${order.id}</title>
+        <style>
+          * { margin: 0; padding: 0; }
+          body { font-family: Arial, sans-serif; padding: 40px; background: #f5f5f5; }
+          .container { max-width: 800px; margin: 0 auto; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+          header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #059669; padding-bottom: 20px; margin-bottom: 30px; }
+          .company-info h1 { color: #059669; font-size: 28px; margin-bottom: 5px; }
+          .company-info p { color: #666; font-size: 14px; }
+          .invoice-info { text-align: right; }
+          .invoice-info p { color: #666; margin: 5px 0; font-size: 14px; }
+          .invoice-info strong { display: block; color: #333; margin-top: 10px; }
+          .section { margin-bottom: 30px; }
+          .section h2 { font-size: 16px; color: #059669; margin-bottom: 15px; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; }
+          .section-content { color: #333; line-height: 1.8; }
+          .customer-info, .delivery-info { display: inline-block; width: 48%; margin-right: 2%; vertical-align: top; }
+          table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+          table th { background: #f0f0f0; padding: 12px; text-align: left; font-weight: bold; color: #333; font-size: 14px; border-bottom: 2px solid #059669; }
+          table td { padding: 12px; border-bottom: 1px solid #e0e0e0; }
+          .product-name { font-weight: 600; color: #333; }
+          .text-right { text-align: right; }
+          .summary { float: right; width: 300px; margin-top: 20px; }
+          .summary-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e0e0e0; }
+          .summary-row.total { font-size: 18px; font-weight: bold; color: #059669; border-top: 2px solid #059669; padding-top: 10px; }
+          .footer { margin-top: 50px; padding-top: 20px; border-top: 1px solid #e0e0e0; text-align: center; color: #999; font-size: 12px; }
+          .status-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+          .status-delivered { background: #d1fae5; color: #065f46; }
+          .status-pending { background: #fef3c7; color: #92400e; }
+          .status-in-progress { background: #dbeafe; color: #003d82; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <header>
+            <div class="company-info">
+              <h1>JOUR DE MARCHÉ</h1>
+              <p>Plateforme de commerce en ligne</p>
+            </div>
+            <div class="invoice-info">
+              <p><strong>Facture</strong></p>
+              <p><strong>${order.id}</strong></p>
+              <p>Date: ${formatDate(order.createdAt)}</p>
+            </div>
+          </header>
+
+          <div style="display: flex; margin-bottom: 30px;">
+            <div class="customer-info">
+              <h3 style="color: #059669; margin-bottom: 10px;">Client</h3>
+              <p><strong>${order.customerName || 'Client'}</strong></p>
+              <p>${order.shippingAddress || 'Adresse non spécifiée'}</p>
+              <p>${order.phone || 'N/A'}</p>
+            </div>
+            <div class="delivery-info">
+              <h3 style="color: #059669; margin-bottom: 10px;">Détails de la commande</h3>
+              <p><strong>Boutique:</strong> ${order.shopName}</p>
+              <p><strong>Statut:</strong> <span class="status-badge status-${order.status}">${getStatusLabel(order.status)}</span></p>
+              <p><strong>Mode de paiement:</strong> ${order.paymentMethod || 'Non spécifié'}</p>
+            </div>
+          </div>
+
+          <div class="section">
+            <h2>Détails des articles</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Article</th>
+                  <th class="text-right">Quantité</th>
+                  <th class="text-right">Prix unitaire</th>
+                  <th class="text-right">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${order.items && order.items.length > 0 
+                  ? order.items.map((item: any) => `
+                    <tr>
+                      <td><span class="product-name">${item.name || 'Produit'}</span></td>
+                      <td class="text-right">${item.quantity || 1}</td>
+                      <td class="text-right">${formatPrice((item.price || 0))}</td>
+                      <td class="text-right">${formatPrice((item.price || 0) * (item.quantity || 1))}</td>
+                    </tr>
+                  `).join('')
+                  : '<tr><td colspan="4" style="text-align: center; color: #999;">Aucun article</td></tr>'
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <div class="summary">
+            <div class="summary-row">
+              <span>Sous-total:</span>
+              <span>${formatPrice(order.total * 0.9)}</span>
+            </div>
+            <div class="summary-row">
+              <span>Frais de livraison:</span>
+              <span>${formatPrice(order.total * 0.1)}</span>
+            </div>
+            <div class="summary-row total">
+              <span>TOTAL:</span>
+              <span>${formatPrice(order.total)}</span>
+            </div>
+          </div>
+
+          <div class="footer">
+            <p>Merci d'avoir utilisé Jour de Marché!</p>
+            <p>Cette facture a été générée automatiquement le ${formatDate(new Date())}.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    // Créer un blob et le télécharger
+    const blob = new Blob([invoiceContent], { type: 'text/html;charset=utf-8' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `Facture_${order.id}.html`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="order-detail-container">
       {/* Header */}
@@ -255,6 +386,10 @@ export function OrderDetail() {
               <button className="btn btn-secondary">
                 Annuler la commande
               </button>
+              <button className="btn btn-secondary" onClick={downloadInvoice}>
+                <Download size={16} />
+                Télécharger la facture
+              </button>
             </>
           )}
 
@@ -271,6 +406,10 @@ export function OrderDetail() {
               <button className="btn btn-secondary" onClick={() => setShowContactForm(!showContactForm)}>
                 <MessageCircle size={16} />
                 Contacter le livreur
+              </button>
+              <button className="btn btn-secondary" onClick={downloadInvoice}>
+                <Download size={16} />
+                Télécharger la facture
               </button>
             </>
           )}
@@ -297,6 +436,10 @@ export function OrderDetail() {
                 <MessageCircle size={16} />
                 Contacter le vendeur
               </button>
+              <button className="btn btn-secondary" onClick={downloadInvoice}>
+                <Download size={16} />
+                Télécharger la facture
+              </button>
             </>
           )}
 
@@ -310,7 +453,7 @@ export function OrderDetail() {
                   <p className="action-desc">Un remboursement a été initié</p>
                 </div>
               </div>
-              <button className="btn btn-secondary">
+              <button className="btn btn-secondary" onClick={downloadInvoice}>
                 <Download size={16} />
                 Télécharger la facture
               </button>
