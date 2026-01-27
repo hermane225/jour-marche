@@ -16,6 +16,9 @@ import { BuyerDashboard, Profile, OrderDetail } from './pages/buyer';
 // Seller Pages
 import { SellerDashboard, CreateShop, ShopPage, CreateProduct } from './pages/seller';
 
+// Admin Pages
+import { AdminLayout, AdminDashboard, AdminSellers, AdminOrders, AdminUsers, AdminReports, AdminLoginGuide } from './pages/admin';
+
 import './index.css';
 
 // Layout avec Header et Footer
@@ -110,6 +113,36 @@ function SellerRoute() {
   return <Outlet />;
 }
 
+// Route protégée pour les admins
+function AdminRoute() {
+  const { user, isAuthenticated, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        height: '100vh',
+        background: 'linear-gradient(135deg, #f9fafb, #f3f4f6)',
+      }}>
+        Chargement...
+      </div>
+    );
+  }
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  // Vérifier si l'utilisateur est admin (vous devez adapter selon votre système)
+  if (user?.role !== 'admin') {
+    return <Navigate to="/buyer/dashboard" replace />;
+  }
+  
+  return <Outlet />;
+}
+
 // Route qui nécessite juste d'être connecté (pas de rôle spécifique)
 function AuthRoute() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -132,6 +165,7 @@ function AppRoutes() {
       <Route element={<AuthLayout />}>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/admin-login-guide" element={<AdminLoginGuide />} />
       </Route>
 
       {/* Pages avec Header/Footer */}
@@ -175,6 +209,17 @@ function AppRoutes() {
         <Route path="/seller/products/create" element={<CreateProduct />} />
         <Route path="/seller/orders" element={<SellerDashboard />} />
         <Route path="/seller/profile" element={<SellerDashboard />} />
+      </Route>
+
+      {/* Routes Admin */}
+      <Route element={<AdminRoute />}>
+        <Route element={<AdminLayout />}>
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/sellers" element={<AdminSellers />} />
+          <Route path="/admin/orders" element={<AdminOrders />} />
+          <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/admin/reports" element={<AdminReports />} />
+        </Route>
       </Route>
 
       {/* Fallback */}

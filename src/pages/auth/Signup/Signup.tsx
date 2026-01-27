@@ -246,8 +246,15 @@ export function Signup() {
                 <input
                   type="text"
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (/^[a-zA-ZÀ-ÿ\s\-']*$/.test(value) || value === '') {
+                      setName(value);
+                    }
+                  }}
                   placeholder="Votre nom"
+                  pattern="[a-zA-ZÀ-ÿ\s\-']+"
+                  title="Utilisez uniquement des lettres"
                   style={{
                     width: '100%',
                     padding: '16px 16px 16px 50px',
@@ -296,6 +303,9 @@ export function Signup() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="exemple@email.com"
+                  required
+                  pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}|[0-9+\s]+"
+                  title="Entrez un email ou un numéro de téléphone valide"
                   style={{
                     width: '100%',
                     padding: '16px 16px 16px 50px',
@@ -344,6 +354,9 @@ export function Signup() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Minimum 6 caractères"
+                  required
+                  minLength={6}
+                  title="Le mot de passe doit contenir au moins 6 caractères"
                   style={{
                     width: '100%',
                     padding: '16px 50px 16px 50px',

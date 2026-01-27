@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import { OrderContext } from "../../../context/OrderContext";
-import { MapPin, CreditCard, Heart, TrendingUp, Package } from "lucide-react";
+import { MapPin, CreditCard, TrendingUp, Package } from "lucide-react";
 import "./Profile.css";
 
 const Profile: React.FC = () => {
@@ -97,33 +97,51 @@ const Profile: React.FC = () => {
                 {editMode ? (
                   <form className="profile-edit-form" onSubmit={handleSubmit}>
                     <div className="form-group">
-                      <label>Nom complet</label>
-                      <input 
+                      <label>Nom complet <span style={{ color: '#ef4444' }}>*</span></label>
+                      <input
                         type="text"
-                        name="name" 
-                        value={form.name} 
-                        onChange={handleChange} 
+                        name="name"
+                        value={form.name}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (/^[a-zA-ZÀ-ÿ\s\-']*$/.test(value) || value === '') {
+                            handleChange(e);
+                          }
+                        }}
                         placeholder="Votre nom"
+                        required
+                        pattern="[a-zA-ZÀ-ÿ\s\-']+"
+                        title="Utilisez uniquement des lettres"
                       />
                     </div>
                     <div className="form-group">
-                      <label>Email</label>
-                      <input 
+                      <label>Email <span style={{ color: '#ef4444' }}>*</span></label>
+                      <input
                         type="email"
-                        name="email" 
-                        value={form.email} 
-                        onChange={handleChange} 
+                        name="email"
+                        value={form.email}
+                        onChange={handleChange}
                         placeholder="votre@email.com"
+                        required
+                        pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}"
+                        title="Entrez un email valide"
                       />
                     </div>
                     <div className="form-group">
-                      <label>Téléphone</label>
-                      <input 
+                      <label>Téléphone <span style={{ color: '#ef4444' }}>*</span></label>
+                      <input
                         type="tel"
-                        name="phone" 
-                        value={form.phone} 
-                        onChange={handleChange} 
+                        name="phone"
+                        value={form.phone}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\D/g, '');
+                          handleChange({ ...e, target: { ...e.target, value } });
+                        }}
                         placeholder="+225 XXXXXXXXXX"
+                        required
+                        pattern="[0-9+\s]+"
+                        inputMode="numeric"
+                        title="Entrez uniquement des chiffres"
                       />
                     </div>
                     <div className="form-group">

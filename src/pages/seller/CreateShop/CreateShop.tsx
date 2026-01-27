@@ -72,9 +72,100 @@ export function CreateShop() {
     { id: 'autre', name: 'Autre', icon: '📦' },
   ];
 
-  const cities = ['Abidjan', 'Bouaké', 'Yamoussoukro', 'San-Pédro', 'Daloa', 'Korhogo'];
-  const communes = ['Cocody', 'Plateau', 'Marcory', 'Treichville', 'Yopougon', 'Abobo', 'Adjamé', 'Koumassi', 'Port-Bouët', 'Bingerville'];
-  const zones = ['Cocody', 'Plateau', 'Marcory', 'Treichville', 'Yopougon', 'Abobo', 'Adjamé', 'Koumassi', 'Port-Bouët', 'Bingerville', 'Riviera', 'Angré', '2 Plateaux'];
+  // Toutes les villes de Côte d'Ivoire
+  const cities = [
+    'Abidjan', 'Yamoussoukro', 'Bouaké', 'Daloa', 'Korhogo', 'San-Pédro', 
+    'Gagnoa', 'Divo', 'Soubré', 'Oumé', 'Katiola', 'Séguela', 'Tabou', 
+    'Grand-Lahou', 'Anyama', 'Tanda', 'Agboville', 'Adzopé', 'Akoupé', 
+    'Alépé', 'Daoukro', 'Dimbokro', 'Bondoukou', 'Bouna', 'Ferkéssédougou', 
+    'Odienné', 'Toumodi', 'Abengourou', 'Ayamé', 'Tiébissou', 
+    'Mankono', 'Duékoué', 'Danané', 'Guiglo', 'Biankouma', 'Sassandra', 
+    'Issia', 'Lakota', 'Vavoua', 'Bangolo', 'Béoumi', 'Boguéni', 'Buyo', 
+    'Brobo', 'Dabakala', 'Dabou', 'Guitry', 'Kossou', 'Marahoué', 'Azaguié'
+  ];
+
+  // Toutes les communes de Côte d'Ivoire
+  const communes = [
+    // District d'Abidjan
+    'Cocody', 'Plateau', 'Marcory', 'Treichville', 'Yopougon', 'Abobo', 'Adjamé', 
+    'Koumassi', 'Port-Bouët', 'Bingerville', 'Riviera', 'Angré', '2 Plateaux',
+    'Attecoubé', 'Vridi', 'Sachel', 'Azaguié', 'Bassam', 'Jacqueville',
+    
+    // District de Yamoussoukro
+    'Yamoussoukro', 'N\'Douci', 'Taabo',
+    
+    // District d'Abengourou
+    'Abengourou', 'Ayamé', 'Atuébo', 'Tangrouan',
+    
+    // District d'Agboville
+    'Agboville', 'Azaguié', 'Tiassalé', 'Akoupé',
+    
+    // District d'Adzopé
+    'Adzopé', 'Alépé', 'Akoupé', 'Anyama',
+    
+    // District de Bondoukou
+    'Bondoukou', 'Tanda', 'Guin', 'Minignan',
+    
+    // District de Bouaké
+    'Bouaké', 'Katiola', 'Nzuékro', 'Toumodi',
+    
+    // District de Bouna
+    'Bouna', 'Transua', 'Kong', 'Niellé',
+    
+    // District de Dabou
+    'Dabou', 'Grand-Lahou', 'Jacqueville', 'Mé',
+    
+    // District de Daloa
+    'Daloa', 'Duékoué', 'Zoukougbeu', 'Saïoua',
+    
+    // District de Daoukro
+    'Daoukro', 'Dimbokro', 'N\'Dako', 'Taabo',
+    
+    // District de Ferkéssédougou
+    'Ferkéssédougou', 'Bouna', 'Dikodougou', 'Tengrela',
+    
+    // District de Gagnoa
+    'Gagnoa', 'Oumé', 'Vavoua', 'Yamoussoukro',
+    
+    // District de Guiglo
+    'Guiglo', 'Danané', 'Biankouma', 'Kouibly',
+    
+    // District de Issia
+    'Issia', 'Prikro', 'Zoukougbeu',
+    
+    // District de Katiola
+    'Katiola', 'Nzuékro', 'Guitry', 'Marahoué',
+    
+    // District de Korhogo
+    'Korhogo', 'Séguela', 'Sinématiali', 'Ouangolodougou',
+    
+    // District de Mankono
+    'Mankono', 'Tengrela', 'Kasséré',
+    
+    // District de Odienné
+    'Odienné', 'Minignan', 'Séguéla', 'Guin',
+    
+    // District de San-Pédro
+    'San-Pédro', 'Sassandra', 'Soubré', 'Tabou',
+    
+    // District de Soubré
+    'Soubré', 'Divo', 'Lakota', 'Gagnoa',
+    
+    // District de Tanda
+    'Tanda', 'Tiébissou', 'Prikro', 'Toumodi',
+    
+    // District de Bondoukou
+    'Bondoukou', 'Tanda', 'Guin', 'Minignan'
+  ];
+
+  const zones = [
+    'Cocody', 'Plateau', 'Marcory', 'Treichville', 'Yopougon', 'Abobo', 'Adjamé', 
+    'Koumassi', 'Port-Bouët', 'Bingerville', 'Riviera', 'Angré', '2 Plateaux',
+    'Attecoubé', 'Vridi', 'Sachel', 'Anyama', 'Bouaké', 'Daloa', 'Korhogo', 
+    'San-Pédro', 'Gagnoa', 'Divo', 'Soubré', 'Oumé', 'Agboville', 'Yamoussoukro',
+    'Daoukro', 'Dimbokro', 'Abengourou', 'Bondoukou', 'Bouna', 'Ferkéssédougou',
+    'Odienné', 'Toumodi', 'Adzopé', 'Alépé', 'Tanda', 'Tiébissou', 'Mankono'
+  ];
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, type: 'logo' | 'cover') => {
     const file = e.target.files?.[0];
@@ -111,8 +202,20 @@ export function CreateShop() {
     navigate('/seller/dashboard');
   };
 
-  const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 5));
-  const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
+  const nextStep = () => {
+    setCurrentStep(prev => Math.min(prev + 1, 5));
+    // Scroll vers le haut immédiatement et de manière fluide
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 0);
+  };
+  const prevStep = () => {
+    setCurrentStep(prev => Math.max(prev - 1, 1));
+    // Scroll vers le haut immédiatement et de manière fluide
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 0);
+  };
 
   const isStepValid = () => {
     switch (currentStep) {
@@ -370,7 +473,15 @@ export function CreateShop() {
                       type="text"
                       placeholder="Ex: Chez Mariam - Saveurs d'Afrique"
                       value={formData.shopName}
-                      onChange={(e) => setFormData({ ...formData, shopName: e.target.value })}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (/^[a-zA-ZÀ-ÿ\s\-']*$/.test(value) || value === '') {
+                          setFormData({ ...formData, shopName: value });
+                        }
+                      }}
+                      required
+                      pattern="[a-zA-ZÀ-ÿ\s\-']+"
+                      title="Le nom doit contenir au moins des lettres"
                       style={{
                         width: '100%',
                         padding: '16px 20px',
@@ -466,9 +577,15 @@ export function CreateShop() {
                       </label>
                       <input
                         type="tel"
-                        placeholder="+225 07 XX XX XX XX"
+                        placeholder="225 07 XX XX XX XX"
                         value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\D/g, '');
+                          setFormData({ ...formData, phone: value });
+                        }}
+                        required
+                        pattern="[0-9+\s]+"
+                        inputMode="numeric"
                         style={{
                           width: '100%',
                           padding: '16px 20px',
@@ -491,7 +608,7 @@ export function CreateShop() {
                       </label>
                       <input
                         type="tel"
-                        placeholder="+225 07 XX XX XX XX"
+                        placeholder="225 07 XX XX XX XX"
                         value={formData.whatsapp}
                         onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
                         style={{
@@ -515,13 +632,15 @@ export function CreateShop() {
                     <div>
                       <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', fontSize: '14px', fontWeight: 600, color: '#374151' }}>
                         <Mail size={16} color="#6b7280" />
-                        Email (optionnel)
+                        Email <span style={{ color: '#ef4444' }}>*</span>
                       </label>
                       <input
                         type="email"
                         placeholder="contact@maboutique.ci"
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        required
+                        pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}"
                         style={{
                           width: '100%',
                           padding: '16px 20px',
@@ -559,6 +678,7 @@ export function CreateShop() {
                       <select
                         value={formData.city}
                         onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                        required
                         style={{
                           width: '100%',
                           padding: '16px 20px',
@@ -586,6 +706,7 @@ export function CreateShop() {
                       <select
                         value={formData.commune}
                         onChange={(e) => setFormData({ ...formData, commune: e.target.value })}
+                        required
                         style={{
                           width: '100%',
                           padding: '16px 20px',
@@ -889,19 +1010,34 @@ export function CreateShop() {
                       display: 'flex',
                       alignItems: 'center',
                       gap: '8px',
-                      padding: '14px 28px',
+                      padding: '16px 32px',
                       border: 'none',
                       borderRadius: '12px',
-                      background: isStepValid() ? 'linear-gradient(135deg, #8b5cf6, #a78bfa)' : '#e5e7eb',
+                      background: isStepValid() ? 'linear-gradient(135deg, #10b981, #059669)' : '#e5e7eb',
                       color: isStepValid() ? 'white' : '#9ca3af',
-                      fontWeight: 600,
-                      fontSize: '15px',
+                      fontWeight: 700,
+                      fontSize: '16px',
                       cursor: isStepValid() ? 'pointer' : 'not-allowed',
-                      boxShadow: isStepValid() ? '0 4px 12px rgba(139, 92, 246, 0.3)' : 'none'
+                      boxShadow: isStepValid() ? '0 8px 20px rgba(16, 185, 129, 0.4)' : 'none',
+                      transition: 'all 0.3s ease',
+                      transform: isStepValid() ? 'translateY(0)' : 'none',
+                      ':hover': isStepValid() ? { transform: 'translateY(-2px)', boxShadow: '0 12px 28px rgba(16, 185, 129, 0.5)' } : {}
+                    }}
+                    onMouseEnter={(e) => {
+                      if (isStepValid()) {
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        e.currentTarget.style.boxShadow = '0 12px 28px rgba(16, 185, 129, 0.5)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (isStepValid()) {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '0 8px 20px rgba(16, 185, 129, 0.4)';
+                      }
                     }}
                   >
                     Continuer
-                    <ArrowRight size={18} />
+                    <ArrowRight size={20} />
                   </button>
                 ) : (
                   <button

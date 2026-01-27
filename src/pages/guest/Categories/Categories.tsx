@@ -27,14 +27,15 @@ export function Categories() {
     <div className="categories-page">
       {/* Hero */}
       <section className="categories-hero">
-        {selectedCategory === 'restaurants' ? (
+        {currentCategory ? (
           <div style={{
               position: 'relative',
               overflow: 'hidden',
               borderRadius: 28,
-              padding: '48px 24px 36px 24px',
+              padding: '60px 24px 48px 24px',
               marginBottom: 28,
-              boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
+              background: 'linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%)',
+              boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
           }}>
             {/* Pattern décoratif */}
             <div style={{
@@ -56,13 +57,38 @@ export function Categories() {
               background: 'rgba(255,255,255,0.05)'
             }} />
 
-            <div style={{ maxWidth: '800px', margin: '0 auto', position: 'relative', textAlign: 'center' }}>
-              <h1 style={{ fontSize: '2.8rem', fontWeight: 900, marginBottom: 14, letterSpacing: '-1px', color: '#fff', fontFamily: 'Inter, sans-serif' }}>
-                🍽️ Restaurants, Maquis & Plein Air
+            <div style={{ maxWidth: '900px', margin: '0 auto', position: 'relative', textAlign: 'center' }}>
+              <h1 style={{ fontSize: '3rem', fontWeight: 900, marginBottom: 16, letterSpacing: '-1px', color: '#fff' }}>
+                {currentCategory.icon} {currentCategory.name}
               </h1>
-              <p style={{ fontSize: '1.3rem', opacity: 0.98, maxWidth: 700, margin: '0 auto', color: '#fff', fontWeight: 500, fontFamily: 'Inter, sans-serif', lineHeight: 1.6 }}>
-                Vivez une expérience culinaire unique : savourez les meilleurs plats ivoiriens dans nos <span style={{ fontWeight: 700 }}>restaurants</span>, <span style={{ fontWeight: 700 }}>maquis animés</span> et <span style={{ fontWeight: 700 }}>espaces plein air</span>. Garba, grillades, spécialités locales, ambiance conviviale et fraîcheur garantie. <span style={{ fontWeight: 700 }}>Commandez, partagez, profitez !</span>
+              <p style={{ fontSize: '1.2rem', opacity: 0.95, maxWidth: 700, margin: '0 auto 24px', color: '#fff', fontWeight: 500, lineHeight: 1.6 }}>
+                {currentCategory.description}
               </p>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '24px', flexWrap: 'wrap' }}>
+                <span style={{
+                  background: 'rgba(255,255,255,0.2)',
+                  backdropFilter: 'blur(8px)',
+                  padding: '12px 20px',
+                  borderRadius: '50px',
+                  color: 'white',
+                  fontSize: '14px',
+                  fontWeight: 700
+                }}>
+                  {filteredProducts.length} produits disponibles
+                </span>
+                <Link to="/categories" style={{
+                  color: 'white',
+                  textDecoration: 'none',
+                  fontSize: '14px',
+                  fontWeight: 600,
+                  opacity: 0.8,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}>
+                  ← Retour aux catégories
+                </Link>
+              </div>
             </div>
           </div>
         ) : null}

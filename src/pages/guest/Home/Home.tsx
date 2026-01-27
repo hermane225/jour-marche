@@ -72,6 +72,11 @@ export function Home() {
   const trendingProducts = products.slice(0, 12) as ProductWithPromo[];
   const featuredShops = shops.slice(0, 4);
   const mainCategories = categories.slice(0, 8);
+
+  // Produits des boutiques populaires
+  const featuredShopProducts = products.filter(product =>
+    featuredShops.some(shop => shop.id === product.shopId)
+  ).slice(0, 8) as ProductWithPromo[];
   
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
 
@@ -537,7 +542,7 @@ export function Home() {
           </div>
           {/* Load More Button */}
           <div style={{ textAlign: 'center', marginTop: '48px' }}>
-            <Link 
+            <Link
               to="/categories"
               style={{
                 display: 'inline-flex',
@@ -572,6 +577,8 @@ export function Home() {
         </div>
       </section>
 
+
+
       {/* Quick Stats */}
       <section style={{ background: 'white', borderBottom: '1px solid #f3f4f6', padding: '24px 0' }}>
         <div className="stats-grid" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px' }}>
@@ -603,55 +610,434 @@ export function Home() {
         </div>
       </section>
 
+      {/* Produits des boutiques populaires */}
+      {featuredShopProducts.length > 0 && (
+        <section style={{ padding: '60px 0', background: 'linear-gradient(135deg, #fafafa 0%, #f0fdf4 100%)' }}>
+          <div className="container" style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px', flexWrap: 'wrap', gap: '16px' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                  <div style={{ 
+                    width: '40px', 
+                    height: '40px', 
+                    borderRadius: '12px', 
+                    background: 'linear-gradient(135deg, #8b5cf6, #a78bfa)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'white'
+                  }}>
+                    <Store size={20} />
+                  </div>
+                  <h2 style={{ margin: 0, fontSize: '28px', fontWeight: 800, color: '#1f2937' }}>
+                    Produits populaires des vendeurs
+                  </h2>
+                </div>
+                <p style={{ margin: '8px 0 0 0', fontSize: '16px', color: '#6b7280' }}>
+                  Découvrez les meilleurs produits de nos vendeurs partenaires
+                </p>
+              </div>
+              <Link
+                to="/boutiques"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '12px 24px',
+                  background: 'linear-gradient(135deg, #8b5cf6, #a78bfa)',
+                  color: 'white',
+                  borderRadius: '50px',
+                  fontWeight: 600,
+                  fontSize: '15px',
+                  textDecoration: 'none',
+                  boxShadow: '0 4px 15px rgba(139, 92, 246, 0.3)'
+                }}
+              >
+                Voir toutes les boutiques <ArrowRight size={18} />
+              </Link>
+            </div>
+            <div className="products-grid">
+              {featuredShopProducts.map((product) => (
+                <Link
+                  key={product.id}
+                  to={`/product/${product.id}`}
+                  style={{ textDecoration: 'none' }}
+                  onMouseEnter={() => setHoveredProduct(product.id)}
+                  onMouseLeave={() => setHoveredProduct(null)}
+                >
+                  <div
+                    style={{
+                      background: 'white',
+                      borderRadius: '24px',
+                      overflow: 'hidden',
+                      boxShadow: hoveredProduct === product.id
+                        ? '0 25px 50px rgba(0,0,0,0.15)'
+                        : '0 4px 20px rgba(0,0,0,0.08)',
+                      transform: hoveredProduct === product.id ? 'translateY(-12px) scale(1.02)' : 'translateY(0)',
+                      transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                      position: 'relative',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {/* Image Container */}
+                    <div style={{
+                      aspectRatio: '1',
+                      overflow: 'hidden',
+                      position: 'relative',
+                      background: 'linear-gradient(135deg, #f8fafc, #f1f5f9)'
+                    }}>
+                      <img
+                        src={product.images[0]}
+                        alt={product.title}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          transition: 'transform 0.5s ease',
+                          transform: hoveredProduct === product.id ? 'scale(1.1)' : 'scale(1)'
+                        }}
+                      />
+                      {/* Badges */}
+                      <div style={{ position: 'absolute', top: '12px', left: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {product.stock < 10 && (
+                          <span style={{ 
+                            padding: '6px 14px', 
+                            background: 'linear-gradient(135deg, #f59e0b, #fbbf24)', 
+                            color: 'white', 
+                            fontSize: '11px', 
+                            fontWeight: 700, 
+                            borderRadius: '50px'
+                          }}>
+                            ⚡ Stock limité
+                          </span>
+                        )}
+                      </div>
+                      {/* Quick Add Button */}
+                      <div style={{
+                        position: 'absolute',
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        padding: '12px',
+                        background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)',
+                        opacity: hoveredProduct === product.id ? 1 : 0,
+                        transform: hoveredProduct === product.id ? 'translateY(0)' : 'translateY(20px)',
+                        transition: 'all 0.3s ease'
+                      }}>
+                        <div onClick={(e) => e.stopPropagation()}>
+                          <button type="button" style={{
+                            width: '100%',
+                            padding: '14px',
+                            background: addedProductId === product.id
+                              ? 'linear-gradient(135deg, #10b981, #34d399)'
+                              : 'linear-gradient(135deg, #059669, #10b981)',
+                            border: 'none',
+                            borderRadius: '14px',
+                            color: 'white',
+                            fontWeight: 700,
+                            fontSize: '14px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px',
+                            boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)',
+                            transform: addedProductId === product.id ? 'scale(1.02)' : 'scale(1)',
+                            transition: 'all 0.3s ease'
+                          }}
+                            onClick={(e) => handleAddToCart(e, product)}
+                          >
+                            {addedProductId === product.id ? (
+                              <>
+                                <Check size={18} />
+                                Ajouté !
+                              </>
+                            ) : (
+                              <>
+                                <ShoppingCart size={18} />
+                                Ajouter au panier
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    {/* Product Info */}
+                    <div style={{ padding: '20px' }}>
+                      {/* Shop name with badge */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                        <span style={{ 
+                          padding: '4px 10px', 
+                          background: 'linear-gradient(135deg, #f3e8ff, #e9d5ff)', 
+                          color: '#8b5cf6', 
+                          fontSize: '11px', 
+                          fontWeight: 700, 
+                          borderRadius: '20px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px'
+                        }}>
+                          <Store size={12} />
+                          {product.shopName}
+                        </span>
+                      </div>
+                      {/* Title */}
+                      <h3 style={{ 
+                        margin: '0 0 12px 0', 
+                        fontSize: '16px', 
+                        fontWeight: 700, 
+                        color: '#1f2937', 
+                        lineHeight: 1.4, 
+                        display: '-webkit-box', 
+                        WebkitLineClamp: 2, 
+                        WebkitBoxOrient: 'vertical', 
+                        overflow: 'hidden',
+                        minHeight: '44px'
+                      }}>
+                        {product.title}
+                      </h3>
+                      {/* Price Section */}
+                      <div style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'space-between',
+                        padding: '12px 16px',
+                        background: 'linear-gradient(135deg, #fafafa, #f5f5f5)',
+                        borderRadius: '14px',
+                        marginTop: '12px'
+                      }}>
+                        <div>
+                          <span style={{ 
+                            fontSize: '22px', 
+                            fontWeight: 800, 
+                            color: '#059669',
+                            display: 'block'
+                          }}>
+                            {formatPrice(product.price)}
+                          </span>
+                        </div>
+                        <div onClick={(e) => e.stopPropagation()}>
+                          <button type="button"
+                            onClick={(e) => handleAddToCart(e, product)}
+                            style={{
+                              width: '48px',
+                              height: '48px',
+                              borderRadius: '14px',
+                              background: addedProductId === product.id
+                                ? 'linear-gradient(135deg, #10b981, #34d399)'
+                                : 'linear-gradient(135deg, #059669, #10b981)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              color: 'white',
+                              boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)',
+                              border: 'none',
+                              cursor: 'pointer',
+                              transform: addedProductId === product.id ? 'scale(1.15)' : 'scale(1)',
+                              transition: 'all 0.3s ease'
+                            }}
+                          >
+                            {addedProductId === product.id ? <Check size={20} /> : <ShoppingCart size={20} />}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Categories */}
-      <section style={{ padding: '60px 0' }}>
-        <div className="container" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px' }}>
-          <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-            <h2 style={{ fontSize: '36px', fontWeight: 800, color: '#1f2937', margin: '0 0 12px 0' }}>
+      <section style={{ padding: '80px 0', background: 'linear-gradient(180deg, #ffffff 0%, #f9fafb 100%)' }}>
+        <div className="container" style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 24px' }}>
+          <div style={{ textAlign: 'center', marginBottom: '50px' }}>
+            <div style={{ 
+              display: 'inline-flex', 
+              alignItems: 'center', 
+              gap: '10px', 
+              background: 'linear-gradient(135deg, #dcfce7, #bbf7d0)',
+              padding: '10px 24px',
+              borderRadius: '50px',
+              marginBottom: '16px'
+            }}>
+              <ShoppingBag size={18} color="#059669" />
+              <span style={{ fontSize: '13px', fontWeight: 700, color: '#059669', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                Catégories
+              </span>
+            </div>
+            <h2 style={{ fontSize: '42px', fontWeight: 800, color: '#1f2937', margin: '0 0 16px 0', lineHeight: 1.2 }}>
               Explorez nos catégories
             </h2>
-            <p style={{ fontSize: '18px', color: '#6b7280', margin: 0 }}>
-              Du marché traditionnel aux boutiques modernes
+            <p style={{ fontSize: '18px', color: '#6b7280', margin: 0, maxWidth: '600px', marginLeft: 'auto', marginRight: 'auto', lineHeight: 1.6 }}>
+              Du marché traditionnel aux boutiques modernes, trouvez tout ce dont vous avez besoin
             </p>
           </div>
 
-          <div className="categories-grid">
-            {mainCategories.map((category) => (
-              <Link 
-                key={category.id}
-                to={`/category/${category.slug}`}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  padding: '32px 20px',
-                  background: 'white',
-                  borderRadius: '20px',
-                  textDecoration: 'none',
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
-                  border: '2px solid transparent',
-                  transition: 'all 0.3s'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-8px)';
-                  e.currentTarget.style.borderColor = '#10b981';
-                  e.currentTarget.style.boxShadow = '0 20px 40px rgba(16, 185, 129, 0.15)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.borderColor = 'transparent';
-                  e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.05)';
-                }}
-              >
-                <span style={{ fontSize: '48px', marginBottom: '16px' }}>{category.icon}</span>
-                <h3 style={{ margin: '0 0 8px 0', fontSize: '16px', fontWeight: 700, color: '#1f2937', textAlign: 'center' }}>
-                  {category.name}
-                </h3>
-                <p style={{ margin: 0, fontSize: '13px', color: '#6b7280', textAlign: 'center', lineHeight: 1.4 }}>
-                  {category.description}
-                </p>
-              </Link>
-            ))}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: '28px',
+            marginBottom: '48px'
+          }}>
+            {mainCategories.map((category, idx) => {
+              const categoryColors = [
+                { bg: '#10b981', light: '#dcfce7', icon: '🥬' },
+                { bg: '#8b5cf6', light: '#f3e8ff', icon: '🥣' },
+                { bg: '#f97316', light: '#fed7aa', icon: '🌾' },
+                { bg: '#06b6d4', light: '#cffafe', icon: '🍽️' },
+                { bg: '#ec4899', light: '#fce7f3', icon: '🥩' },
+                { bg: '#f59e0b', light: '#fef3c7', icon: '🌶️' },
+                { bg: '#14b8a6', light: '#ccfbf1', icon: '🧃' },
+                { bg: '#3b82f6', light: '#dbeafe', icon: '🥐' },
+              ];
+              const color = categoryColors[idx % categoryColors.length];
+              const productCount = products.filter(p => p.category === category.slug).length;
+              
+              return (
+                <Link 
+                  key={category.id}
+                  to={`/category/${category.slug}`}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'flex-start',
+                    padding: '0',
+                    background: 'white',
+                    borderRadius: '24px',
+                    textDecoration: 'none',
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
+                    border: '2px solid transparent',
+                    transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    cursor: 'pointer',
+                    height: '100%'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-12px) scale(1.02)';
+                    e.currentTarget.style.borderColor = color.bg;
+                    e.currentTarget.style.boxShadow = `0 25px 50px ${color.bg}25, 0 0 0 1px ${color.bg}10`;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                    e.currentTarget.style.borderColor = 'transparent';
+                    e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.05)';
+                  }}
+                >
+                  {/* Gradient Header */}
+                  <div style={{
+                    width: '100%',
+                    background: `linear-gradient(135deg, ${color.bg} 0%, ${color.bg}dd 100%)`,
+                    padding: '32px 24px',
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    justifyContent: 'space-between',
+                    position: 'relative',
+                    overflow: 'hidden'
+                  }}>
+                    {/* Background Pattern */}
+                    <div style={{
+                      position: 'absolute',
+                      top: '-40px',
+                      right: '-40px',
+                      width: '120px',
+                      height: '120px',
+                      borderRadius: '50%',
+                      background: 'rgba(255,255,255,0.1)',
+                      opacity: 0.5
+                    }} />
+                    <div style={{
+                      position: 'absolute',
+                      bottom: '-30px',
+                      left: '-30px',
+                      width: '100px',
+                      height: '100px',
+                      borderRadius: '50%',
+                      background: 'rgba(255,255,255,0.08)',
+                      opacity: 0.3
+                    }} />
+                    
+                    <div style={{ position: 'relative', zIndex: 2 }}>
+                      <div style={{
+                        fontSize: '56px',
+                        marginBottom: '12px',
+                        display: 'block'
+                      }}>
+                        {category.icon}
+                      </div>
+                    </div>
+                    
+                    <div style={{
+                      background: 'rgba(255,255,255,0.2)',
+                      backdropFilter: 'blur(8px)',
+                      padding: '6px 12px',
+                      borderRadius: '50px',
+                      color: 'white',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      position: 'relative',
+                      zIndex: 2
+                    }}>
+                      {productCount}
+                    </div>
+                  </div>
+                  
+                  {/* Content */}
+                  <div style={{
+                    padding: '24px',
+                    flex: 1,
+                    width: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between'
+                  }}>
+                    <div>
+                      <h3 style={{
+                        margin: '0 0 8px 0',
+                        fontSize: '18px',
+                        fontWeight: 700,
+                        color: '#1f2937'
+                      }}>
+                        {category.name}
+                      </h3>
+                      <p style={{
+                        margin: 0,
+                        fontSize: '14px',
+                        color: '#6b7280',
+                        lineHeight: 1.5
+                      }}>
+                        {category.description}
+                      </p>
+                    </div>
+                    
+                    {/* Footer Badge */}
+                    <div style={{
+                      marginTop: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      paddingTop: '16px',
+                      borderTop: `1px solid ${color.light}`
+                    }}>
+                      <span style={{
+                        fontSize: '12px',
+                        fontWeight: 600,
+                        color: color.bg,
+                        background: color.light,
+                        padding: '4px 12px',
+                        borderRadius: '50px'
+                      }}>
+                        Voir les produits
+                      </span>
+                      <ArrowRight size={18} color={color.bg} style={{ transition: 'transform 0.3s ease' }} />
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
 
 

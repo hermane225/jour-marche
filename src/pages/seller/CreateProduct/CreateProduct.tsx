@@ -128,22 +128,33 @@ export function CreateProduct() {
                   label="Titre du produit"
                   placeholder="Ex: Poulet braisé, T-shirt en coton..."
                   value={formData.title}
-                  onChange={(e) => setFormData({...formData, title: e.target.value})}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (/^[a-zA-ZÀ-ÿ0-9\s\-,.']*$/.test(value) || value === '') {
+                      setFormData({...formData, title: value});
+                    }
+                  }}
                   required
+                  pattern="[a-zA-ZÀ-ÿ0-9\s\-,.]+"
+                  title="Utilisez uniquement des lettres, chiffres et caractères basiques"
                 />
                 <div className="create-product-textarea-wrapper">
-                  <label>Description du produit</label>
+                  <label>Description du produit <span style={{ color: '#ef4444' }}>*</span></label>
                   <textarea
                     placeholder="Décrivez votre produit en détail..."
                     value={formData.description}
                     onChange={(e) => setFormData({...formData, description: e.target.value})}
                     rows={5}
+                    required
+                    minLength={10}
+                    maxLength={1000}
+                    title="La description doit contenir entre 10 et 1000 caractères"
                   />
                 </div>
                 
                 {/* Catégorie */}
                 <div className="create-product-select-wrapper">
-                  <label>Catégorie</label>
+                  <label>Catégorie <span style={{ color: '#ef4444' }}>*</span></label>
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({...formData, category: e.target.value})}
@@ -306,8 +317,16 @@ export function CreateProduct() {
                     type="number"
                     placeholder="0.00"
                     value={formData.price}
-                    onChange={(e) => setFormData({...formData, price: e.target.value})}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (/^[0-9]*\.?[0-9]*$/.test(value) || value === '') {
+                        setFormData({...formData, price: value});
+                      }
+                    }}
                     required
+                    inputMode="numeric"
+                    pattern="[0-9]+"
+                    title="Entrez uniquement des chiffres"
                   />
                   <span className="price-currency">FCFA</span>
                 </div>
@@ -316,8 +335,16 @@ export function CreateProduct() {
                   type="number"
                   placeholder="0"
                   value={formData.stock}
-                  onChange={(e) => setFormData({...formData, stock: e.target.value})}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (/^[0-9]*$/.test(value) || value === '') {
+                      setFormData({...formData, stock: value});
+                    }
+                  }}
                   required
+                  inputMode="numeric"
+                  pattern="[0-9]+"
+                  title="Entrez uniquement des chiffres"
                 />
               </Card>
             </div>

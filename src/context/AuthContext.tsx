@@ -31,6 +31,14 @@ const mockUsers: User[] = [
     phone: '+225 05 98 76 54',
     createdAt: new Date('2023-02-20'),
   },
+  {
+    id: '3',
+    email: 'admin@jourmarche.com',
+    name: 'Admin Jour Marché',
+    role: 'admin',
+    phone: '+225 07 00 00 00',
+    createdAt: new Date('2023-01-01'),
+  },
 ];
 
 // Fonction d'initialisation paresseuse pour le user
