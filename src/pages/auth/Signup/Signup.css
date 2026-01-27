@@ -1,0 +1,136 @@
+/* Signup Page Styles */
+
+.signup-page {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Image Section */
+.signup-image-section {
+  display: none;
+  flex: 1;
+  overflow: hidden;
+}
+
+@media (min-width: 1024px) {
+  .signup-image-section {
+    display: block;
+  }
+}
+
+.signup-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Form Section */
+.signup-form-section {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-8);
+  background-color: var(--color-white);
+}
+
+.signup-form-container {
+  width: 100%;
+  max-width: 400px;
+}
+
+.signup-form-logo {
+  width: 48px;
+  height: 48px;
+  background-color: #1F4D3A;
+  border-radius: var(--border-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: var(--spacing-6);
+}
+
+.signup-form-header {
+  margin-bottom: var(--spacing-6);
+}
+
+.signup-form-header h2 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-gray-900);
+  margin-bottom: var(--spacing-2);
+}
+
+.signup-form-header p {
+  color: var(--color-gray-500);
+  font-size: var(--font-size-sm);
+}
+
+/* Form */
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.signup-error {
+  color: var(--color-error);
+  font-size: var(--font-size-sm);
+}
+
+/* Divider */
+.signup-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  margin: var(--spacing-5) 0;
+}
+
+.signup-divider::before,
+.signup-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background-color: var(--color-gray-200);
+}
+
+.signup-divider span {
+  color: var(--color-gray-400);
+  font-size: var(--font-size-sm);
+}
+
+/* Links */
+.signup-login-link {
+  margin-top: var(--spacing-5);
+  text-align: center;
+  color: var(--color-gray-500);
+  font-size: var(--font-size-sm);
+}
+
+.signup-login-link a {
+  color: var(--color-secondary);
+  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+}
+
+.signup-login-link a:hover {
+  text-decoration: underline;
+}
+
+.signup-terms {
+  margin-top: var(--spacing-5);
+  text-align: center;
+  color: var(--color-gray-400);
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-relaxed);
+}
+
+.signup-terms a {
+  color: var(--color-gray-500);
+  text-decoration: underline;
+}
+
+.signup-terms a:hover {
+  color: var(--color-gray-700);
+}
