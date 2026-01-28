@@ -151,8 +151,8 @@ export function OrderDetail() {
             <div class="customer-info">
               <h3 style="color: #059669; margin-bottom: 10px;">Client</h3>
               <p><strong>${order.customerName || 'Client'}</strong></p>
-              <p>${order.shippingAddress || 'Adresse non spécifiée'}</p>
-              <p>${order.phone || 'N/A'}</p>
+              <p>${order.customerAddress || 'Adresse non spécifiée'}</p>
+              <p>${order.customerPhone || 'N/A'}</p>
             </div>
             <div class="delivery-info">
               <h3 style="color: #059669; margin-bottom: 10px;">Détails de la commande</h3>

@@ -1020,8 +1020,7 @@ export function CreateShop() {
                       cursor: isStepValid() ? 'pointer' : 'not-allowed',
                       boxShadow: isStepValid() ? '0 8px 20px rgba(16, 185, 129, 0.4)' : 'none',
                       transition: 'all 0.3s ease',
-                      transform: isStepValid() ? 'translateY(0)' : 'none',
-                      ':hover': isStepValid() ? { transform: 'translateY(-2px)', boxShadow: '0 12px 28px rgba(16, 185, 129, 0.5)' } : {}
+                      transform: isStepValid() ? 'translateY(0)' : 'none'
                     }}
                     onMouseEnter={(e) => {
                       if (isStepValid()) {
