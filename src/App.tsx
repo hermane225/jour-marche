@@ -10,6 +10,7 @@ import { Login, Signup } from './pages/auth';
 // Guest Pages
 import { Home, ProductDetail, Cart, Categories, Shops, ShopDetail, Promotions, Search, MobileMoneyPayment } from './pages/guest';
 import { OrderReview } from './pages/guest/OrderReview';
+import { OrderConfirmation } from './pages/guest/OrderConfirmation';
 
 // Buyer Pages
 import { BuyerDashboard, Profile, OrderDetail } from './pages/buyer';
@@ -187,6 +188,7 @@ function AppRoutes() {
         {/* Panier et commande */}
         <Route path="/cart" element={<Cart />} />
         <Route path="/order/review" element={<OrderReview />} />
+        <Route path="/order/confirmation" element={<OrderConfirmation />} />
 
         {/* Page de paiement Mobile Money */}
         <Route path="/payment/mobile-money" element={<MobileMoneyPayment />} />
