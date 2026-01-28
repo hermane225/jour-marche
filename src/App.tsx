@@ -11,6 +11,7 @@ import { Login, Signup } from './pages/auth';
 import { Home, ProductDetail, Cart, Categories, Shops, ShopDetail, Promotions, Search, MobileMoneyPayment } from './pages/guest';
 import { OrderReview } from './pages/guest/OrderReview';
 import { OrderConfirmation } from './pages/guest/OrderConfirmation';
+import { DeliveryInfo } from './pages/guest/DeliveryInfo';
 
 // Buyer Pages
 import { BuyerDashboard, Profile, OrderDetail } from './pages/buyer';
@@ -187,6 +188,7 @@ function AppRoutes() {
 
         {/* Panier et commande */}
         <Route path="/cart" element={<Cart />} />
+        <Route path="/delivery/info" element={<DeliveryInfo />} />
         <Route path="/order/review" element={<OrderReview />} />
         <Route path="/order/confirmation" element={<OrderConfirmation />} />
 

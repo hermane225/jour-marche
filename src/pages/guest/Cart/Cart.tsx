@@ -38,23 +38,8 @@ export function Cart() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Valider les infos client
-    if (!customerInfo.name || !customerInfo.phone) {
-      alert('Veuillez remplir tous les champs obligatoires');
-      setIsSubmitting(false);
-      return;
-    }
-
-    // Sauvegarder les infos de livraison dans sessionStorage
-    sessionStorage.setItem('delivery_info', JSON.stringify({
-      name: customerInfo.name,
-      phone: customerInfo.phone,
-      address: customerInfo.address,
-      deliveryType: 'delivery',
-    }));
-
-    // Rediriger vers la page de confirmation de commande
-    navigate('/order/review');
+    // Rediriger vers la page d'informations de livraison
+    navigate('/delivery/info');
     setIsSubmitting(false);
   };
 
@@ -145,70 +130,7 @@ export function Cart() {
             </div>
           </Card>
 
-          {/* Checkout Form */}
-          <Card className="cart-checkout-card">
-            <h3>Informations de livraison</h3>
-            
-            <form onSubmit={handleSubmit} className="cart-form">
-              <Input
-                label="Nom complet"
-                placeholder="Entrez votre nom"
-                value={customerInfo.name}
-                onChange={(e) => setCustomerInfo({...customerInfo, name: e.target.value})}
-                required
-              />
-
-              <Input
-                label="Numéro de téléphone"
-                type="tel"
-                placeholder="+225 XX XX XX XX"
-                value={customerInfo.phone}
-                onChange={(e) => setCustomerInfo({...customerInfo, phone: e.target.value})}
-                required
-              />
-
-              <Input
-                label="Adresse de livraison"
-                placeholder="Commune, Quartier, Rue..."
-                value={customerInfo.address}
-                onChange={(e) => setCustomerInfo({...customerInfo, address: e.target.value})}
-                required
-              />
-
-              <div className="cart-payment-section">
-                <h4>Mode de paiement</h4>
-                <div className="cart-payment-options">
-                  <label className={`cart-payment-option ${paymentMethod === 'mobile_money' ? 'active' : ''}`}>
-                    <input
-                      type="radio"
-                      name="payment"
-                      value="mobile_money"
-                      checked={paymentMethod === 'mobile_money'}
-                      onChange={() => setPaymentMethod('mobile_money')}
-                    />
-                    <span className="cart-payment-icon">📱</span>
-                    <span>Mobile Money</span>
-                  </label>
-                  
-                  <label className={`cart-payment-option ${paymentMethod === 'cash' ? 'active' : ''}`}>
-                    <input
-                      type="radio"
-                      name="payment"
-                      value="cash"
-                      checked={paymentMethod === 'cash'}
-                      onChange={() => setPaymentMethod('cash')}
-                    />
-                    <span className="cart-payment-icon">💵</span>
-                    <span>Cash à la livraison</span>
-                  </label>
-                </div>
-              </div>
-            </form>
-          </Card>
-        </div>
-
-        {/* Order Summary */}
-        <div className="cart-summary-section">
+          {/* Récapitulatif et bouton de paiement */}
           <Card className="cart-summary-card">
             <h3>Récapitulatif</h3>
             
@@ -233,7 +155,6 @@ export function Cart() {
               size="lg"
               onClick={handleSubmit}
               isLoading={isSubmitting}
-              disabled={!customerInfo.name || !customerInfo.phone || !customerInfo.address}
             >
               Passer commande
             </Button>
