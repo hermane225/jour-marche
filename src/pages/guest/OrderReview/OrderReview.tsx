@@ -10,13 +10,14 @@ interface DeliveryInfo {
   phone: string;
   address: string;
   deliveryType: 'pickup' | 'delivery';
+  relayInfo?: any;
 }
 
 export default function OrderReview() {
   const navigate = useNavigate();
-  const { cart } = useCart();
+  const { cart, clearCart } = useCart();
   const [isEditing, setIsEditing] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<'mobile_money' | 'cash'>('mobile_money');
+  const [isProcessing, setIsProcessing] = useState(false);
 
   // Scroller vers le haut au montage
   useEffect(() => {
@@ -58,22 +59,24 @@ export default function OrderReview() {
   };
 
   const handleProceedToPayment = () => {
+    setIsProcessing(true);
+
+    // Vider le panier
+    clearCart();
+
     // Sauvegarder les infos de livraison et le montant
     sessionStorage.setItem('delivery_info', JSON.stringify(deliveryInfo));
     sessionStorage.setItem('order_total', JSON.stringify({
       subtotal,
       deliveryFee,
       total,
-      paymentMethod,
       deliveryType: deliveryInfo.deliveryType,
     }));
 
-    if (paymentMethod === 'mobile_money') {
-      navigate('/payment/mobile-money');
-    } else {
-      // Aller à la confirmation de commande pour le paiement en espèces
-      navigate('/order/confirmation');
-    }
+    // Rediriger vers la page de sélection du mode de paiement
+    setTimeout(() => {
+      navigate('/payment/method');
+    }, 300);
   };
 
   if (cart.items.length === 0) {
@@ -283,49 +286,14 @@ export default function OrderReview() {
             </div>
           </Card>
 
-          {/* Options de paiement */}
-          <Card>
-            <div className="card-header">
-              <h2>Mode de paiement</h2>
-            </div>
-            <div className="payment-methods">
-              <label className="payment-option">
-                <input
-                  type="radio"
-                  name="payment"
-                  value="mobile_money"
-                  checked={paymentMethod === 'mobile_money'}
-                  onChange={() => setPaymentMethod('mobile_money')}
-                />
-                <div className="payment-method-content">
-                  <span className="method-name">Mobile Money</span>
-                  <span className="method-desc">Wave, Orange, Moov, MTN</span>
-                </div>
-              </label>
-              <label className="payment-option">
-                <input
-                  type="radio"
-                  name="payment"
-                  value="cash"
-                  checked={paymentMethod === 'cash'}
-                  onChange={() => setPaymentMethod('cash')}
-                />
-                <div className="payment-method-content">
-                  <span className="method-name">Paiement à la livraison</span>
-                  <span className="method-desc">Espèces à la réception</span>
-                </div>
-              </label>
-            </div>
-          </Card>
-
           {/* Bouton de confirmation */}
           <Button
             variant="primary"
             onClick={handleProceedToPayment}
             style={{ width: '100%', padding: '16px', fontSize: '16px', fontWeight: 'bold' }}
-            disabled={!deliveryInfo.name || !deliveryInfo.phone || (deliveryInfo.deliveryType === 'delivery' && !deliveryInfo.address)}
+            disabled={!deliveryInfo.name || !deliveryInfo.phone || (deliveryInfo.deliveryType === 'delivery' && !deliveryInfo.address) || isProcessing}
           >
-            Procéder au paiement
+            {isProcessing ? 'Traitement...' : 'Valider et continuer'}
           </Button>
 
           <p className="payment-info">

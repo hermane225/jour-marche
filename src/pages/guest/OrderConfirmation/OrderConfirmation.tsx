@@ -79,6 +79,7 @@ export default function OrderConfirmation() {
       // Nettoyer le sessionStorage
       sessionStorage.removeItem('delivery_info');
       sessionStorage.removeItem('order_total');
+      sessionStorage.removeItem('payment_method');
     }
 
     setIsLoading(false);

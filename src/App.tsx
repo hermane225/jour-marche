@@ -12,6 +12,7 @@ import { Home, ProductDetail, Cart, Categories, Shops, ShopDetail, Promotions, S
 import { OrderReview } from './pages/guest/OrderReview';
 import { OrderConfirmation } from './pages/guest/OrderConfirmation';
 import { DeliveryInfo } from './pages/guest/DeliveryInfo';
+import { PaymentMethod } from './pages/guest/PaymentMethod';
 
 // Buyer Pages
 import { BuyerDashboard, Profile, OrderDetail } from './pages/buyer';
@@ -190,10 +191,9 @@ function AppRoutes() {
         <Route path="/cart" element={<Cart />} />
         <Route path="/delivery/info" element={<DeliveryInfo />} />
         <Route path="/order/review" element={<OrderReview />} />
-        <Route path="/order/confirmation" element={<OrderConfirmation />} />
-
-        {/* Page de paiement Mobile Money */}
+        <Route path="/payment/method" element={<PaymentMethod />} />
         <Route path="/payment/mobile-money" element={<MobileMoneyPayment />} />
+        <Route path="/order/confirmation" element={<OrderConfirmation />} />
 
         {/* Création de boutique - nécessite d'être connecté */}
         <Route element={<AuthRoute />}>
