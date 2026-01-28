@@ -1,0 +1,503 @@
+.order-review-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 40px 20px;
+}
+
+.order-review-header {
+  max-width: 1200px;
+  margin: 0 auto 40px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  color: #059669;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.back-button:hover {
+  background: #f0f0f0;
+  transform: translateX(-4px);
+}
+
+.order-review-header h1 {
+  font-size: 32px;
+  color: #1f2937;
+  margin: 0;
+  flex: 1;
+}
+
+.order-review-empty {
+  max-width: 600px;
+  margin: 100px auto;
+  text-align: center;
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.order-review-empty h2 {
+  font-size: 24px;
+  color: #1f2937;
+  margin-bottom: 20px;
+}
+
+.order-review-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 30px;
+}
+
+@media (max-width: 968px) {
+  .order-review-container {
+    grid-template-columns: 1fr;
+  }
+
+  .order-review-sidebar {
+    order: -1;
+  }
+}
+
+.order-review-main {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.card-header h2 {
+  font-size: 18px;
+  color: #1f2937;
+  margin: 0;
+  font-weight: 700;
+}
+
+.edit-button {
+  background: none;
+  border: none;
+  color: #059669;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+  transition: color 0.3s ease;
+}
+
+.edit-button:hover {
+  color: #047857;
+  text-decoration: underline;
+}
+
+/* Sections des articles */
+.order-items {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.order-item {
+  display: flex;
+  gap: 15px;
+  padding: 15px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  transition: all 0.3s ease;
+}
+
+.order-item:hover {
+  background: #f3f4f6;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.item-image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.item-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.item-details h3 {
+  margin: 0 0 5px;
+  font-size: 16px;
+  color: #1f2937;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.item-shop {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.item-quantity {
+  font-size: 14px;
+  color: #4b5563;
+}
+
+.quantity-badge {
+  display: inline-block;
+  background: #dbeafe;
+  color: #1e40af;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+.item-price {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+  min-width: 100px;
+}
+
+.unit-price {
+  font-size: 13px;
+  color: #6b7280;
+  text-decoration: line-through;
+}
+
+.total-price {
+  font-size: 16px;
+  color: #059669;
+  font-weight: 700;
+}
+
+/* Formulaire de livraison */
+.delivery-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 14px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="tel"] {
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="tel"]:focus {
+  outline: none;
+  border-color: #059669;
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+}
+
+.delivery-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.delivery-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.delivery-option:hover {
+  background: #f3f4f6;
+  border-color: #059669;
+}
+
+.delivery-option input[type="radio"] {
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+}
+
+.delivery-option span {
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.form-actions button {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* Affichage des infos de livraison */
+.delivery-info-display {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+}
+
+.info-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.info-value {
+  text-align: right;
+  color: #1f2937;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+/* Sidebar */
+.order-review-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: fit-content;
+  position: sticky;
+  top: 20px;
+}
+
+.price-summary {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+.price-summary .card-header {
+  border-bottom-color: rgba(255, 255, 255, 0.2);
+}
+
+.price-summary .card-header h2 {
+  color: white;
+}
+
+.price-details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.price-row.total {
+  font-size: 18px;
+  font-weight: 700;
+  color: white;
+}
+
+.price-value {
+  font-weight: 600;
+}
+
+.total-value {
+  font-size: 20px;
+}
+
+.price-divider {
+  height: 2px;
+  background: rgba(255, 255, 255, 0.3);
+  margin: 5px 0;
+}
+
+/* Options de paiement */
+.payment-methods {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.payment-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  background: #f9fafb;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.payment-option:hover {
+  background: #f3f4f6;
+  border-color: #059669;
+}
+
+.payment-option input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.payment-option input[type="radio"]:checked + .payment-method-content {
+  color: #059669;
+}
+
+.payment-method-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  color: #374151;
+  transition: color 0.3s ease;
+}
+
+.method-name {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.method-desc {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.payment-option:has(input:checked) {
+  background: #dbeafe;
+  border-color: #059669;
+}
+
+.payment-option:has(input:checked) .payment-method-content {
+  color: #059669;
+}
+
+.payment-option:has(input:checked) .method-desc {
+  color: #059669;
+  opacity: 0.8;
+}
+
+/* Bouton de paiement */
+button[variant="primary"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.payment-info {
+  text-align: center;
+  font-size: 12px;
+  color: #6b7280;
+  margin: 0;
+  padding-top: 10px;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .order-review-page {
+    padding: 20px 10px;
+  }
+
+  .order-review-header {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 20px;
+  }
+
+  .order-review-header h1 {
+    font-size: 24px;
+  }
+
+  .order-item {
+    flex-wrap: wrap;
+  }
+
+  .item-price {
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  .order-review-sidebar {
+    position: relative;
+    top: 0;
+  }
+
+  .info-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .info-value {
+    text-align: left;
+  }
+}

@@ -33,36 +33,23 @@ export function Cart() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    if (paymentMethod === 'mobile_money') {
-      // Rediriger vers la page de paiement Mobile Money
-      navigate('/payment/mobile-money');
+    // Valider les infos client
+    if (!customerInfo.name || !customerInfo.phone) {
+      alert('Veuillez remplir tous les champs obligatoires');
       setIsSubmitting(false);
       return;
     }
 
-    // Créer la commande
-    const shopId = cart.items[0]?.product.shopId || 'shop_1';
-    const shopName = cart.items[0]?.product.shopName || 'Boutique';
-
-    const newOrder = createOrder({
-      items: cart.items,
-      total: total,
-      customerName: customerInfo.name,
-      customerPhone: customerInfo.phone,
-      customerAddress: customerInfo.address,
-      paymentMethod: paymentMethod,
-      shopId: shopId,
-      shopName: shopName,
+    // Sauvegarder les infos de livraison dans sessionStorage
+    sessionStorage.setItem('delivery_info', JSON.stringify({
+      name: customerInfo.name,
+      phone: customerInfo.phone,
+      address: customerInfo.address,
       deliveryType: 'delivery',
-      deliveryFee: deliveryFee,
-    });
+    }));
 
-    // Simulation d'envoi
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    setOrderNumber(newOrder.orderNumber);
-    setOrderSuccess(true);
-    clearCart();
+    // Rediriger vers la page de confirmation de commande
+    navigate('/order/review');
     setIsSubmitting(false);
   };
 
