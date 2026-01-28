@@ -36,6 +36,9 @@ export default function OrderConfirmation() {
   };
 
   useEffect(() => {
+    // Scroller vers le haut au montage de la page
+    window.scrollTo(0, 0);
+    
     // Récupérer les infos sauvegardées
     const savedDeliveryInfo = sessionStorage.getItem('delivery_info');
     const savedOrderTotal = sessionStorage.getItem('order_total');

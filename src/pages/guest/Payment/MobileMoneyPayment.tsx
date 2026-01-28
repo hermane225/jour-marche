@@ -31,14 +31,24 @@ export default function MobileMoneyPayment() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [orderNumber, setOrderNumber] = useState('');
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const [deliveryInfo, setDeliveryInfo] = useState<DeliveryInfo | null>(null);
   const [orderTotal, setOrderTotal] = useState<OrderTotal | null>(null);
 
   useEffect(() => {
+    // Scroller vers le haut au montage de la page
+    window.scrollTo(0, 0);
+    
     // Récupérer les infos sauvegardées
     const savedDeliveryInfo = sessionStorage.getItem('delivery_info');
     const savedOrderTotal = sessionStorage.getItem('order_total');
+
+    if (!savedDeliveryInfo || !savedOrderTotal) {
+      // Si les infos ne sont pas disponibles, rediriger vers le panier
+      navigate('/cart');
+      return;
+    }
 
     if (savedDeliveryInfo) {
       setDeliveryInfo(JSON.parse(savedDeliveryInfo));
@@ -46,7 +56,9 @@ export default function MobileMoneyPayment() {
     if (savedOrderTotal) {
       setOrderTotal(JSON.parse(savedOrderTotal));
     }
-  }, []);
+    
+    setIsLoaded(true);
+  }, [navigate]);
 
   const providers = [
     { id: 'wave' as Provider, name: 'Wave', logo: '/wave.png' },
@@ -134,6 +146,21 @@ export default function MobileMoneyPayment() {
         <Button variant="primary" onClick={() => navigate('/')} style={{ width: '100%' }}>
           Retour à l'accueil
         </Button>
+      </div>
+    );
+  }
+
+  // Si les données ne sont pas encore chargées
+  if (!isLoaded || !deliveryInfo || !orderTotal) {
+    return (
+      <div style={{ maxWidth: 400, margin: '40px auto', padding: 24, background: '#fff', borderRadius: 12, boxShadow: '0 2px 8px #0001', textAlign: 'center' }}>
+        <div style={{ width: 50, height: 50, border: '4px solid #f0f0f0', borderTop: '4px solid #059669', borderRadius: '50%', margin: '20px auto', animation: 'spin 1s linear infinite' }} />
+        <p>Chargement des informations de paiement...</p>
+        <style>{`
+          @keyframes spin {
+            to { transform: rotate(360deg); }
+          }
+        `}</style>
       </div>
     );
   }

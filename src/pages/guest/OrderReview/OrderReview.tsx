@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState, type FormEvent, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, MapPin, Phone, User } from 'lucide-react';
 import { useCart } from '../../../context/CartContext';
@@ -17,6 +17,11 @@ export default function OrderReview() {
   const { cart } = useCart();
   const [isEditing, setIsEditing] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'mobile_money' | 'cash'>('mobile_money');
+
+  // Scroller vers le haut au montage
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   // Récupérer les informations du formulaire précédent (via sessionStorage ou props)
   const savedDeliveryInfo = sessionStorage.getItem('delivery_info');
