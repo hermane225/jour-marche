@@ -38,8 +38,8 @@ export function Cart() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Rediriger vers la page d'informations de livraison
-    navigate('/delivery/info');
+    // Rediriger vers la page de révision du panier
+    navigate('/cart/review');
     setIsSubmitting(false);
   };
 

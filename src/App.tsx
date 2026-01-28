@@ -8,7 +8,7 @@ import { Header, Footer } from './components/layout';
 import { Login, Signup } from './pages/auth';
 
 // Guest Pages
-import { Home, ProductDetail, Cart, Categories, Shops, ShopDetail, Promotions, Search, MobileMoneyPayment } from './pages/guest';
+import { Home, ProductDetail, Cart, Categories, Shops, ShopDetail, Promotions, Search, MobileMoneyPayment, CartReview } from './pages/guest';
 import { OrderReview } from './pages/guest/OrderReview';
 import { OrderConfirmation } from './pages/guest/OrderConfirmation';
 import { DeliveryInfo } from './pages/guest/DeliveryInfo';
@@ -189,6 +189,7 @@ function AppRoutes() {
 
         {/* Panier et commande */}
         <Route path="/cart" element={<Cart />} />
+        <Route path="/cart/review" element={<CartReview />} />
         <Route path="/delivery/info" element={<DeliveryInfo />} />
         <Route path="/order/review" element={<OrderReview />} />
         <Route path="/payment/method" element={<PaymentMethod />} />
