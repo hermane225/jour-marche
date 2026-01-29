@@ -43,8 +43,10 @@ export default function PaymentMethod() {
     <div className="payment-method-page">
       <div className="payment-header">
         <button className="back-button" onClick={() => navigate(-1)}>
-          <ChevronLeft size={24} />
-          Retour
+          <span className="back-button-icon">
+            <ChevronLeft size={20} />
+          </span>
+          <span className="back-button-text">Retour</span>
         </button>
         <h1>Mode de paiement</h1>
       </div>
@@ -179,7 +181,7 @@ export default function PaymentMethod() {
           <div className="help-section">
             <h3>❓ Questions?</h3>
             <p>Contactez notre équipe support</p>
-            <p className="support-contact">+225 27 XX XX XX XX</p>
+            <p className="support-contact">+225 01 51 60 04 02</p>
           </div>
         </Card>
       </div>
