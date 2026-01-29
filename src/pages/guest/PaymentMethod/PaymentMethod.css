@@ -172,6 +172,39 @@
   flex-shrink: 0;
 }
 
+.payment-icon-images {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+  width: 64px;
+  height: 64px;
+}
+
+.payment-icon-images .operator-icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  border-radius: 4px;
+  background: white;
+  padding: 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.payment-icon-cash {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+}
+
+.payment-icon-cash .cash-icon {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
 .payment-info {
   display: flex;
   flex-direction: column;
@@ -218,6 +251,14 @@
   font-size: 13px;
   color: #047857;
   font-weight: 500;
+}
+
+.payment-note-warning {
+  color: #d97706;
+  background: #fffbeb;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #fcd34d;
 }
 
 .payment-note span {

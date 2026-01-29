@@ -73,7 +73,12 @@ export default function PaymentMethod() {
                 className="payment-radio"
               />
               <div className="payment-card-content">
-                <div className="payment-icon">📱</div>
+                <div className="payment-icon payment-icon-images">
+                  <img src="/wave.png" alt="Wave" className="operator-icon" />
+                  <img src="/orange.png" alt="Orange" className="operator-icon" />
+                  <img src="/mtn.png" alt="MTN" className="operator-icon" />
+                  <img src="/moov.png" alt="Moov" className="operator-icon" />
+                </div>
                 <div className="payment-info">
                   <h3>Mobile Money</h3>
                   <p>Payez directement avec votre compte mobile money</p>
@@ -104,12 +109,14 @@ export default function PaymentMethod() {
                 className="payment-radio"
               />
               <div className="payment-card-content">
-                <div className="payment-icon">💵</div>
+                <div className="payment-icon payment-icon-cash">
+                  <img src="/livraison.png" alt="Paiement à la livraison" className="cash-icon" />
+                </div>
                 <div className="payment-info">
                   <h3>Paiement à la livraison</h3>
                   <p>Payez en espèces à la réception de votre commande</p>
-                  <div className="payment-note">
-                    <span>✓ Sans frais supplémentaires</span>
+                  <div className="payment-note payment-note-warning">
+                    <span>⚠️ Frais de livraison à payer au livreur</span>
                   </div>
                 </div>
               </div>
@@ -139,7 +146,7 @@ export default function PaymentMethod() {
                   <p className="detail-title">Paiement à la livraison</p>
                   <ul className="details-list">
                     <li>Payez en espèces à la réception</li>
-                    <li>Aucun frais de paiement en ligne</li>
+                    <li>Frais de livraison à régler au livreur</li>
                     <li>Commande confirmée après paiement</li>
                     <li>Quittance remise à la livraison</li>
                   </ul>
