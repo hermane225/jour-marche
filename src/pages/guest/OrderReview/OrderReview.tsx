@@ -16,6 +16,10 @@ interface DeliveryInfo {
     address: string;
     phone: string;
     hours: string;
+    commune?: string;
+    distance?: number;
+    customerFee?: number;  // Frais payés par le client
+    driverFee?: number;    // Frais payés par Jour Marché au livreur
   };
 }
 
@@ -58,10 +62,24 @@ export default function OrderReview() {
     return new Intl.NumberFormat('fr-FR').format(price) + ' FCFA';
   };
 
-  // Frais de livraison : 0 pour relay et pickup, 2000 pour delivery
-  const deliveryFee = deliveryInfo.deliveryType === 'delivery' ? 2000 : 0;
+  // Frais de livraison selon le type
+  // - Livraison à domicile: 2000 FCFA
+  // - Point relais: petits frais fixes (ex: 200 FCFA) payés par client
+  // - Retrait boutique: gratuit
+  const getDeliveryFee = () => {
+    if (deliveryInfo.deliveryType === 'delivery') return 2000;
+    if (deliveryInfo.deliveryType === 'relay' && deliveryInfo.relayInfo?.customerFee) {
+      return deliveryInfo.relayInfo.customerFee;
+    }
+    return 0;
+  };
+  
+  const deliveryFee = getDeliveryFee();
   const subtotal = cart.items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
   const total = subtotal + deliveryFee;
+  
+  // Frais livreur (payés par Jour Marché, pas par le client)
+  const driverFee = deliveryInfo.relayInfo?.driverFee || 0;
 
   const handleEditAddress = () => {
     setEditedInfo(deliveryInfo);
@@ -437,14 +455,21 @@ export default function OrderReview() {
             </div>
             <div className="price-details">
               <div className="price-row">
-                <span>Sous-total</span>
+                <span>Sous-total produits</span>
                 <span className="price-value">{formatPrice(subtotal)}</span>
               </div>
               <div className="price-row">
                 <span>
-                  Frais de {deliveryInfo.deliveryType === 'delivery' ? 'livraison' : 'retrait'}
+                  {deliveryInfo.deliveryType === 'delivery' 
+                    ? 'Frais de livraison' 
+                    : deliveryInfo.deliveryType === 'relay'
+                      ? 'Frais de service relais'
+                      : 'Frais de retrait'
+                  }
                 </span>
-                <span className="price-value">{formatPrice(deliveryFee)}</span>
+                <span className="price-value" style={{ color: deliveryFee === 0 ? '#059669' : undefined }}>
+                  {deliveryFee === 0 ? 'Gratuit' : formatPrice(deliveryFee)}
+                </span>
               </div>
               <div className="price-divider" />
               <div className="price-row total">
@@ -452,6 +477,40 @@ export default function OrderReview() {
                 <span className="price-value total-value">{formatPrice(total)}</span>
               </div>
             </div>
+            
+            {/* Exemple concret pour point relais */}
+            {deliveryInfo.deliveryType === 'relay' && (
+              <div style={{
+                marginTop: '16px',
+                padding: '16px',
+                background: 'linear-gradient(135deg, #eff6ff, #f0fdf4)',
+                borderRadius: '12px',
+                border: '1px solid #e5e7eb'
+              }}>
+                <p style={{ fontSize: '13px', color: '#374151', marginBottom: '12px', fontWeight: 600 }}>
+                  📋 Détail du fonctionnement
+                </p>
+                <div style={{ fontSize: '12px', color: '#6b7280', lineHeight: 1.6 }}>
+                  <p style={{ marginBottom: '8px' }}>
+                    <strong style={{ color: '#059669' }}>✓ Vous payez:</strong> {formatPrice(total)}
+                  </p>
+                  <p style={{ marginBottom: '8px', paddingLeft: '16px' }}>
+                    → Produit(s): {formatPrice(subtotal)}<br/>
+                    → Frais service: {deliveryFee > 0 ? formatPrice(deliveryFee) : 'Gratuit'}
+                  </p>
+                  <div style={{
+                    padding: '8px 12px',
+                    background: '#fff7ed',
+                    borderRadius: '8px',
+                    marginTop: '8px',
+                    color: '#9a3412',
+                    fontSize: '11px'
+                  }}>
+                    💡 <strong>Note:</strong> Jour Marché paie le livreur un tarif fixe de {formatPrice(driverFee)} pour déposer votre colis au point relais ({deliveryInfo.relayInfo?.commune || 'Zone'}).
+                  </div>
+                </div>
+              </div>
+            )}
           </Card>
 
           {/* Bouton de confirmation */}

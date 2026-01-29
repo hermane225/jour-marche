@@ -1,59 +1,15 @@
 import { useState, type FormEvent, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, MapPin, Phone, User, Package } from 'lucide-react';
+import { ChevronLeft, MapPin, Phone, User, Package, Info } from 'lucide-react';
 import { useCart } from '../../../context/CartContext';
 import { Button, Input, Card } from '../../../components/ui';
+import { relayPoints, RELAY_CUSTOMER_FEE } from '../../../data/mockData';
 import './DeliveryInfo.css';
 
-interface DeliveryOption {
-  id: string;
-  name: string;
-  address: string;
-  phone: string;
-  city: string;
-  hours: string;
-  distance?: string;
-}
-
-// Mock data pour les points de relais
-const RELAY_POINTS: DeliveryOption[] = [
-  {
-    id: 'relay_1',
-    name: 'Point de Relais Marcory',
-    address: '123 Avenue Giscard d\'Estaing, Marcory',
-    phone: '+225 27 20 30 40 50',
-    city: 'Abidjan',
-    hours: 'Lun-Sam: 8h-18h, Dim: 9h-17h',
-    distance: '2.3 km',
-  },
-  {
-    id: 'relay_2',
-    name: 'Point de Relais Plateau',
-    address: '456 Rue du Commerce, Plateau',
-    phone: '+225 27 20 25 35 45',
-    city: 'Abidjan',
-    hours: 'Lun-Sam: 9h-19h',
-    distance: '4.5 km',
-  },
-  {
-    id: 'relay_3',
-    name: 'Point de Relais Cocody',
-    address: '789 Boulevard de la Paix, Cocody',
-    phone: '+225 27 20 35 45 55',
-    city: 'Abidjan',
-    hours: 'Lun-Dim: 8h-20h',
-    distance: '5.8 km',
-  },
-  {
-    id: 'relay_4',
-    name: 'Point de Relais Yopougon',
-    address: '321 Rue Principale, Yopougon',
-    phone: '+225 27 20 40 50 60',
-    city: 'Abidjan',
-    hours: 'Lun-Sam: 8h-17h',
-    distance: '8.2 km',
-  },
-];
+// Fonction de formatage des prix
+const formatPrice = (price: number) => {
+  return new Intl.NumberFormat('fr-FR').format(price) + ' FCFA';
+};
 
 export default function DeliveryInfo() {
   const navigate = useNavigate();
@@ -102,7 +58,7 @@ export default function DeliveryInfo() {
 
     // Sauvegarder les infos de livraison
     const relayInfo = deliveryType === 'relay' 
-      ? RELAY_POINTS.find(r => r.id === selectedRelay)
+      ? relayPoints.find(r => r.id === selectedRelay)
       : null;
 
     const deliveryData = {
@@ -110,7 +66,11 @@ export default function DeliveryInfo() {
       phone: customerInfo.phone,
       address: deliveryType === 'delivery' ? deliveryAddress : relayInfo?.address || '',
       deliveryType: deliveryType,
-      relayInfo: deliveryType === 'relay' ? relayInfo : null,
+      relayInfo: deliveryType === 'relay' ? {
+        ...relayInfo,
+        customerFee: relayInfo?.customerFee || 0,
+        driverFee: relayInfo?.driverFee || 0,
+      } : null,
     };
 
     sessionStorage.setItem('delivery_info', JSON.stringify(deliveryData));
@@ -245,7 +205,12 @@ export default function DeliveryInfo() {
                       <span className="option-icon">📦</span>
                       <span className="option-title">Retrait en point de relais</span>
                     </div>
-                    <p className="option-description">Retrait gratuit dans le point de relais de votre choix</p>
+                    <p className="option-description">
+                      {RELAY_CUSTOMER_FEE > 0 
+                        ? `Retrait au point relais (Frais: ${formatPrice(RELAY_CUSTOMER_FEE)})`
+                        : 'Retrait gratuit dans le point de relais de votre choix'
+                      }
+                    </p>
                   </div>
                 </label>
               </div>
@@ -270,8 +235,31 @@ export default function DeliveryInfo() {
               {deliveryType === 'relay' && (
                 <div className="relay-section">
                   <h3>Sélectionnez votre point de relais</h3>
+                  
+                  {/* Info sur les frais */}
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '10px',
+                    padding: '12px 16px',
+                    background: '#eff6ff',
+                    borderRadius: '8px',
+                    marginBottom: '16px',
+                    fontSize: '13px',
+                    color: '#1e40af'
+                  }}>
+                    <Info size={18} style={{ flexShrink: 0, marginTop: 2 }} />
+                    <div>
+                      <strong>Comment ça marche ?</strong>
+                      <p style={{ margin: '4px 0 0' }}>
+                        Vous payez le prix du produit {RELAY_CUSTOMER_FEE > 0 ? `+ ${formatPrice(RELAY_CUSTOMER_FEE)} de frais de service` : '(pas de frais supplémentaires)'}.
+                        Le livreur dépose votre colis au point relais choisi, et vous venez le récupérer.
+                      </p>
+                    </div>
+                  </div>
+                  
                   <div className="relay-list">
-                    {RELAY_POINTS.map((relay) => (
+                    {relayPoints.map((relay) => (
                       <label
                         key={relay.id}
                         className={`relay-option ${selectedRelay === relay.id ? 'active' : ''}`}
@@ -286,9 +274,7 @@ export default function DeliveryInfo() {
                         <div className="relay-content">
                           <div className="relay-header">
                             <div className="relay-name">{relay.name}</div>
-                            {relay.distance && (
-                              <div className="relay-distance">{relay.distance}</div>
-                            )}
+                            <div className="relay-distance">{relay.distance} km</div>
                           </div>
                           <div className="relay-details">
                             <div className="relay-detail">
@@ -303,6 +289,21 @@ export default function DeliveryInfo() {
                               <Package size={16} />
                               <span>{relay.hours}</span>
                             </div>
+                          </div>
+                          {/* Badge zone */}
+                          <div style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            marginTop: '8px',
+                            padding: '4px 10px',
+                            background: '#f0fdf4',
+                            borderRadius: '12px',
+                            fontSize: '12px',
+                            color: '#059669',
+                            fontWeight: 600
+                          }}>
+                            📍 {relay.commune}
                           </div>
                         </div>
                       </label>

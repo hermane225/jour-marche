@@ -1016,3 +1016,190 @@ export const deliveryFees: Record<string, number> = {
   'Bingerville': 2500,
   'Grand-Bassam': 3500,
 };
+
+// ============================================
+// Configuration des frais Point Relais
+// ============================================
+
+// Frais fixes optionnels payés par le client pour le retrait en point relais (FCFA)
+// Le client paie: prix du produit + relayCustomerFee
+export const RELAY_CUSTOMER_FEE = 200; // Petit frais fixe facturé au client (optionnel)
+
+// Tarifs payés par Jour Marché au livreur pour livrer au point relais (FCFA)
+// Ces frais sont payés par Jour Marché, pas par le client
+export interface RelayDriverFee {
+  zone: string;
+  baseFee: number;           // Tarif de base
+  distanceRanges: {
+    maxKm: number;           // Distance max en km
+    fee: number;             // Tarif pour cette tranche
+  }[];
+  volumeBonus: {             // Bonus selon le volume
+    small: number;           // Petit colis (< 2kg)
+    medium: number;          // Moyen colis (2-5kg)
+    large: number;           // Gros colis (> 5kg)
+  };
+}
+
+export const relayDriverFees: RelayDriverFee[] = [
+  {
+    zone: 'Zone A', // Plateau, Cocody, Marcory
+    baseFee: 500,
+    distanceRanges: [
+      { maxKm: 3, fee: 500 },
+      { maxKm: 5, fee: 750 },
+      { maxKm: 10, fee: 1000 },
+    ],
+    volumeBonus: { small: 0, medium: 100, large: 200 },
+  },
+  {
+    zone: 'Zone B', // Treichville, Koumassi, Adjamé
+    baseFee: 750,
+    distanceRanges: [
+      { maxKm: 3, fee: 750 },
+      { maxKm: 5, fee: 1000 },
+      { maxKm: 10, fee: 1250 },
+    ],
+    volumeBonus: { small: 0, medium: 100, large: 200 },
+  },
+  {
+    zone: 'Zone C', // Yopougon, Abobo, Port-Bouët
+    baseFee: 1000,
+    distanceRanges: [
+      { maxKm: 5, fee: 1000 },
+      { maxKm: 10, fee: 1250 },
+      { maxKm: 15, fee: 1500 },
+    ],
+    volumeBonus: { small: 0, medium: 150, large: 300 },
+  },
+];
+
+// Mapping des communes vers les zones
+export const communeToZone: Record<string, string> = {
+  'Plateau': 'Zone A',
+  'Cocody': 'Zone A',
+  'Marcory': 'Zone A',
+  'Treichville': 'Zone B',
+  'Koumassi': 'Zone B',
+  'Adjamé': 'Zone B',
+  'Yopougon': 'Zone C',
+  'Abobo': 'Zone C',
+  'Port-Bouët': 'Zone C',
+  'Attécoubé': 'Zone B',
+  'Bingerville': 'Zone C',
+  'Grand-Bassam': 'Zone C',
+};
+
+// Fonction utilitaire pour calculer les frais livreur pour un point relais
+export function calculateRelayDriverFee(
+  commune: string,
+  distanceKm: number,
+  packageSize: 'small' | 'medium' | 'large' = 'small'
+): number {
+  const zone = communeToZone[commune] || 'Zone C';
+  const zoneConfig = relayDriverFees.find(z => z.zone === zone) || relayDriverFees[2];
+  
+  // Trouver le tarif selon la distance
+  let distanceFee = zoneConfig.baseFee;
+  for (const range of zoneConfig.distanceRanges) {
+    if (distanceKm <= range.maxKm) {
+      distanceFee = range.fee;
+      break;
+    }
+    distanceFee = range.fee; // Prendre le dernier si au-delà de toutes les tranches
+  }
+  
+  // Ajouter le bonus volume
+  const volumeBonus = zoneConfig.volumeBonus[packageSize];
+  
+  return distanceFee + volumeBonus;
+}
+
+// Points de relais avec informations de tarification
+export interface RelayPoint {
+  id: string;
+  name: string;
+  address: string;
+  phone: string;
+  city: string;
+  commune: string;
+  hours: string;
+  distance: number;        // Distance en km
+  customerFee: number;     // Frais payés par le client (optionnel, peut être 0)
+  driverFee: number;       // Frais payés par Jour Marché au livreur
+}
+
+export const relayPoints: RelayPoint[] = [
+  {
+    id: 'relay_1',
+    name: 'Point de Relais Marcory',
+    address: '123 Avenue Giscard d\'Estaing, Marcory',
+    phone: '+225 27 20 30 40 50',
+    city: 'Abidjan',
+    commune: 'Marcory',
+    hours: 'Lun-Sam: 8h-18h, Dim: 9h-17h',
+    distance: 2.3,
+    customerFee: RELAY_CUSTOMER_FEE,
+    driverFee: calculateRelayDriverFee('Marcory', 2.3, 'small'),
+  },
+  {
+    id: 'relay_2',
+    name: 'Point de Relais Plateau',
+    address: '456 Rue du Commerce, Plateau',
+    phone: '+225 27 20 25 35 45',
+    city: 'Abidjan',
+    commune: 'Plateau',
+    hours: 'Lun-Sam: 9h-19h',
+    distance: 4.5,
+    customerFee: RELAY_CUSTOMER_FEE,
+    driverFee: calculateRelayDriverFee('Plateau', 4.5, 'small'),
+  },
+  {
+    id: 'relay_3',
+    name: 'Point de Relais Cocody',
+    address: '789 Boulevard de la Paix, Cocody',
+    phone: '+225 27 20 35 45 55',
+    city: 'Abidjan',
+    commune: 'Cocody',
+    hours: 'Lun-Dim: 8h-20h',
+    distance: 5.8,
+    customerFee: RELAY_CUSTOMER_FEE,
+    driverFee: calculateRelayDriverFee('Cocody', 5.8, 'small'),
+  },
+  {
+    id: 'relay_4',
+    name: 'Point de Relais Yopougon',
+    address: '321 Rue Principale, Yopougon',
+    phone: '+225 27 20 40 50 60',
+    city: 'Abidjan',
+    commune: 'Yopougon',
+    hours: 'Lun-Sam: 8h-17h',
+    distance: 8.2,
+    customerFee: RELAY_CUSTOMER_FEE,
+    driverFee: calculateRelayDriverFee('Yopougon', 8.2, 'small'),
+  },
+  {
+    id: 'relay_5',
+    name: 'Point de Relais Abobo',
+    address: '567 Avenue Principale, Abobo',
+    phone: '+225 27 20 45 55 65',
+    city: 'Abidjan',
+    commune: 'Abobo',
+    hours: 'Lun-Sam: 7h-18h',
+    distance: 10.5,
+    customerFee: RELAY_CUSTOMER_FEE,
+    driverFee: calculateRelayDriverFee('Abobo', 10.5, 'small'),
+  },
+  {
+    id: 'relay_6',
+    name: 'Point de Relais Koumassi',
+    address: '890 Boulevard Principal, Koumassi',
+    phone: '+225 27 20 50 60 70',
+    city: 'Abidjan',
+    commune: 'Koumassi',
+    hours: 'Lun-Sam: 8h-19h',
+    distance: 6.1,
+    customerFee: RELAY_CUSTOMER_FEE,
+    driverFee: calculateRelayDriverFee('Koumassi', 6.1, 'small'),
+  },
+];

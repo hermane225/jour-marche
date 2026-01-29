@@ -11,7 +11,9 @@ export default function PaymentMethod() {
 
   // Scroller vers le haut au montage
   useEffect(() => {
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
   }, []);
 
   const handleSelectPayment = (method: 'mobile_money' | 'cash') => {

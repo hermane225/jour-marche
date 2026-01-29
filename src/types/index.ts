@@ -169,3 +169,25 @@ export interface Delivery {
   distance: number; // en km
   createdAt: Date;
 }
+
+// Types pour les livraisons Point Relais
+export interface RelayDeliveryInfo {
+  relayId: string;
+  relayName: string;
+  relayAddress: string;
+  relayPhone: string;
+  commune: string;
+  customerFee: number;     // Frais payés par le client (ex: 200 FCFA)
+  driverFee: number;       // Frais payés par Jour Marché au livreur (ex: 500-1500 FCFA)
+  distance: number;        // Distance en km
+  packageSize?: 'small' | 'medium' | 'large';
+}
+
+// Récapitulatif des coûts pour une commande en point relais
+export interface RelayOrderCosts {
+  productTotal: number;        // Prix du produit (ex: 10,000 FCFA)
+  customerRelayFee: number;    // Frais client point relais (ex: 200 FCFA)
+  totalCustomerPays: number;   // Total payé par le client (ex: 10,200 FCFA)
+  driverFee: number;           // Tarif payé par Jour Marché au livreur (ex: 500-1,500 FCFA)
+  jourMarcheMargin: number;    // Marge Jour Marché (customerRelayFee - driverFee peut être négatif)
+}
