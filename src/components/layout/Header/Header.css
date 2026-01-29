@@ -17,6 +17,30 @@
   }
 }
 
+/* Cart drawer scroll container */
+.cart-items-scroll-container {
+  scrollbar-width: thin;
+  scrollbar-color: #10b981 #f3f4f6;
+}
+
+.cart-items-scroll-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.cart-items-scroll-container::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-radius: 4px;
+}
+
+.cart-items-scroll-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #10b981, #059669);
+  border-radius: 4px;
+}
+
+.cart-items-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: #059669;
+}
+
 /* Masquer le bouton S'inscrire sur mobile, afficher sur desktop */
 @media (max-width: 1024px) {
   .desktop-signup-btn {

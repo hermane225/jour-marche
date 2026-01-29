@@ -109,55 +109,75 @@ export function Header() {
             top: 0, 
             right: 0, 
             height: '100vh', 
+            maxHeight: '100vh',
             width: 'min(420px, 100vw)', 
-            background: 'white', 
-            boxShadow: '-10px 0 40px rgba(0, 0, 0, 0.15)', 
+            background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)', 
+            boxShadow: '-20px 0 60px rgba(0, 0, 0, 0.15)', 
             zIndex: 1100, 
             display: 'flex', 
             flexDirection: 'column',
-            animation: 'slideInRight 0.3s ease'
+            animation: 'slideInRight 0.3s ease',
+            borderLeft: '1px solid rgba(0, 0, 0, 0.05)',
+            overflow: 'hidden'
           }}>
             {/* Header */}
             <div style={{ 
               display: 'flex', 
               alignItems: 'center', 
               justifyContent: 'space-between', 
-              padding: '1.5rem', 
-              borderBottom: '2px solid #f3f4f6',
-              background: 'linear-gradient(135deg, #f9fafb, #f3f4f6)'
+              padding: '1.25rem 1.5rem', 
+              borderBottom: '1px solid #e5e7eb',
+              background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)'
             }}>
-              <div>
-                <h3 style={{ 
-                  margin: 0, 
-                  fontWeight: 700,
-                  fontSize: '1.3rem',
-                  color: '#1f2937'
-                }}>Mon Panier</h3>
-                <p style={{ 
-                  margin: '0.3rem 0 0 0', 
-                  fontSize: '0.85rem',
-                  color: '#6b7280'
-                }}>{cart.items.length} article{cart.items.length !== 1 ? 's' : ''}</p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <div style={{
+                  background: 'rgba(255, 255, 255, 0.2)',
+                  borderRadius: '12px',
+                  padding: '10px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  <ShoppingCart size={22} style={{ color: 'white' }} />
+                </div>
+                <div>
+                  <h3 style={{ 
+                    margin: 0, 
+                    fontWeight: 700,
+                    fontSize: '1.2rem',
+                    color: 'white',
+                    letterSpacing: '-0.02em'
+                  }}>Mon Panier</h3>
+                  <p style={{ 
+                    margin: '0.2rem 0 0 0', 
+                    fontSize: '0.8rem',
+                    color: 'rgba(255, 255, 255, 0.85)',
+                    fontWeight: 500
+                  }}>{cart.items.length} article{cart.items.length !== 1 ? 's' : ''}</p>
+                </div>
               </div>
               <button 
                 type="button" 
                 onClick={() => setShowCartDrawer(false)} 
                 style={{ 
                   border: 'none', 
-                  background: '#e5e7eb', 
+                  background: 'rgba(255, 255, 255, 0.2)', 
                   padding: '10px', 
-                  borderRadius: '8px', 
+                  borderRadius: '10px', 
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   transition: 'all 0.3s ease',
-                  color: '#374151'
+                  color: 'white',
+                  backdropFilter: 'blur(10px)'
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = '#d1d5db';
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.3)';
+                  e.currentTarget.style.transform = 'rotate(90deg)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = '#e5e7eb';
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+                  e.currentTarget.style.transform = 'rotate(0deg)';
                 }}
               >
                 <X size={20} />
@@ -165,28 +185,60 @@ export function Header() {
             </div>
 
             {/* Items Container */}
-            <div style={{ 
-              flex: 1, 
-              overflowY: 'auto', 
-              padding: '1.5rem',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.75rem'
-            }}>
+            <div 
+              className="cart-items-scroll-container"
+              style={{ 
+                flex: '1 1 auto', 
+                overflowY: 'scroll', 
+                overflowX: 'hidden',
+                padding: '1rem 1.5rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.75rem',
+                minHeight: 0,
+                maxHeight: 'calc(100vh - 280px)',
+                WebkitOverflowScrolling: 'touch'
+              }}>
               {cart.items.length === 0 ? (
                 <div style={{ 
                   textAlign: 'center', 
                   color: '#6b7280',
-                  padding: '3rem 1rem',
+                  padding: '4rem 2rem',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
                   height: '100%'
                 }}>
-                  <ShoppingCart size={48} style={{ color: '#d1d5db', marginBottom: '1rem' }} />
-                  <p style={{ margin: 0, fontSize: '1rem', fontWeight: 500 }}>Votre panier est vide</p>
-                  <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.85rem' }}>Ajoutez des articles pour commencer</p>
+                  <div style={{
+                    background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
+                    borderRadius: '50%',
+                    padding: '2rem',
+                    marginBottom: '1.5rem',
+                    boxShadow: '0 8px 25px rgba(16, 185, 129, 0.15)'
+                  }}>
+                    <ShoppingCart size={48} style={{ color: '#10b981' }} />
+                  </div>
+                  <p style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600, color: '#374151' }}>Votre panier est vide</p>
+                  <p style={{ margin: '0.75rem 0 0 0', fontSize: '0.9rem', color: '#9ca3af', maxWidth: '200px' }}>Explorez nos produits et ajoutez vos favoris !</p>
+                  <Link 
+                    to="/" 
+                    onClick={() => setShowCartDrawer(false)}
+                    style={{
+                      marginTop: '1.5rem',
+                      padding: '0.75rem 1.5rem',
+                      background: 'linear-gradient(135deg, #10b981, #059669)',
+                      color: 'white',
+                      borderRadius: '10px',
+                      textDecoration: 'none',
+                      fontWeight: 600,
+                      fontSize: '0.9rem',
+                      boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)',
+                      transition: 'all 0.3s ease'
+                    }}
+                  >
+                    🛍️ Découvrir les produits
+                  </Link>
                 </div>
               ) : (
                 cart.items.map((it, idx) => (
@@ -196,34 +248,57 @@ export function Header() {
                       display: 'flex', 
                       gap: '1rem', 
                       padding: '1rem',
-                      background: '#f9fafb',
-                      borderRadius: '10px',
+                      background: 'white',
+                      borderRadius: '16px',
                       border: '1px solid #e5e7eb',
                       alignItems: 'flex-start',
-                      transition: 'all 0.3s ease'
+                      transition: 'all 0.3s ease',
+                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)'
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background = '#f0fdf4';
-                      e.currentTarget.style.borderColor = '#d1d5db';
+                      e.currentTarget.style.boxShadow = '0 8px 25px rgba(16, 185, 129, 0.12)';
+                      e.currentTarget.style.borderColor = '#10b981';
+                      e.currentTarget.style.transform = 'translateY(-2px)';
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.background = '#f9fafb';
+                      e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.04)';
                       e.currentTarget.style.borderColor = '#e5e7eb';
+                      e.currentTarget.style.transform = 'translateY(0)';
                     }}
                   >
                     {/* Image */}
-                    <img 
-                      src={it.product.images?.[0]} 
-                      alt={it.product.title} 
-                      style={{ 
-                        width: 80, 
-                        height: 80, 
-                        objectFit: 'cover', 
-                        borderRadius: 8,
-                        flexShrink: 0,
-                        border: '1px solid #e5e7eb'
-                      }} 
-                    />
+                    <div style={{ position: 'relative' }}>
+                      <img 
+                        src={it.product.images?.[0]} 
+                        alt={it.product.title} 
+                        style={{ 
+                          width: 85, 
+                          height: 85, 
+                          objectFit: 'cover', 
+                          borderRadius: 12,
+                          flexShrink: 0,
+                          border: '2px solid #f3f4f6'
+                        }} 
+                      />
+                      <div style={{
+                        position: 'absolute',
+                        top: '-6px',
+                        right: '-6px',
+                        background: 'linear-gradient(135deg, #10b981, #059669)',
+                        color: 'white',
+                        borderRadius: '50%',
+                        width: '24px',
+                        height: '24px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '0.75rem',
+                        fontWeight: 700,
+                        boxShadow: '0 2px 8px rgba(16, 185, 129, 0.4)'
+                      }}>
+                        {it.quantity}
+                      </div>
+                    </div>
 
                     {/* Info */}
                     <div style={{ flex: 1 }}>
@@ -348,34 +423,39 @@ export function Header() {
             {cart.items.length > 0 && (
               <div style={{ 
                 padding: '1.5rem', 
-                borderTop: '2px solid #f3f4f6',
-                background: 'linear-gradient(135deg, #f9fafb, #f3f4f6)'
+                borderTop: '1px solid #e5e7eb',
+                background: 'white',
+                boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.05)'
               }}>
                 {/* Total */}
                 <div style={{ 
                   display: 'flex', 
                   justifyContent: 'space-between', 
                   alignItems: 'center',
-                  marginBottom: '1.5rem',
-                  padding: '1rem',
-                  background: 'white',
-                  borderRadius: '10px',
-                  border: '1px solid #e5e7eb'
+                  marginBottom: '1.25rem',
+                  padding: '1.25rem',
+                  background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
+                  borderRadius: '14px',
+                  border: '1px solid #bbf7d0'
                 }}>
-                  <div style={{ color: '#6b7280', fontWeight: 500 }}>Total</div>
+                  <div>
+                    <div style={{ color: '#6b7280', fontWeight: 500, fontSize: '0.85rem' }}>Total à payer</div>
+                    <div style={{ color: '#374151', fontWeight: 400, fontSize: '0.75rem', marginTop: '2px' }}>Livraison non incluse</div>
+                  </div>
                   <div style={{ 
                     fontWeight: 800,
-                    fontSize: '1.3rem',
-                    color: '#059669'
+                    fontSize: '1.5rem',
+                    color: '#059669',
+                    textShadow: '0 1px 2px rgba(5, 150, 105, 0.1)'
                   }}>
-                    {new Intl.NumberFormat('fr-FR').format(cart.total || 0)} FCFA
+                    {new Intl.NumberFormat('fr-FR').format(cart.total || 0)} <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>FCFA</span>
                   </div>
                 </div>
 
                 {/* Buttons */}
                 {!showPaymentOptions ? (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                    <button 
+                    {/* <button 
                       type="button" 
                       onClick={() => setShowPaymentOptions(true)} 
                       style={{ 
@@ -401,7 +481,7 @@ export function Header() {
                       }}
                     >
                       Passer la commande
-                    </button>
+                    </button> */}
                     <Link 
                       to="/cart" 
                       onClick={() => setShowCartDrawer(false)} 
@@ -409,23 +489,28 @@ export function Header() {
                         textAlign: 'center', 
                         padding: '1rem', 
                         borderRadius: 10, 
-                        background: 'white', 
-                        border: '1.5px solid #059669', 
-                        color: '#059669', 
+                        background: 'linear-gradient(135deg, #10b981, #059669)', 
+                        border: 'none', 
+                        color: 'white', 
                         textDecoration: 'none', 
                         fontWeight: 700,
                         fontSize: '1rem',
                         cursor: 'pointer',
+                        boxShadow: '0 4px 12px rgba(5, 150, 105, 0.3)',
                         transition: 'all 0.3s ease'
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.background = '#f0fdf4';
+                        e.currentTarget.style.background = 'linear-gradient(135deg, #059669, #047857)';
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        e.currentTarget.style.boxShadow = '0 6px 20px rgba(5, 150, 105, 0.4)';
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.background = 'white';
+                        e.currentTarget.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(5, 150, 105, 0.3)';
                       }}
                     >
-                      Modifier le panier
+                       Passer la commande
                     </Link>
                   </div>
                 ) : (

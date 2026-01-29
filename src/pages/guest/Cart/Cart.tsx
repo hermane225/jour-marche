@@ -149,14 +149,14 @@ export function Cart() {
               </div>
             </div>
 
-            <Button 
-              variant="primary" 
-              fullWidth 
+            <Button
+              variant="primary"
+              fullWidth
               size="lg"
               onClick={handleSubmit}
               isLoading={isSubmitting}
             >
-              Passer commande
+              Passer ma commande
             </Button>
 
             <p className="cart-summary-note">

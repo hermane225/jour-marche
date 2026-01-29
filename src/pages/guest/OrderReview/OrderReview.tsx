@@ -1,6 +1,6 @@
 import { useState, type FormEvent, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, MapPin, Phone, User } from 'lucide-react';
+import { ChevronLeft, MapPin, Phone, User, Package, CheckCircle, MessageSquare } from 'lucide-react';
 import { useCart } from '../../../context/CartContext';
 import { Button, Input, Card } from '../../../components/ui';
 import './OrderReview.css';
@@ -9,15 +9,31 @@ interface DeliveryInfo {
   name: string;
   phone: string;
   address: string;
-  deliveryType: 'pickup' | 'delivery';
-  relayInfo?: any;
+  deliveryType: 'pickup' | 'delivery' | 'relay';
+  relayInfo?: {
+    id: string;
+    name: string;
+    address: string;
+    phone: string;
+    hours: string;
+  };
 }
+
+// Générer un numéro de colis unique
+const generateParcelNumber = () => {
+  const prefix = 'JDM';
+  const timestamp = Date.now().toString(36).toUpperCase();
+  const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+  return `${prefix}-${timestamp}-${random}`;
+};
 
 export default function OrderReview() {
   const navigate = useNavigate();
   const { cart, clearCart } = useCart();
   const [isEditing, setIsEditing] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [orderConfirmed, setOrderConfirmed] = useState(false);
+  const [parcelNumber, setParcelNumber] = useState('');
 
   // Scroller vers le haut au montage
   useEffect(() => {
@@ -42,6 +58,7 @@ export default function OrderReview() {
     return new Intl.NumberFormat('fr-FR').format(price) + ' FCFA';
   };
 
+  // Frais de livraison : 0 pour relay et pickup, 2000 pour delivery
   const deliveryFee = deliveryInfo.deliveryType === 'delivery' ? 2000 : 0;
   const subtotal = cart.items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
   const total = subtotal + deliveryFee;
@@ -61,7 +78,37 @@ export default function OrderReview() {
   const handleProceedToPayment = () => {
     setIsProcessing(true);
 
-    // Vider le panier
+    // Si c'est un point relais, confirmer directement avec paiement au retrait
+    if (deliveryInfo.deliveryType === 'relay') {
+      const newParcelNumber = generateParcelNumber();
+      setParcelNumber(newParcelNumber);
+      
+      // Sauvegarder la commande
+      const orderData = {
+        parcelNumber: newParcelNumber,
+        deliveryInfo,
+        items: cart.items,
+        subtotal,
+        deliveryFee,
+        total,
+        paymentMethod: 'cash_on_pickup',
+        status: 'pending',
+        createdAt: new Date().toISOString(),
+      };
+      sessionStorage.setItem('last_order', JSON.stringify(orderData));
+      
+      // Vider le panier
+      clearCart();
+      
+      // Afficher la confirmation
+      setTimeout(() => {
+        setIsProcessing(false);
+        setOrderConfirmed(true);
+      }, 1500);
+      return;
+    }
+
+    // Vider le panier pour les autres modes
     clearCart();
 
     // Sauvegarder les infos de livraison et le montant
@@ -78,6 +125,97 @@ export default function OrderReview() {
       navigate('/payment/method');
     }, 300);
   };
+
+  // Écran de confirmation pour point relais
+  if (orderConfirmed && deliveryInfo.deliveryType === 'relay') {
+    return (
+      <div className="order-review-page">
+        <div className="order-confirmation-success">
+          <div className="success-animation">
+            <CheckCircle size={80} color="#10b981" />
+          </div>
+          
+          <h1 style={{ color: '#059669', marginBottom: '0.5rem' }}>Commande confirmée !</h1>
+          <p style={{ color: '#6b7280', fontSize: '1.1rem', marginBottom: '2rem' }}>
+            Votre commande a été enregistrée avec succès
+          </p>
+
+          <div style={{ marginBottom: '1.5rem', padding: '1.5rem', background: 'linear-gradient(135deg, #f0fdf4, #dcfce7)', border: '2px solid #10b981', borderRadius: '12px' }}>
+            <div style={{ textAlign: 'center' }}>
+              <Package size={32} color="#059669" style={{ marginBottom: '0.5rem' }} />
+              <p style={{ color: '#6b7280', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Numéro de colis</p>
+              <p style={{ fontSize: '1.8rem', fontWeight: 800, color: '#059669', letterSpacing: '2px' }}>
+                {parcelNumber}
+              </p>
+            </div>
+          </div>
+
+          <div style={{ marginBottom: '1.5rem', padding: '1.5rem', background: '#fffbeb', border: '1px solid #fcd34d', borderRadius: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
+              <MessageSquare size={28} color="#f59e0b" style={{ flexShrink: 0 }} />
+              <div>
+                <p style={{ fontWeight: 600, color: '#92400e', marginBottom: '0.5rem' }}>
+                  📱 SMS envoyé au {deliveryInfo.phone}
+                </p>
+                <p style={{ color: '#a16207', fontSize: '0.9rem' }}>
+                  Vous recevrez un SMS avec le numéro de colis et les instructions de retrait.
+                  Conservez ce numéro pour récupérer votre commande.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ marginBottom: '1.5rem', padding: '1.5rem', background: 'white', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+            <h3 style={{ marginBottom: '1rem', color: '#374151' }}>📍 Point de retrait</h3>
+            <div style={{ background: '#f9fafb', padding: '1rem', borderRadius: '12px' }}>
+              <p style={{ fontWeight: 600, color: '#1f2937', marginBottom: '0.5rem' }}>
+                {deliveryInfo.relayInfo?.name}
+              </p>
+              <p style={{ color: '#6b7280', fontSize: '0.9rem', marginBottom: '0.25rem' }}>
+                {deliveryInfo.relayInfo?.address}
+              </p>
+              <p style={{ color: '#6b7280', fontSize: '0.9rem', marginBottom: '0.25rem' }}>
+                📞 {deliveryInfo.relayInfo?.phone}
+              </p>
+              <p style={{ color: '#6b7280', fontSize: '0.9rem' }}>
+                🕐 {deliveryInfo.relayInfo?.hours}
+              </p>
+            </div>
+          </div>
+
+          <div style={{ marginBottom: '2rem', padding: '1.5rem', background: '#f0f9ff', border: '1px solid #0ea5e9', borderRadius: '12px' }}>
+            <h3 style={{ marginBottom: '0.75rem', color: '#0369a1' }}>💰 Paiement au retrait</h3>
+            <p style={{ color: '#0c4a6e', fontSize: '0.95rem', marginBottom: '0.5rem' }}>
+              Montant à payer lors du retrait :
+            </p>
+            <p style={{ fontSize: '1.5rem', fontWeight: 700, color: '#059669' }}>
+              {formatPrice(total)}
+            </p>
+            <p style={{ color: '#64748b', fontSize: '0.85rem', marginTop: '0.5rem' }}>
+              Paiement en espèces ou Mobile Money accepté au point de retrait
+            </p>
+          </div>
+
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <Button
+              variant="secondary"
+              onClick={() => navigate('/orders')}
+              style={{ flex: 1 }}
+            >
+              Mes commandes
+            </Button>
+            <Button
+              variant="primary"
+              onClick={() => navigate('/')}
+              style={{ flex: 1 }}
+            >
+              Continuer mes achats
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (cart.items.length === 0) {
     return (
@@ -249,12 +387,42 @@ export default function OrderReview() {
                     <span className="info-value">{deliveryInfo.address || '-'}</span>
                   </div>
                 )}
+                {deliveryInfo.deliveryType === 'relay' && deliveryInfo.relayInfo && (
+                  <div className="info-row" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '0.5rem' }}>
+                    <span className="info-label">
+                      <Package size={18} />
+                      Point de retrait
+                    </span>
+                    <div style={{ background: '#f0fdf4', padding: '0.75rem', borderRadius: '8px', width: '100%' }}>
+                      <p style={{ fontWeight: 600, color: '#059669', marginBottom: '0.25rem' }}>
+                        {deliveryInfo.relayInfo.name}
+                      </p>
+                      <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
+                        {deliveryInfo.relayInfo.address}
+                      </p>
+                      <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>
+                        📞 {deliveryInfo.relayInfo.phone}
+                      </p>
+                    </div>
+                  </div>
+                )}
                 <div className="info-row">
                   <span className="info-label">Type de livraison</span>
                   <span className="info-value">
-                    {deliveryInfo.deliveryType === 'delivery' ? 'Livraison à domicile' : 'Retrait en boutique'}
+                    {deliveryInfo.deliveryType === 'delivery' 
+                      ? 'Livraison à domicile' 
+                      : deliveryInfo.deliveryType === 'relay' 
+                        ? 'Retrait en point relais' 
+                        : 'Retrait en boutique'}
                   </span>
                 </div>
+                {deliveryInfo.deliveryType === 'relay' && (
+                  <div className="info-row" style={{ background: '#fffbeb', padding: '0.75rem', borderRadius: '8px', marginTop: '0.5rem' }}>
+                    <span style={{ color: '#92400e', fontSize: '0.9rem' }}>
+                      💰 Paiement au retrait du colis
+                    </span>
+                  </div>
+                )}
               </div>
             )}
           </Card>
@@ -293,11 +461,21 @@ export default function OrderReview() {
             style={{ width: '100%', padding: '16px', fontSize: '16px', fontWeight: 'bold' }}
             disabled={!deliveryInfo.name || !deliveryInfo.phone || (deliveryInfo.deliveryType === 'delivery' && !deliveryInfo.address) || isProcessing}
           >
-            {isProcessing ? 'Traitement...' : 'Valider et continuer'}
+            {isProcessing 
+              ? 'Traitement...' 
+              : deliveryInfo.deliveryType === 'relay' 
+                ? 'Confirmer (Paiement au retrait)' 
+                : 'Valider et continuer'}
           </Button>
 
+          {deliveryInfo.deliveryType === 'relay' && (
+            <p className="payment-info" style={{ background: '#f0fdf4', padding: '1rem', borderRadius: '8px', color: '#059669', textAlign: 'center' }}>
+              📦 Vous paierez <strong>{formatPrice(total)}</strong> lors du retrait de votre colis au point relais.
+            </p>
+          )}
+
           <p className="payment-info">
-            En cliquant sur "Procéder au paiement", vous acceptez nos conditions d'utilisation.
+            En cliquant sur "Valider", vous acceptez nos conditions d'utilisation.
           </p>
         </div>
       </div>

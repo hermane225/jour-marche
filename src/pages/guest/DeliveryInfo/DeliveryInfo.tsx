@@ -172,7 +172,7 @@ export default function DeliveryInfo() {
                 <Input
                   id="name"
                   type="text"
-                  placeholder="Ex: Jean Dupont"
+                  placeholder="Ex: yao patrick"
                   value={customerInfo.name}
                   onChange={(e) => setCustomerInfo({ ...customerInfo, name: e.target.value })}
                   required
