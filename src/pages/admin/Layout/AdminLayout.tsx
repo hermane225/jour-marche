@@ -10,7 +10,8 @@ export function AdminLayout() {
   const menuItems = [
     { path: '/admin/dashboard', label: '📊 Tableau de bord', icon: '📊' },
     { path: '/admin/orders', label: '📦 Commandes', icon: '📦' },
-    { path: '/admin/sellers', label: '🏪 Vendeurs', icon: '🏪' },
+    { path: '/admin/shops', label: '🏪 Boutiques', icon: '🏪' },
+    { path: '/admin/sellers', label: '👨‍💼 Vendeurs', icon: '👨‍💼' },
     { path: '/admin/users', label: '👥 Utilisateurs', icon: '👥' },
     { path: '/admin/reports', label: '📈 Rapports', icon: '📈' },
   ];

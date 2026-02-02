@@ -1,23 +1,33 @@
 import { Link, useParams } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Card } from '../../../components/ui';
 import { categories, products } from '../../../data/mockData';
 import './Categories.css';
 
 export function Categories() {
-  const { slug } = useParams<{ slug: string }>();
+  const { slug, subSlug } = useParams<{ slug: string; subSlug?: string }>();
   const selectedCategory = slug || null;
+  const selectedSubCategory = subSlug || null;
+  const [showSubcategories, setShowSubcategories] = useState(true);
 
   // Scroll vers le haut quand la catégorie change
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [slug]);
-
-  const filteredProducts = selectedCategory 
-    ? products.filter(p => p.category === selectedCategory)
-    : products;
+  }, [slug, subSlug]);
 
   const currentCategory = categories.find(c => c.slug === selectedCategory);
+  const currentSubCategory = currentCategory?.subcategories?.find(s => s.slug === selectedSubCategory);
+
+  // Filtrer les produits selon la catégorie et sous-catégorie
+  const filteredProducts = selectedCategory 
+    ? products.filter(p => {
+        if (selectedSubCategory) {
+          // Si une sous-catégorie est sélectionnée, filtrer par sous-catégorie
+          return p.category === selectedCategory || p.category === selectedSubCategory;
+        }
+        return p.category === selectedCategory;
+      })
+    : products;
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('fr-FR').format(price) + ' FCFA';
@@ -61,6 +71,11 @@ export function Categories() {
               <h1 style={{ fontSize: '3rem', fontWeight: 900, marginBottom: 16, letterSpacing: '-1px', color: '#fff' }}>
                 {currentCategory.icon} {currentCategory.name}
               </h1>
+              {currentSubCategory && (
+                <p style={{ fontSize: '1.4rem', opacity: 1, marginBottom: 12, color: '#fff', fontWeight: 700 }}>
+                  {currentSubCategory.icon} {currentSubCategory.name}
+                </p>
+              )}
               <p style={{ fontSize: '1.2rem', opacity: 0.95, maxWidth: 700, margin: '0 auto 24px', color: '#fff', fontWeight: 500, lineHeight: 1.6 }}>
                 {currentCategory.description}
               </p>
@@ -76,23 +91,79 @@ export function Categories() {
                 }}>
                   {filteredProducts.length} produits disponibles
                 </span>
-                <Link to="/categories" style={{
-                  color: 'white',
-                  textDecoration: 'none',
-                  fontSize: '14px',
-                  fontWeight: 600,
-                  opacity: 0.8,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px'
-                }}>
-                  ← Retour aux catégories
-                </Link>
+                {currentSubCategory ? (
+                  <Link to={`/categories/${selectedCategory}`} style={{
+                    color: 'white',
+                    textDecoration: 'none',
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    opacity: 0.8,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                  }}>
+                    ← Retour à {currentCategory.name}
+                  </Link>
+                ) : (
+                  <Link to="/categories" style={{
+                    color: 'white',
+                    textDecoration: 'none',
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    opacity: 0.8,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                  }}>
+                    ← Retour aux catégories
+                  </Link>
+                )}
               </div>
             </div>
           </div>
         ) : null}
       </section>
+
+      {/* Sous-catégories */}
+      {selectedCategory && currentCategory?.subcategories && currentCategory.subcategories.length > 0 && !selectedSubCategory && (
+        <section className="subcategories-section">
+          <div className="subcategories-header">
+            <h2>Explorer {currentCategory.name}</h2>
+            <button 
+              className="toggle-subcategories-btn"
+              onClick={() => setShowSubcategories(!showSubcategories)}
+            >
+              {showSubcategories ? 'Masquer' : 'Afficher'} les sous-catégories
+            </button>
+          </div>
+          {showSubcategories && (
+            <div className="subcategories-grid">
+              {currentCategory.subcategories.map(sub => (
+                <Link 
+                  to={`/categories/${selectedCategory}/${sub.slug}`} 
+                  key={sub.id} 
+                  className="subcategory-card"
+                >
+                  <span className="subcategory-icon">{sub.icon}</span>
+                  <span className="subcategory-name">{sub.name}</span>
+                </Link>
+              ))}
+              <Link 
+                to={`/categories/${selectedCategory}`} 
+                className="subcategory-card subcategory-all"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setShowSubcategories(false);
+                  window.scrollTo({ top: document.querySelector('.categories-products')?.getBoundingClientRect().top! + window.scrollY - 100, behavior: 'smooth' });
+                }}
+              >
+                <span className="subcategory-icon">📦</span>
+                <span className="subcategory-name">Voir tous les produits</span>
+              </Link>
+            </div>
+          )}
+        </section>
+      )}
 
       {/* Categories Grid */}
       {!selectedCategory && (

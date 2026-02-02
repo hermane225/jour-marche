@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, MapPin, Phone, User, Package, CheckCircle, MessageSquare } from 'lucide-react';
 import { useCart } from '../../../context/CartContext';
 import { Button, Input, Card } from '../../../components/ui';
+import { calculateRelayDriverFee } from '../../../data/mockData';
 import './OrderReview.css';
 
 interface DeliveryInfo {
@@ -62,14 +63,26 @@ export default function OrderReview() {
     return new Intl.NumberFormat('fr-FR').format(price) + ' FCFA';
   };
 
-  // Frais de livraison selon le type
+  // Calculer le poids total du panier (en grammes)
+  const getTotalWeight = () => {
+    return cart.items.reduce((sum, item) => {
+      const itemWeight = item.product.weight || 500; // Poids par défaut: 500g si non défini
+      return sum + (itemWeight * item.quantity);
+    }, 0);
+  };
+
+  // Calculer les frais de livraison selon le poids et la distance
   // - Livraison à domicile: 2000 FCFA
-  // - Point relais: petits frais fixes (ex: 200 FCFA) payés par client
+  // - Point relais: frais calculés selon le poids des articles et la distance
   // - Retrait boutique: gratuit
   const getDeliveryFee = () => {
     if (deliveryInfo.deliveryType === 'delivery') return 2000;
-    if (deliveryInfo.deliveryType === 'relay' && deliveryInfo.relayInfo?.customerFee) {
-      return deliveryInfo.relayInfo.customerFee;
+    if (deliveryInfo.deliveryType === 'relay' && deliveryInfo.relayInfo) {
+      const commune = deliveryInfo.relayInfo.commune || 'Yopougon';
+      const distance = deliveryInfo.relayInfo.distance || 5;
+      const totalWeight = getTotalWeight();
+      // Calculer les frais selon le poids et le trajet
+      return calculateRelayDriverFee(commune, distance, totalWeight);
     }
     return 0;
   };

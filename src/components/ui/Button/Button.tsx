@@ -21,10 +21,12 @@ export function Button({
   children,
   className = '',
   disabled,
+  type = 'button',
   ...props
 }: ButtonProps) {
   return (
     <button
+      type={type}
       className={`btn btn-${variant} btn-${size} ${fullWidth ? 'btn-full' : ''} ${className}`}
       disabled={disabled || isLoading}
       {...props}

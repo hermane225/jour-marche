@@ -510,7 +510,7 @@ export function Home() {
                           </span>
                         )}
                       </div>
-                      <div onClick={(e) => e.stopPropagation()}>
+                      <div onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
                         <button type="button"
                           onClick={(e) => handleAddToCart(e, product)}
                           style={{
@@ -724,7 +724,7 @@ export function Home() {
                         transform: hoveredProduct === product.id ? 'translateY(0)' : 'translateY(20px)',
                         transition: 'all 0.3s ease'
                       }}>
-                        <div onClick={(e) => e.stopPropagation()}>
+                        <div onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
                           <button type="button" style={{
                             width: '100%',
                             padding: '14px',
@@ -816,7 +816,7 @@ export function Home() {
                             {formatPrice(product.price)}
                           </span>
                         </div>
-                        <div onClick={(e) => e.stopPropagation()}>
+                        <div onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
                           <button type="button"
                             onClick={(e) => handleAddToCart(e, product)}
                             style={{

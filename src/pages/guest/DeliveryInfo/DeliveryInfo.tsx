@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, MapPin, Phone, User, Package, Info } from 'lucide-react';
 import { useCart } from '../../../context/CartContext';
 import { Button, Input, Card } from '../../../components/ui';
-import { relayPoints, RELAY_CUSTOMER_FEE } from '../../../data/mockData';
+import { relayPoints } from '../../../data/mockData';
 import './DeliveryInfo.css';
 
 // Fonction de formatage des prix
@@ -188,7 +188,7 @@ export default function DeliveryInfo() {
                       <span className="option-icon">🚚</span>
                       <span className="option-title">Livraison à domicile</span>
                     </div>
-                    <p className="option-description">Livraison directement à votre adresse (Frais: 2,000 FCFA)</p>
+                    <p className="option-description">Livraison directement à votre adresse </p>
                   </div>
                 </label>
 
@@ -206,10 +206,7 @@ export default function DeliveryInfo() {
                       <span className="option-title">Retrait en point de relais</span>
                     </div>
                     <p className="option-description">
-                      {RELAY_CUSTOMER_FEE > 0 
-                        ? `Retrait au point relais (Frais: ${formatPrice(RELAY_CUSTOMER_FEE)})`
-                        : 'Retrait gratuit dans le point de relais de votre choix'
-                      }
+                      Retrait gratuit dans le point de relais de votre choix
                     </p>
                   </div>
                 </label>
@@ -235,28 +232,6 @@ export default function DeliveryInfo() {
               {deliveryType === 'relay' && (
                 <div className="relay-section">
                   <h3>Sélectionnez votre point de relais</h3>
-                  
-                  {/* Info sur les frais */}
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    gap: '10px',
-                    padding: '12px 16px',
-                    background: '#eff6ff',
-                    borderRadius: '8px',
-                    marginBottom: '16px',
-                    fontSize: '13px',
-                    color: '#1e40af'
-                  }}>
-                    <Info size={18} style={{ flexShrink: 0, marginTop: 2 }} />
-                    <div>
-                      <strong>Comment ça marche ?</strong>
-                      <p style={{ margin: '4px 0 0' }}>
-                        Vous payez le prix du produit {RELAY_CUSTOMER_FEE > 0 ? `+ ${formatPrice(RELAY_CUSTOMER_FEE)} de frais de service` : '(pas de frais supplémentaires)'}.
-                        Le livreur dépose votre colis au point relais choisi, et vous venez le récupérer.
-                      </p>
-                    </div>
-                  </div>
                   
                   <div className="relay-list">
                     {relayPoints.map((relay) => (

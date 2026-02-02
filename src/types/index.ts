@@ -122,12 +122,20 @@ export interface Order {
   deliveryNotes?: string;
 }
 
+export interface SubCategory {
+  id: string;
+  name: string;
+  slug: string;
+  icon?: string;
+}
+
 export interface Category {
   id: string;
   name: string;
   slug: string;
   icon?: string; // Icône pour la catégorie
   description?: string;
+  subcategories?: SubCategory[]; // Sous-catégories
 }
 
 export interface SellerStats {

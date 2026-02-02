@@ -1,21 +1,820 @@
 import type { Product, Category, Shop } from '../types';
 
-// Catégories - On peut tout vendre sur Jour de Marché ! Formel ou informel, tout le monde est bienvenu !
+// Catégories - JOUR DE MARCHÉ = L'ALIBABA IVOIRIEN ! On vend TOUT ici !
+// Du marché traditionnel aux boutiques high-tech, tout le monde est bienvenu !
 export const categories: Category[] = [
-  { id: '1', name: 'Légumes & Fruits', slug: 'legumes-fruits', icon: '🥦', description: 'Légumes frais, fruits de saison, produits du jardin' },
-  { id: '2', name: 'Attiéké & Manioc', slug: 'attieke-manioc', icon: '🥣', description: 'Attiéké, placali, foutou, gari...' },
-  { id: '3', name: 'Céréales & Vivriers', slug: 'cereales-vivriers', icon: '🌾', description: 'Riz local, maïs, mil, igname, banane plantain' },
-  { id: '4', name: 'Restaurants', slug: 'restaurants', icon: '🍽️', description: 'Plats cuisinés, maquis, garba...' },
-  { id: '5', name: 'Poissons & Viandes', slug: 'poissons-viandes', icon: '🥩', description: 'Poisson frais, viande, poulet, escargots' },
-  { id: '6', name: 'Épices & Condiments', slug: 'epices-condiments', icon: '🌶️', description: 'Piment, soumbala, cube, huile de palme' },
-  { id: '7', name: 'Boissons', slug: 'boissons', icon: '🧃', description: 'Jus naturels, bissap, gingembre' },
-  { id: '8', name: 'Boulangerie', slug: 'boulangerie', icon: '🥐', description: 'Pain, pâtisseries, viennoiseries' },
-  { id: '9', name: 'Mode', slug: 'mode', icon: '👗', description: 'Vêtements, chaussures, pagnes' },
-  { id: '10', name: 'Beauté', slug: 'beaute', icon: '💄', description: 'Cosmétiques, soins, tresses' },
-  { id: '11', name: 'Artisanat', slug: 'artisanat', icon: '🎨', description: 'Produits artisanaux locaux' },
-  { id: '12', name: 'Électronique', slug: 'electronique', icon: '📱', description: 'Téléphones, accessoires' },
-  { id: '13', name: 'Maison', slug: 'maison', icon: '🏠', description: 'Meubles, décoration' },
-  { id: '14', name: 'Services', slug: 'services', icon: '🔧', description: 'Réparations, couture, coiffure' },
+  // === ALIMENTATION & BOISSONS ===
+  { 
+    id: '1', name: 'Légumes & Fruits', slug: 'legumes-fruits', icon: '🥦', 
+    description: 'Légumes frais, fruits de saison, produits du jardin',
+    subcategories: [
+      { id: '1-1', name: 'Légumes frais', slug: 'legumes-frais', icon: '🥬' },
+      { id: '1-2', name: 'Fruits locaux', slug: 'fruits-locaux', icon: '🥭' },
+      { id: '1-3', name: 'Fruits importés', slug: 'fruits-importes', icon: '🍎' },
+      { id: '1-4', name: 'Tubercules', slug: 'tubercules', icon: '🥔' },
+      { id: '1-5', name: 'Herbes & Aromates', slug: 'herbes-aromates', icon: '🌿' },
+    ]
+  },
+  { 
+    id: '2', name: 'Attiéké & Manioc', slug: 'attieke-manioc', icon: '🥣', 
+    description: 'Attiéké, placali, foutou, gari...',
+    subcategories: [
+      { id: '2-1', name: 'Attiéké', slug: 'attieke', icon: '🥣' },
+      { id: '2-2', name: 'Placali', slug: 'placali', icon: '🍚' },
+      { id: '2-3', name: 'Foutou', slug: 'foutou', icon: '🍛' },
+      { id: '2-4', name: 'Gari', slug: 'gari', icon: '🌾' },
+      { id: '2-5', name: 'Farine de manioc', slug: 'farine-manioc', icon: '🥡' },
+    ]
+  },
+  { 
+    id: '3', name: 'Céréales & Vivriers', slug: 'cereales-vivriers', icon: '🌾', 
+    description: 'Riz local, maïs, mil, igname, banane plantain',
+    subcategories: [
+      { id: '3-1', name: 'Riz', slug: 'riz', icon: '🍚' },
+      { id: '3-2', name: 'Maïs', slug: 'mais', icon: '🌽' },
+      { id: '3-3', name: 'Mil & Sorgho', slug: 'mil-sorgho', icon: '🌾' },
+      { id: '3-4', name: 'Igname', slug: 'igname', icon: '🥔' },
+      { id: '3-5', name: 'Banane plantain', slug: 'banane-plantain', icon: '🍌' },
+      { id: '3-6', name: 'Haricots & Légumineuses', slug: 'haricots-legumineuses', icon: '🫘' },
+    ]
+  },
+  { 
+    id: '4', name: 'Restaurants & Maquis', slug: 'restaurants', icon: '🍽️', 
+    description: 'Plats cuisinés, maquis, garba, allocodrome',
+    subcategories: [
+      { id: '4-1', name: 'Garba', slug: 'garba', icon: '🐟' },
+      { id: '4-2', name: 'Allocodrome', slug: 'allocodrome', icon: '🍌' },
+      { id: '4-3', name: 'Maquis', slug: 'maquis', icon: '🍖' },
+      { id: '4-4', name: 'Grillades', slug: 'grillades', icon: '🍢' },
+      { id: '4-5', name: 'Plats traditionnels', slug: 'plats-traditionnels', icon: '🍲' },
+      { id: '4-6', name: 'Fast-food', slug: 'fast-food', icon: '🍔' },
+    ]
+  },
+  { 
+    id: '5', name: 'Poissons & Viandes', slug: 'poissons-viandes', icon: '🥩', 
+    description: 'Poisson frais, viande, poulet, escargots, gibier',
+    subcategories: [
+      { id: '5-1', name: 'Poisson frais', slug: 'poisson-frais', icon: '🐟' },
+      { id: '5-2', name: 'Poisson fumé', slug: 'poisson-fume', icon: '🐠' },
+      { id: '5-3', name: 'Viande de bœuf', slug: 'viande-boeuf', icon: '🥩' },
+      { id: '5-4', name: 'Poulet', slug: 'poulet', icon: '🍗' },
+      { id: '5-5', name: 'Escargots', slug: 'escargots', icon: '🐌' },
+      { id: '5-6', name: 'Gibier', slug: 'gibier', icon: '🦌' },
+      { id: '5-7', name: 'Crevettes & Fruits de mer', slug: 'crevettes-fruits-mer', icon: '🦐' },
+    ]
+  },
+  { 
+    id: '6', name: 'Épices & Condiments', slug: 'epices-condiments', icon: '🌶️', 
+    description: 'Piment, soumbala, cube, huile de palme, dawadawa',
+    subcategories: [
+      { id: '6-1', name: 'Piments', slug: 'piments', icon: '🌶️' },
+      { id: '6-2', name: 'Soumbala', slug: 'soumbala', icon: '🫘' },
+      { id: '6-3', name: 'Huile de palme', slug: 'huile-palme', icon: '🫒' },
+      { id: '6-4', name: 'Cubes & Bouillons', slug: 'cubes-bouillons', icon: '🧂' },
+      { id: '6-5', name: 'Épices en poudre', slug: 'epices-poudre', icon: '🥄' },
+    ]
+  },
+  { 
+    id: '7', name: 'Boissons', slug: 'boissons', icon: '🧃', 
+    description: 'Jus naturels, bissap, gingembre, bandji, vin de palme',
+    subcategories: [
+      { id: '7-1', name: 'Jus naturels', slug: 'jus-naturels', icon: '🍹' },
+      { id: '7-2', name: 'Bissap', slug: 'bissap', icon: '🌺' },
+      { id: '7-3', name: 'Gingembre', slug: 'gingembre', icon: '🫚' },
+      { id: '7-4', name: 'Vin de palme', slug: 'vin-palme', icon: '🌴' },
+      { id: '7-5', name: 'Bandji', slug: 'bandji', icon: '🥥' },
+      { id: '7-6', name: 'Sodas & Eaux', slug: 'sodas-eaux', icon: '🥤' },
+    ]
+  },
+  { 
+    id: '8', name: 'Boulangerie & Pâtisserie', slug: 'boulangerie', icon: '🥐', 
+    description: 'Pain, pâtisseries, gâteaux, viennoiseries',
+    subcategories: [
+      { id: '8-1', name: 'Pain', slug: 'pain', icon: '🥖' },
+      { id: '8-2', name: 'Viennoiseries', slug: 'viennoiseries', icon: '🥐' },
+      { id: '8-3', name: 'Gâteaux', slug: 'gateaux', icon: '🎂' },
+      { id: '8-4', name: 'Beignets', slug: 'beignets', icon: '🍩' },
+    ]
+  },
+  { 
+    id: '9', name: 'Épicerie & Supermarché', slug: 'epicerie', icon: '🛒', 
+    description: 'Produits alimentaires, conserves, produits laitiers',
+    subcategories: [
+      { id: '9-1', name: 'Conserves', slug: 'conserves', icon: '🥫' },
+      { id: '9-2', name: 'Produits laitiers', slug: 'produits-laitiers', icon: '🥛' },
+      { id: '9-3', name: 'Huiles & Vinaigres', slug: 'huiles-vinaigres', icon: '🫒' },
+      { id: '9-4', name: 'Sucre & Café', slug: 'sucre-cafe', icon: '☕' },
+      { id: '9-5', name: 'Pâtes & Semoule', slug: 'pates-semoule', icon: '🍝' },
+    ]
+  },
+
+  // === MODE & BEAUTÉ ===
+  { 
+    id: '10', name: 'Mode Femme', slug: 'mode-femme', icon: '👗', 
+    description: 'Robes, pagnes, ensembles, tenues traditionnelles',
+    subcategories: [
+      { id: '10-1', name: 'Robes', slug: 'robes', icon: '👗' },
+      { id: '10-2', name: 'Ensembles', slug: 'ensembles-femme', icon: '👚' },
+      { id: '10-3', name: 'Jupes', slug: 'jupes', icon: '🩱' },
+      { id: '10-4', name: 'Pantalons femme', slug: 'pantalons-femme', icon: '👖' },
+      { id: '10-5', name: 'Tenues traditionnelles', slug: 'tenues-traditionnelles-femme', icon: '🎎' },
+      { id: '10-6', name: 'Lingerie', slug: 'lingerie', icon: '👙' },
+    ]
+  },
+  { 
+    id: '11', name: 'Mode Homme', slug: 'mode-homme', icon: '👔', 
+    description: 'Chemises, pantalons, boubous, costumes',
+    subcategories: [
+      { id: '11-1', name: 'Chemises', slug: 'chemises', icon: '👔' },
+      { id: '11-2', name: 'Pantalons', slug: 'pantalons-homme', icon: '👖' },
+      { id: '11-3', name: 'Boubous', slug: 'boubous', icon: '🥻' },
+      { id: '11-4', name: 'Costumes', slug: 'costumes', icon: '🤵' },
+      { id: '11-5', name: 'T-shirts & Polos', slug: 'tshirts-polos', icon: '👕' },
+      { id: '11-6', name: 'Sous-vêtements homme', slug: 'sous-vetements-homme', icon: '🩲' },
+    ]
+  },
+  { 
+    id: '12', name: 'Mode Enfant', slug: 'mode-enfant', icon: '👶', 
+    description: 'Vêtements bébé et enfants, uniformes scolaires',
+    subcategories: [
+      { id: '12-1', name: 'Vêtements bébé', slug: 'vetements-bebe', icon: '👶' },
+      { id: '12-2', name: 'Vêtements fille', slug: 'vetements-fille', icon: '👧' },
+      { id: '12-3', name: 'Vêtements garçon', slug: 'vetements-garcon', icon: '👦' },
+      { id: '12-4', name: 'Uniformes scolaires', slug: 'uniformes-scolaires', icon: '🎒' },
+    ]
+  },
+  { 
+    id: '13', name: 'Chaussures', slug: 'chaussures', icon: '👟', 
+    description: 'Chaussures homme, femme, enfant, sandales, baskets',
+    subcategories: [
+      { id: '13-1', name: 'Chaussures femme', slug: 'chaussures-femme', icon: '👠' },
+      { id: '13-2', name: 'Chaussures homme', slug: 'chaussures-homme', icon: '👞' },
+      { id: '13-3', name: 'Chaussures enfant', slug: 'chaussures-enfant', icon: '👟' },
+      { id: '13-4', name: 'Sandales & Tongs', slug: 'sandales-tongs', icon: '🩴' },
+      { id: '13-5', name: 'Baskets', slug: 'baskets', icon: '👟' },
+      { id: '13-6', name: 'Bottes & Bottines', slug: 'bottes-bottines', icon: '🥾' },
+    ]
+  },
+  { 
+    id: '14', name: 'Sacs & Accessoires', slug: 'sacs-accessoires', icon: '👜', 
+    description: 'Sacs à main, ceintures, montres, bijoux, lunettes',
+    subcategories: [
+      { id: '14-1', name: 'Sacs à main', slug: 'sacs-main', icon: '👜' },
+      { id: '14-2', name: 'Sacs à dos', slug: 'sacs-dos', icon: '🎒' },
+      { id: '14-3', name: 'Ceintures', slug: 'ceintures', icon: '🪢' },
+      { id: '14-4', name: 'Montres', slug: 'montres', icon: '⌚' },
+      { id: '14-5', name: 'Bijoux', slug: 'bijoux', icon: '💎' },
+      { id: '14-6', name: 'Lunettes', slug: 'lunettes-mode', icon: '🕶️' },
+      { id: '14-7', name: 'Chapeaux & Casquettes', slug: 'chapeaux-casquettes', icon: '🧢' },
+    ]
+  },
+  { 
+    id: '15', name: 'Pagnes & Tissus', slug: 'pagnes-tissus', icon: '🧵', 
+    description: 'Wax, bazin, kente, bogolan, dentelle, soie',
+    subcategories: [
+      { id: '15-1', name: 'Wax', slug: 'wax', icon: '🎨' },
+      { id: '15-2', name: 'Bazin', slug: 'bazin', icon: '✨' },
+      { id: '15-3', name: 'Kente', slug: 'kente', icon: '🧣' },
+      { id: '15-4', name: 'Bogolan', slug: 'bogolan', icon: '🎭' },
+      { id: '15-5', name: 'Dentelle', slug: 'dentelle', icon: '🪡' },
+      { id: '15-6', name: 'Soie & Satin', slug: 'soie-satin', icon: '🎀' },
+    ]
+  },
+  { 
+    id: '16', name: 'Beauté & Cosmétiques', slug: 'beaute', icon: '💄', 
+    description: 'Maquillage, soins peau, produits capillaires',
+    subcategories: [
+      { id: '16-1', name: 'Maquillage', slug: 'maquillage', icon: '💄' },
+      { id: '16-2', name: 'Soins visage', slug: 'soins-visage', icon: '🧴' },
+      { id: '16-3', name: 'Soins corps', slug: 'soins-corps', icon: '🧼' },
+      { id: '16-4', name: 'Produits capillaires', slug: 'produits-capillaires', icon: '💇‍♀️' },
+      { id: '16-5', name: 'Vernis & Ongles', slug: 'vernis-ongles', icon: '💅' },
+    ]
+  },
+  { 
+    id: '17', name: 'Perruques & Mèches', slug: 'perruques-meches', icon: '💇‍♀️', 
+    description: 'Perruques, tissages, mèches brésiliennes, extensions',
+    subcategories: [
+      { id: '17-1', name: 'Perruques naturelles', slug: 'perruques-naturelles', icon: '👩' },
+      { id: '17-2', name: 'Perruques synthétiques', slug: 'perruques-synthetiques', icon: '💇' },
+      { id: '17-3', name: 'Mèches brésiliennes', slug: 'meches-bresiliennes', icon: '✨' },
+      { id: '17-4', name: 'Extensions', slug: 'extensions', icon: '🎀' },
+      { id: '17-5', name: 'Tissages', slug: 'tissages', icon: '🧵' },
+    ]
+  },
+  { 
+    id: '18', name: 'Parfums', slug: 'parfums', icon: '🌸', 
+    description: 'Parfums homme et femme, huiles essentielles',
+    subcategories: [
+      { id: '18-1', name: 'Parfums femme', slug: 'parfums-femme', icon: '🌸' },
+      { id: '18-2', name: 'Parfums homme', slug: 'parfums-homme', icon: '🌿' },
+      { id: '18-3', name: 'Parfums arabes', slug: 'parfums-arabes', icon: '🕌' },
+      { id: '18-4', name: 'Huiles essentielles', slug: 'huiles-essentielles', icon: '💧' },
+      { id: '18-5', name: 'Encens', slug: 'encens', icon: '🔥' },
+    ]
+  },
+
+  // === ÉLECTRONIQUE & HIGH-TECH ===
+  { 
+    id: '19', name: 'Téléphones & Tablettes', slug: 'telephones-tablettes', icon: '📱', 
+    description: 'Smartphones, tablettes, accessoires téléphone',
+    subcategories: [
+      { id: '19-1', name: 'Smartphones', slug: 'smartphones', icon: '📱' },
+      { id: '19-2', name: 'Téléphones basiques', slug: 'telephones-basiques', icon: '📞' },
+      { id: '19-3', name: 'Tablettes', slug: 'tablettes', icon: '📲' },
+      { id: '19-4', name: 'Coques & Protections', slug: 'coques-protections', icon: '🛡️' },
+      { id: '19-5', name: 'Chargeurs & Câbles', slug: 'chargeurs-cables', icon: '🔌' },
+      { id: '19-6', name: 'Écouteurs & Kits mains libres', slug: 'ecouteurs-kits', icon: '🎧' },
+      { id: '19-7', name: 'Power Banks', slug: 'power-banks', icon: '🔋' },
+    ]
+  },
+  { 
+    id: '20', name: 'Ordinateurs', slug: 'ordinateurs', icon: '💻', 
+    description: 'PC portables, PC bureau, accessoires informatiques',
+    subcategories: [
+      { id: '20-1', name: 'PC Portables', slug: 'pc-portables', icon: '💻' },
+      { id: '20-2', name: 'PC Bureau', slug: 'pc-bureau', icon: '🖥️' },
+      { id: '20-3', name: 'Écrans & Moniteurs', slug: 'ecrans-moniteurs', icon: '🖥️' },
+      { id: '20-4', name: 'Claviers', slug: 'claviers', icon: '⌨️' },
+      { id: '20-5', name: 'Souris', slug: 'souris', icon: '🖱️' },
+      { id: '20-6', name: 'Disques durs & SSD', slug: 'disques-durs-ssd', icon: '💾' },
+      { id: '20-7', name: 'Imprimantes', slug: 'imprimantes', icon: '🖨️' },
+      { id: '20-8', name: 'Composants PC', slug: 'composants-pc', icon: '🔧' },
+    ]
+  },
+  { 
+    id: '21', name: 'TV & Home Cinéma', slug: 'tv-home-cinema', icon: '📺', 
+    description: 'Télévisions, décodeurs, home cinéma, projecteurs',
+    subcategories: [
+      { id: '21-1', name: 'Télévisions', slug: 'televisions', icon: '📺' },
+      { id: '21-2', name: 'Décodeurs', slug: 'decodeurs', icon: '📡' },
+      { id: '21-3', name: 'Home Cinéma', slug: 'home-cinema', icon: '🎬' },
+      { id: '21-4', name: 'Projecteurs', slug: 'projecteurs', icon: '📽️' },
+      { id: '21-5', name: 'Supports TV', slug: 'supports-tv', icon: '📐' },
+    ]
+  },
+  { 
+    id: '22', name: 'Audio & Casques', slug: 'audio-casques', icon: '🎧', 
+    description: 'Écouteurs, casques, enceintes Bluetooth, barres de son',
+    subcategories: [
+      { id: '22-1', name: 'Casques audio', slug: 'casques-audio', icon: '🎧' },
+      { id: '22-2', name: 'Écouteurs filaires', slug: 'ecouteurs-filaires', icon: '🎵' },
+      { id: '22-3', name: 'Écouteurs Bluetooth', slug: 'ecouteurs-bluetooth', icon: '📶' },
+      { id: '22-4', name: 'Enceintes Bluetooth', slug: 'enceintes-bluetooth', icon: '🔊' },
+      { id: '22-5', name: 'Barres de son', slug: 'barres-son', icon: '🔉' },
+    ]
+  },
+  { 
+    id: '23', name: 'Jeux Vidéo & Consoles', slug: 'jeux-video', icon: '🎮', 
+    description: 'PlayStation, Xbox, Nintendo, jeux, manettes',
+    subcategories: [
+      { id: '23-1', name: 'PlayStation', slug: 'playstation', icon: '🎮' },
+      { id: '23-2', name: 'Xbox', slug: 'xbox', icon: '🎯' },
+      { id: '23-3', name: 'Nintendo', slug: 'nintendo', icon: '🕹️' },
+      { id: '23-4', name: 'Jeux vidéo', slug: 'jeux', icon: '💿' },
+      { id: '23-5', name: 'Manettes & Accessoires', slug: 'manettes-accessoires', icon: '🕹️' },
+    ]
+  },
+  { 
+    id: '24', name: 'Appareils Photo', slug: 'appareils-photo', icon: '📷', 
+    description: 'Caméras, appareils photo, drones, GoPro',
+    subcategories: [
+      { id: '24-1', name: 'Appareils photo reflex', slug: 'appareils-reflex', icon: '📷' },
+      { id: '24-2', name: 'Appareils compacts', slug: 'appareils-compacts', icon: '📸' },
+      { id: '24-3', name: 'Caméras vidéo', slug: 'cameras-video', icon: '🎥' },
+      { id: '24-4', name: 'Drones', slug: 'drones', icon: '🚁' },
+      { id: '24-5', name: 'GoPro & Action cams', slug: 'gopro-action-cams', icon: '📹' },
+      { id: '24-6', name: 'Objectifs & Accessoires', slug: 'objectifs-accessoires', icon: '🔭' },
+    ]
+  },
+  { 
+    id: '25', name: 'Accessoires Tech', slug: 'accessoires-tech', icon: '🔌', 
+    description: 'Chargeurs, câbles, coques, power banks, cartes SD',
+    subcategories: [
+      { id: '25-1', name: 'Chargeurs universels', slug: 'chargeurs-universels', icon: '🔌' },
+      { id: '25-2', name: 'Câbles USB', slug: 'cables-usb', icon: '🔗' },
+      { id: '25-3', name: 'Cartes mémoire', slug: 'cartes-memoire', icon: '💾' },
+      { id: '25-4', name: 'Clés USB', slug: 'cles-usb', icon: '📀' },
+      { id: '25-5', name: 'Adaptateurs', slug: 'adaptateurs', icon: '🔄' },
+    ]
+  },
+
+  // === ÉLECTROMÉNAGER ===
+  { 
+    id: '26', name: 'Gros Électroménager', slug: 'gros-electromenager', icon: '🧊', 
+    description: 'Réfrigérateurs, congélateurs, machines à laver, cuisinières',
+    subcategories: [
+      { id: '26-1', name: 'Réfrigérateurs', slug: 'refrigerateurs', icon: '🧊' },
+      { id: '26-2', name: 'Congélateurs', slug: 'congelateurs', icon: '❄️' },
+      { id: '26-3', name: 'Machines à laver', slug: 'machines-laver', icon: '🧺' },
+      { id: '26-4', name: 'Sèche-linge', slug: 'seche-linge', icon: '💨' },
+      { id: '26-5', name: 'Cuisinières & Fours', slug: 'cuisinieres-fours', icon: '🔥' },
+      { id: '26-6', name: 'Lave-vaisselle', slug: 'lave-vaisselle', icon: '🍽️' },
+    ]
+  },
+  { 
+    id: '27', name: 'Petit Électroménager', slug: 'petit-electromenager', icon: '🍳', 
+    description: 'Mixeurs, blenders, micro-ondes, bouilloires, grille-pain',
+    subcategories: [
+      { id: '27-1', name: 'Mixeurs & Blenders', slug: 'mixeurs-blenders', icon: '🥤' },
+      { id: '27-2', name: 'Micro-ondes', slug: 'micro-ondes', icon: '📦' },
+      { id: '27-3', name: 'Bouilloires', slug: 'bouilloires', icon: '☕' },
+      { id: '27-4', name: 'Grille-pain', slug: 'grille-pain', icon: '🍞' },
+      { id: '27-5', name: 'Friteuses', slug: 'friteuses', icon: '🍟' },
+      { id: '27-6', name: 'Robots cuisine', slug: 'robots-cuisine', icon: '🤖' },
+      { id: '27-7', name: 'Cafetières', slug: 'cafetieres', icon: '☕' },
+    ]
+  },
+  { 
+    id: '28', name: 'Climatisation & Ventilation', slug: 'climatisation', icon: '❄️', 
+    description: 'Climatiseurs, ventilateurs, purificateurs d\'air',
+    subcategories: [
+      { id: '28-1', name: 'Climatiseurs split', slug: 'climatiseurs-split', icon: '❄️' },
+      { id: '28-2', name: 'Climatiseurs mobiles', slug: 'climatiseurs-mobiles', icon: '🌬️' },
+      { id: '28-3', name: 'Ventilateurs', slug: 'ventilateurs', icon: '🌀' },
+      { id: '28-4', name: 'Purificateurs d\'air', slug: 'purificateurs-air', icon: '💨' },
+      { id: '28-5', name: 'Humidificateurs', slug: 'humidificateurs', icon: '💧' },
+    ]
+  },
+  { 
+    id: '29', name: 'Fer & Entretien', slug: 'fer-entretien', icon: '🧹', 
+    description: 'Fers à repasser, aspirateurs, nettoyeurs vapeur',
+    subcategories: [
+      { id: '29-1', name: 'Fers à repasser', slug: 'fers-repasser', icon: '👔' },
+      { id: '29-2', name: 'Centrales vapeur', slug: 'centrales-vapeur', icon: '💨' },
+      { id: '29-3', name: 'Aspirateurs', slug: 'aspirateurs', icon: '🧹' },
+      { id: '29-4', name: 'Nettoyeurs vapeur', slug: 'nettoyeurs-vapeur', icon: '♨️' },
+    ]
+  },
+
+  // === MAISON & JARDIN ===
+  { 
+    id: '30', name: 'Meubles', slug: 'meubles', icon: '🛋️', 
+    description: 'Canapés, lits, armoires, tables, chaises',
+    subcategories: [
+      { id: '30-1', name: 'Canapés & Salons', slug: 'canapes-salons', icon: '🛋️' },
+      { id: '30-2', name: 'Lits', slug: 'lits', icon: '🛏️' },
+      { id: '30-3', name: 'Armoires', slug: 'armoires', icon: '🚪' },
+      { id: '30-4', name: 'Tables', slug: 'tables', icon: '🪑' },
+      { id: '30-5', name: 'Chaises', slug: 'chaises', icon: '💺' },
+      { id: '30-6', name: 'Étagères', slug: 'etageres', icon: '📚' },
+    ]
+  },
+  { 
+    id: '31', name: 'Décoration', slug: 'decoration', icon: '🖼️', 
+    description: 'Tableaux, rideaux, tapis, coussins, vases',
+    subcategories: [
+      { id: '31-1', name: 'Tableaux & Cadres', slug: 'tableaux-cadres', icon: '🖼️' },
+      { id: '31-2', name: 'Rideaux', slug: 'rideaux', icon: '🪟' },
+      { id: '31-3', name: 'Tapis', slug: 'tapis', icon: '🧶' },
+      { id: '31-4', name: 'Coussins', slug: 'coussins', icon: '🛋️' },
+      { id: '31-5', name: 'Vases & Plantes', slug: 'vases-plantes', icon: '🌸' },
+      { id: '31-6', name: 'Luminaires', slug: 'luminaires', icon: '💡' },
+    ]
+  },
+  { 
+    id: '32', name: 'Literie', slug: 'literie', icon: '🛏️', 
+    description: 'Matelas, draps, couettes, oreillers',
+    subcategories: [
+      { id: '32-1', name: 'Matelas', slug: 'matelas', icon: '🛏️' },
+      { id: '32-2', name: 'Draps & Housses', slug: 'draps-housses', icon: '🧺' },
+      { id: '32-3', name: 'Couettes & Couvertures', slug: 'couettes-couvertures', icon: '🛌' },
+      { id: '32-4', name: 'Oreillers', slug: 'oreillers', icon: '😴' },
+    ]
+  },
+  { 
+    id: '33', name: 'Cuisine & Arts de Table', slug: 'cuisine-table', icon: '🍽️', 
+    description: 'Ustensiles, vaisselle, casseroles, verres',
+    subcategories: [
+      { id: '33-1', name: 'Casseroles & Poêles', slug: 'casseroles-poeles', icon: '🍳' },
+      { id: '33-2', name: 'Vaisselle', slug: 'vaisselle', icon: '🍽️' },
+      { id: '33-3', name: 'Verres & Gobelets', slug: 'verres-gobelets', icon: '🥛' },
+      { id: '33-4', name: 'Couverts', slug: 'couverts', icon: '🍴' },
+      { id: '33-5', name: 'Ustensiles cuisine', slug: 'ustensiles-cuisine', icon: '🥄' },
+    ]
+  },
+  { 
+    id: '34', name: 'Rangement', slug: 'rangement', icon: '📦', 
+    description: 'Étagères, boîtes, organisateurs, placards',
+    subcategories: [
+      { id: '34-1', name: 'Boîtes de rangement', slug: 'boites-rangement', icon: '📦' },
+      { id: '34-2', name: 'Paniers', slug: 'paniers', icon: '🧺' },
+      { id: '34-3', name: 'Cintres', slug: 'cintres', icon: '👔' },
+      { id: '34-4', name: 'Organisateurs', slug: 'organisateurs', icon: '🗂️' },
+    ]
+  },
+  { 
+    id: '35', name: 'Jardin & Extérieur', slug: 'jardin-exterieur', icon: '🌿', 
+    description: 'Plantes, outils jardinage, meubles extérieur, barbecues',
+    subcategories: [
+      { id: '35-1', name: 'Plantes & Pots', slug: 'plantes-pots', icon: '🌱' },
+      { id: '35-2', name: 'Outils jardinage', slug: 'outils-jardinage', icon: '🌿' },
+      { id: '35-3', name: 'Meubles jardin', slug: 'meubles-jardin', icon: '🪑' },
+      { id: '35-4', name: 'Barbecues', slug: 'barbecues', icon: '🍖' },
+      { id: '35-5', name: 'Parasols & Tonnelles', slug: 'parasols-tonnelles', icon: '⛱️' },
+    ]
+  },
+  { 
+    id: '36', name: 'Bricolage & Outillage', slug: 'bricolage', icon: '🔨', 
+    description: 'Outils, perceuses, peinture, électricité, plomberie',
+    subcategories: [
+      { id: '36-1', name: 'Outils à main', slug: 'outils-main', icon: '🔧' },
+      { id: '36-2', name: 'Outils électriques', slug: 'outils-electriques', icon: '🔌' },
+      { id: '36-3', name: 'Peinture', slug: 'peinture', icon: '🎨' },
+      { id: '36-4', name: 'Électricité', slug: 'electricite', icon: '⚡' },
+      { id: '36-5', name: 'Plomberie', slug: 'plomberie', icon: '🚿' },
+    ]
+  },
+  { 
+    id: '37', name: 'Quincaillerie', slug: 'quincaillerie', icon: '🔩', 
+    description: 'Vis, clous, serrures, poignées, accessoires',
+    subcategories: [
+      { id: '37-1', name: 'Vis & Clous', slug: 'vis-clous', icon: '🔩' },
+      { id: '37-2', name: 'Serrures', slug: 'serrures', icon: '🔐' },
+      { id: '37-3', name: 'Poignées', slug: 'poignees', icon: '🚪' },
+      { id: '37-4', name: 'Chaînes & Cadenas', slug: 'chaines-cadenas', icon: '🔒' },
+    ]
+  },
+
+  // === AUTO-MOTO ===
+  { 
+    id: '38', name: 'Voitures', slug: 'voitures', icon: '🚗', 
+    description: 'Voitures neuves et occasion, SUV, berlines',
+    subcategories: [
+      { id: '38-1', name: 'Berlines', slug: 'berlines', icon: '🚗' },
+      { id: '38-2', name: 'SUV & 4x4', slug: 'suv-4x4', icon: '🚙' },
+      { id: '38-3', name: 'Pick-up', slug: 'pick-up', icon: '🛻' },
+      { id: '38-4', name: 'Citadines', slug: 'citadines', icon: '🚘' },
+      { id: '38-5', name: 'Utilitaires', slug: 'utilitaires', icon: '🚐' },
+    ]
+  },
+  { 
+    id: '39', name: 'Motos & Scooters', slug: 'motos-scooters', icon: '🏍️', 
+    description: 'Motos, scooters, tricycles, vélos',
+    subcategories: [
+      { id: '39-1', name: 'Motos', slug: 'motos', icon: '🏍️' },
+      { id: '39-2', name: 'Scooters', slug: 'scooters', icon: '🛵' },
+      { id: '39-3', name: 'Tricycles', slug: 'tricycles', icon: '🛺' },
+      { id: '39-4', name: 'Vélos', slug: 'velos', icon: '🚲' },
+      { id: '39-5', name: 'Vélos électriques', slug: 'velos-electriques', icon: '🔋' },
+    ]
+  },
+  { 
+    id: '40', name: 'Pièces Auto', slug: 'pieces-auto', icon: '⚙️', 
+    description: 'Pièces détachées, pneus, batteries, huiles',
+    subcategories: [
+      { id: '40-1', name: 'Pneus', slug: 'pneus', icon: '🛞' },
+      { id: '40-2', name: 'Batteries', slug: 'batteries-auto', icon: '🔋' },
+      { id: '40-3', name: 'Huiles & Lubrifiants', slug: 'huiles-lubrifiants', icon: '🛢️' },
+      { id: '40-4', name: 'Freins', slug: 'freins', icon: '🛑' },
+      { id: '40-5', name: 'Filtres', slug: 'filtres', icon: '🔧' },
+      { id: '40-6', name: 'Ampoules auto', slug: 'ampoules-auto', icon: '💡' },
+    ]
+  },
+  { 
+    id: '41', name: 'Accessoires Auto', slug: 'accessoires-auto', icon: '🚙', 
+    description: 'GPS, caméras embarquées, housses, tapis',
+    subcategories: [
+      { id: '41-1', name: 'GPS & Navigation', slug: 'gps-navigation', icon: '📍' },
+      { id: '41-2', name: 'Caméras embarquées', slug: 'cameras-embarquees', icon: '📹' },
+      { id: '41-3', name: 'Housses & Tapis', slug: 'housses-tapis', icon: '🪑' },
+      { id: '41-4', name: 'Entretien auto', slug: 'entretien-auto', icon: '🧽' },
+      { id: '41-5', name: 'Casques moto', slug: 'casques-moto', icon: '⛑️' },
+    ]
+  },
+
+  // === SPORT & LOISIRS ===
+  { 
+    id: '42', name: 'Sport & Fitness', slug: 'sport-fitness', icon: '⚽', 
+    description: 'Équipements sport, fitness, musculation, vélos',
+    subcategories: [
+      { id: '42-1', name: 'Football', slug: 'football', icon: '⚽' },
+      { id: '42-2', name: 'Basketball', slug: 'basketball', icon: '🏀' },
+      { id: '42-3', name: 'Musculation', slug: 'musculation', icon: '🏋️' },
+      { id: '42-4', name: 'Fitness', slug: 'fitness', icon: '🏃' },
+      { id: '42-5', name: 'Natation', slug: 'natation', icon: '🏊' },
+      { id: '42-6', name: 'Tennis', slug: 'tennis', icon: '🎾' },
+    ]
+  },
+  { 
+    id: '43', name: 'Vêtements Sport', slug: 'vetements-sport', icon: '👕', 
+    description: 'Maillots, survêtements, chaussures sport',
+    subcategories: [
+      { id: '43-1', name: 'Maillots', slug: 'maillots', icon: '👕' },
+      { id: '43-2', name: 'Survêtements', slug: 'survetements', icon: '🧥' },
+      { id: '43-3', name: 'Chaussures sport', slug: 'chaussures-sport', icon: '👟' },
+      { id: '43-4', name: 'Maillots de bain', slug: 'maillots-bain', icon: '🩱' },
+    ]
+  },
+  { 
+    id: '44', name: 'Camping & Plein Air', slug: 'camping-plein-air', icon: '⛺', 
+    description: 'Tentes, sacs de couchage, lampes, glacières',
+    subcategories: [
+      { id: '44-1', name: 'Tentes', slug: 'tentes', icon: '⛺' },
+      { id: '44-2', name: 'Sacs de couchage', slug: 'sacs-couchage', icon: '🛌' },
+      { id: '44-3', name: 'Lampes & Torches', slug: 'lampes-torches', icon: '🔦' },
+      { id: '44-4', name: 'Glacières', slug: 'glacieres', icon: '🧊' },
+    ]
+  },
+  { 
+    id: '45', name: 'Instruments de Musique', slug: 'instruments-musique', icon: '🎸', 
+    description: 'Guitares, claviers, djembés, percussions',
+    subcategories: [
+      { id: '45-1', name: 'Guitares', slug: 'guitares', icon: '🎸' },
+      { id: '45-2', name: 'Claviers & Pianos', slug: 'claviers-pianos', icon: '🎹' },
+      { id: '45-3', name: 'Djembés & Percussions', slug: 'djembes-percussions', icon: '🥁' },
+      { id: '45-4', name: 'Instruments à vent', slug: 'instruments-vent', icon: '🎺' },
+    ]
+  },
+
+  // === SANTÉ & BIEN-ÊTRE ===
+  { 
+    id: '46', name: 'Pharmacie & Santé', slug: 'pharmacie-sante', icon: '💊', 
+    description: 'Médicaments, vitamines, premiers soins',
+    subcategories: [
+      { id: '46-1', name: 'Vitamines & Compléments', slug: 'vitamines-complements', icon: '💊' },
+      { id: '46-2', name: 'Premiers soins', slug: 'premiers-soins', icon: '🩹' },
+      { id: '46-3', name: 'Hygiène', slug: 'hygiene', icon: '🧴' },
+      { id: '46-4', name: 'Contraception', slug: 'contraception', icon: '💟' },
+    ]
+  },
+  { 
+    id: '47', name: 'Médecine Traditionnelle', slug: 'medecine-traditionnelle', icon: '🌿', 
+    description: 'Plantes médicinales, remèdes naturels, tisanes',
+    subcategories: [
+      { id: '47-1', name: 'Plantes médicinales', slug: 'plantes-medicinales', icon: '🌿' },
+      { id: '47-2', name: 'Tisanes', slug: 'tisanes', icon: '🍵' },
+      { id: '47-3', name: 'Huiles naturelles', slug: 'huiles-naturelles', icon: '💧' },
+      { id: '47-4', name: 'Remèdes traditionnels', slug: 'remedes-traditionnels', icon: '🏺' },
+    ]
+  },
+  { 
+    id: '48', name: 'Optique', slug: 'optique', icon: '👓', 
+    description: 'Lunettes de vue, lunettes soleil, lentilles',
+    subcategories: [
+      { id: '48-1', name: 'Lunettes de vue', slug: 'lunettes-vue', icon: '👓' },
+      { id: '48-2', name: 'Lunettes soleil', slug: 'lunettes-soleil', icon: '🕶️' },
+      { id: '48-3', name: 'Lentilles', slug: 'lentilles', icon: '👁️' },
+    ]
+  },
+  { 
+    id: '49', name: 'Matériel Médical', slug: 'materiel-medical', icon: '🩺', 
+    description: 'Tensiomètres, thermomètres, fauteuils roulants',
+    subcategories: [
+      { id: '49-1', name: 'Tensiomètres', slug: 'tensiometres', icon: '❤️' },
+      { id: '49-2', name: 'Thermomètres', slug: 'thermometres', icon: '🌡️' },
+      { id: '49-3', name: 'Fauteuils roulants', slug: 'fauteuils-roulants', icon: '♿' },
+      { id: '49-4', name: 'Béquilles & Cannes', slug: 'bequilles-cannes', icon: '🦯' },
+    ]
+  },
+
+  // === BÉBÉ & ENFANT ===
+  { 
+    id: '50', name: 'Puériculture', slug: 'puericulture', icon: '🍼', 
+    description: 'Biberons, poussettes, sièges auto, couches',
+    subcategories: [
+      { id: '50-1', name: 'Biberons & Tétines', slug: 'biberons-tetines', icon: '🍼' },
+      { id: '50-2', name: 'Poussettes', slug: 'poussettes', icon: '🚼' },
+      { id: '50-3', name: 'Sièges auto', slug: 'sieges-auto', icon: '🚗' },
+      { id: '50-4', name: 'Couches', slug: 'couches', icon: '👶' },
+      { id: '50-5', name: 'Lits bébé', slug: 'lits-bebe', icon: '🛏️' },
+    ]
+  },
+  { 
+    id: '51', name: 'Jouets', slug: 'jouets', icon: '🧸', 
+    description: 'Jouets enfants, jeux éducatifs, poupées, voitures',
+    subcategories: [
+      { id: '51-1', name: 'Jouets bébé', slug: 'jouets-bebe', icon: '🧸' },
+      { id: '51-2', name: 'Poupées', slug: 'poupees', icon: '👧' },
+      { id: '51-3', name: 'Voitures & Véhicules', slug: 'voitures-vehicules', icon: '🚗' },
+      { id: '51-4', name: 'Jeux éducatifs', slug: 'jeux-educatifs', icon: '🎓' },
+      { id: '51-5', name: 'Jeux de société', slug: 'jeux-societe', icon: '🎲' },
+    ]
+  },
+  { 
+    id: '52', name: 'Fournitures Scolaires', slug: 'fournitures-scolaires', icon: '📚', 
+    description: 'Cahiers, stylos, sacs à dos, manuels scolaires',
+    subcategories: [
+      { id: '52-1', name: 'Cahiers & Feuilles', slug: 'cahiers-feuilles', icon: '📓' },
+      { id: '52-2', name: 'Stylos & Crayons', slug: 'stylos-crayons', icon: '✏️' },
+      { id: '52-3', name: 'Sacs scolaires', slug: 'sacs-scolaires', icon: '🎒' },
+      { id: '52-4', name: 'Manuels scolaires', slug: 'manuels-scolaires', icon: '📖' },
+      { id: '52-5', name: 'Calculatrices', slug: 'calculatrices', icon: '🔢' },
+    ]
+  },
+
+  // === BUREAU & ENTREPRISE ===
+  { 
+    id: '53', name: 'Fournitures Bureau', slug: 'fournitures-bureau', icon: '📎', 
+    description: 'Papeterie, classeurs, imprimantes, photocopieuses',
+    subcategories: [
+      { id: '53-1', name: 'Papeterie', slug: 'papeterie', icon: '📝' },
+      { id: '53-2', name: 'Classeurs & Dossiers', slug: 'classeurs-dossiers', icon: '📁' },
+      { id: '53-3', name: 'Imprimantes', slug: 'imprimantes-bureau', icon: '🖨️' },
+      { id: '53-4', name: 'Photocopieuses', slug: 'photocopieuses', icon: '📄' },
+      { id: '53-5', name: 'Agrafeuses & Perforeuses', slug: 'agrafeuses-perforeuses', icon: '📎' },
+    ]
+  },
+  { 
+    id: '54', name: 'Mobilier Bureau', slug: 'mobilier-bureau', icon: '🪑', 
+    description: 'Bureaux, chaises ergonomiques, armoires',
+    subcategories: [
+      { id: '54-1', name: 'Bureaux', slug: 'bureaux', icon: '🪑' },
+      { id: '54-2', name: 'Chaises bureau', slug: 'chaises-bureau', icon: '💺' },
+      { id: '54-3', name: 'Armoires bureau', slug: 'armoires-bureau', icon: '🚪' },
+      { id: '54-4', name: 'Caissons', slug: 'caissons', icon: '📦' },
+    ]
+  },
+  { 
+    id: '55', name: 'Équipement Pro', slug: 'equipement-pro', icon: '🏭', 
+    description: 'Matériel industriel, machines, outils pro',
+    subcategories: [
+      { id: '55-1', name: 'Machines industrielles', slug: 'machines-industrielles', icon: '🏭' },
+      { id: '55-2', name: 'Générateurs', slug: 'generateurs', icon: '⚡' },
+      { id: '55-3', name: 'Compresseurs', slug: 'compresseurs', icon: '💨' },
+      { id: '55-4', name: 'Soudure', slug: 'soudure', icon: '🔥' },
+    ]
+  },
+
+  // === IMMOBILIER ===
+  { 
+    id: '56', name: 'Locations', slug: 'locations-immobilier', icon: '🏢', 
+    description: 'Appartements, maisons, bureaux à louer',
+    subcategories: [
+      { id: '56-1', name: 'Appartements à louer', slug: 'appartements-louer', icon: '🏢' },
+      { id: '56-2', name: 'Maisons à louer', slug: 'maisons-louer', icon: '🏠' },
+      { id: '56-3', name: 'Bureaux à louer', slug: 'bureaux-louer', icon: '🏬' },
+      { id: '56-4', name: 'Locaux commerciaux', slug: 'locaux-commerciaux', icon: '🏪' },
+    ]
+  },
+  { 
+    id: '57', name: 'Ventes Immobilier', slug: 'ventes-immobilier', icon: '🏡', 
+    description: 'Maisons, terrains, appartements à vendre',
+    subcategories: [
+      { id: '57-1', name: 'Maisons à vendre', slug: 'maisons-vendre', icon: '🏡' },
+      { id: '57-2', name: 'Appartements à vendre', slug: 'appartements-vendre', icon: '🏢' },
+      { id: '57-3', name: 'Terrains', slug: 'terrains', icon: '🌍' },
+      { id: '57-4', name: 'Immeubles', slug: 'immeubles', icon: '🏗️' },
+    ]
+  },
+
+  // === SERVICES ===
+  { 
+    id: '58', name: 'Artisanat & Création', slug: 'artisanat', icon: '🎨', 
+    description: 'Produits artisanaux, créations locales, sculptures',
+    subcategories: [
+      { id: '58-1', name: 'Sculptures', slug: 'sculptures', icon: '🗿' },
+      { id: '58-2', name: 'Tableaux & Peintures', slug: 'tableaux-peintures', icon: '🎨' },
+      { id: '58-3', name: 'Vannerie', slug: 'vannerie', icon: '🧺' },
+      { id: '58-4', name: 'Poterie', slug: 'poterie', icon: '🏺' },
+    ]
+  },
+  { 
+    id: '59', name: 'Couture & Tailleur', slug: 'couture-tailleur', icon: '✂️', 
+    description: 'Confection sur mesure, retouches, broderie',
+    subcategories: [
+      { id: '59-1', name: 'Confection sur mesure', slug: 'confection-mesure', icon: '👗' },
+      { id: '59-2', name: 'Retouches', slug: 'retouches', icon: '✂️' },
+      { id: '59-3', name: 'Broderie', slug: 'broderie', icon: '🪡' },
+    ]
+  },
+  { 
+    id: '60', name: 'Coiffure & Tresses', slug: 'coiffure-tresses', icon: '💇', 
+    description: 'Tresses, coiffures, barbier, salon beauté',
+    subcategories: [
+      { id: '60-1', name: 'Tresses', slug: 'tresses', icon: '💇‍♀️' },
+      { id: '60-2', name: 'Coiffure femme', slug: 'coiffure-femme', icon: '💁‍♀️' },
+      { id: '60-3', name: 'Barbier', slug: 'barbier', icon: '💈' },
+      { id: '60-4', name: 'Soins capillaires', slug: 'soins-capillaires', icon: '🧴' },
+    ]
+  },
+  { 
+    id: '61', name: 'Réparations', slug: 'reparations', icon: '🔧', 
+    description: 'Électronique, électroménager, téléphones, ordinateurs',
+    subcategories: [
+      { id: '61-1', name: 'Réparation téléphones', slug: 'reparation-telephones', icon: '📱' },
+      { id: '61-2', name: 'Réparation ordinateurs', slug: 'reparation-ordinateurs', icon: '💻' },
+      { id: '61-3', name: 'Réparation électroménager', slug: 'reparation-electromenager', icon: '🔌' },
+      { id: '61-4', name: 'Réparation climatiseurs', slug: 'reparation-climatiseurs', icon: '❄️' },
+    ]
+  },
+  { 
+    id: '62', name: 'Transport & Livraison', slug: 'transport-livraison', icon: '🚚', 
+    description: 'Déménagement, livraison, transport marchandises',
+    subcategories: [
+      { id: '62-1', name: 'Déménagement', slug: 'demenagement', icon: '📦' },
+      { id: '62-2', name: 'Livraison express', slug: 'livraison-express', icon: '🏃' },
+      { id: '62-3', name: 'Transport marchandises', slug: 'transport-marchandises', icon: '🚛' },
+    ]
+  },
+  { 
+    id: '63', name: 'Événementiel', slug: 'evenementiel', icon: '🎉', 
+    description: 'Location matériel, décoration, DJ, traiteur',
+    subcategories: [
+      { id: '63-1', name: 'Location matériel', slug: 'location-materiel', icon: '🎪' },
+      { id: '63-2', name: 'Décoration événement', slug: 'decoration-evenement', icon: '🎈' },
+      { id: '63-3', name: 'DJ & Animation', slug: 'dj-animation', icon: '🎧' },
+      { id: '63-4', name: 'Traiteur', slug: 'traiteur', icon: '🍽️' },
+      { id: '63-5', name: 'Photographe', slug: 'photographe', icon: '📸' },
+    ]
+  },
+  { 
+    id: '64', name: 'Cours & Formation', slug: 'cours-formation', icon: '📖', 
+    description: 'Cours particuliers, formations, coaching',
+    subcategories: [
+      { id: '64-1', name: 'Cours particuliers', slug: 'cours-particuliers', icon: '👨‍🏫' },
+      { id: '64-2', name: 'Langues', slug: 'langues', icon: '🌍' },
+      { id: '64-3', name: 'Informatique', slug: 'cours-informatique', icon: '💻' },
+      { id: '64-4', name: 'Musique', slug: 'cours-musique', icon: '🎵' },
+      { id: '64-5', name: 'Coaching', slug: 'coaching', icon: '🎯' },
+    ]
+  },
+  { 
+    id: '65', name: 'Services Informatiques', slug: 'services-informatiques', icon: '🖥️', 
+    description: 'Développement web, maintenance, dépannage',
+    subcategories: [
+      { id: '65-1', name: 'Développement web', slug: 'developpement-web', icon: '🌐' },
+      { id: '65-2', name: 'Développement mobile', slug: 'developpement-mobile', icon: '📱' },
+      { id: '65-3', name: 'Maintenance informatique', slug: 'maintenance-informatique', icon: '🔧' },
+      { id: '65-4', name: 'Réseaux & Sécurité', slug: 'reseaux-securite', icon: '🔒' },
+    ]
+  },
+
+  // === AGRICULTURE & ÉLEVAGE ===
+  { 
+    id: '66', name: 'Agriculture', slug: 'agriculture', icon: '🌱', 
+    description: 'Semences, engrais, matériel agricole, récoltes',
+    subcategories: [
+      { id: '66-1', name: 'Semences', slug: 'semences', icon: '🌱' },
+      { id: '66-2', name: 'Engrais', slug: 'engrais', icon: '🧪' },
+      { id: '66-3', name: 'Matériel agricole', slug: 'materiel-agricole', icon: '🚜' },
+      { id: '66-4', name: 'Pesticides', slug: 'pesticides', icon: '🧴' },
+    ]
+  },
+  { 
+    id: '67', name: 'Élevage', slug: 'elevage', icon: '🐄', 
+    description: 'Bétail, volailles, aliments animaux, équipement',
+    subcategories: [
+      { id: '67-1', name: 'Bétail', slug: 'betail', icon: '🐄' },
+      { id: '67-2', name: 'Volailles', slug: 'volailles', icon: '🐔' },
+      { id: '67-3', name: 'Aliments animaux', slug: 'aliments-animaux', icon: '🌾' },
+      { id: '67-4', name: 'Équipement élevage', slug: 'equipement-elevage', icon: '🏠' },
+    ]
+  },
+  { 
+    id: '68', name: 'Pêche & Aquaculture', slug: 'peche-aquaculture', icon: '🐟', 
+    description: 'Matériel pêche, poissons, crevettes, aquariums',
+    subcategories: [
+      { id: '68-1', name: 'Matériel pêche', slug: 'materiel-peche', icon: '🎣' },
+      { id: '68-2', name: 'Poissons vivants', slug: 'poissons-vivants', icon: '🐟' },
+      { id: '68-3', name: 'Aquariums', slug: 'aquariums', icon: '🐠' },
+    ]
+  },
+
+  // === ANIMAUX ===
+  { 
+    id: '69', name: 'Animaux de Compagnie', slug: 'animaux-compagnie', icon: '🐕', 
+    description: 'Chiens, chats, oiseaux, accessoires, nourriture',
+    subcategories: [
+      { id: '69-1', name: 'Chiens', slug: 'chiens', icon: '🐕' },
+      { id: '69-2', name: 'Chats', slug: 'chats', icon: '🐈' },
+      { id: '69-3', name: 'Oiseaux', slug: 'oiseaux', icon: '🦜' },
+      { id: '69-4', name: 'Nourriture animaux', slug: 'nourriture-animaux', icon: '🥫' },
+      { id: '69-5', name: 'Accessoires animaux', slug: 'accessoires-animaux', icon: '🦴' },
+    ]
+  },
+
+  // === DIVERS ===
+  { 
+    id: '70', name: 'Occasions & Seconde Main', slug: 'occasions', icon: '♻️', 
+    description: 'Articles d\'occasion, vintage, seconde main',
+    subcategories: [
+      { id: '70-1', name: 'Vêtements occasion', slug: 'vetements-occasion', icon: '👕' },
+      { id: '70-2', name: 'Électronique occasion', slug: 'electronique-occasion', icon: '📱' },
+      { id: '70-3', name: 'Meubles occasion', slug: 'meubles-occasion', icon: '🛋️' },
+      { id: '70-4', name: 'Vintage', slug: 'vintage', icon: '🕰️' },
+    ]
+  },
+  { 
+    id: '71', name: 'Gros & Demi-Gros', slug: 'gros-demi-gros', icon: '📦', 
+    description: 'Vente en gros, import-export, destockage',
+    subcategories: [
+      { id: '71-1', name: 'Alimentaire en gros', slug: 'alimentaire-gros', icon: '🥫' },
+      { id: '71-2', name: 'Textile en gros', slug: 'textile-gros', icon: '👕' },
+      { id: '71-3', name: 'Électronique en gros', slug: 'electronique-gros', icon: '📱' },
+      { id: '71-4', name: 'Destockage', slug: 'destockage', icon: '💰' },
+    ]
+  },
+  { 
+    id: '72', name: 'Made in Côte d\'Ivoire', slug: 'made-in-ci', icon: '🇨🇮', 
+    description: 'Produits 100% ivoiriens, artisanat local',
+    subcategories: [
+      { id: '72-1', name: 'Produits alimentaires CI', slug: 'produits-alimentaires-ci', icon: '🍫' },
+      { id: '72-2', name: 'Mode ivoirienne', slug: 'mode-ivoirienne', icon: '👗' },
+      { id: '72-3', name: 'Artisanat ivoirien', slug: 'artisanat-ivoirien', icon: '🎭' },
+      { id: '72-4', name: 'Cosmétiques locaux', slug: 'cosmetiques-locaux', icon: '🧴' },
+    ]
+  },
 ];
 
 // Produits de démonstration - Du marché traditionnel aux boutiques modernes !
@@ -1023,7 +1822,7 @@ export const deliveryFees: Record<string, number> = {
 
 // Frais fixes optionnels payés par le client pour le retrait en point relais (FCFA)
 // Le client paie: prix du produit + relayCustomerFee
-export const RELAY_CUSTOMER_FEE = 200; // Petit frais fixe facturé au client (optionnel)
+export const RELAY_CUSTOMER_FEE = 0; // Petit frais fixe facturé au client (optionnel)
 
 // Tarifs payés par Jour Marché au livreur pour livrer au point relais (FCFA)
 // Ces frais sont payés par Jour Marché, pas par le client
@@ -1090,14 +1889,26 @@ export const communeToZone: Record<string, string> = {
   'Grand-Bassam': 'Zone C',
 };
 
+// Fonction utilitaire pour déterminer la taille du colis selon le poids
+export function getPackageSize(weightGrams: number): 'small' | 'medium' | 'large' {
+  const weightKg = weightGrams / 1000;
+  if (weightKg < 2) return 'small';
+  if (weightKg <= 5) return 'medium';
+  return 'large';
+}
+
 // Fonction utilitaire pour calculer les frais livreur pour un point relais
+// Calcul basé sur: le poids de l'article et le trajet (distance)
 export function calculateRelayDriverFee(
   commune: string,
   distanceKm: number,
-  packageSize: 'small' | 'medium' | 'large' = 'small'
+  weightGrams: number = 500 // Poids par défaut 500g
 ): number {
   const zone = communeToZone[commune] || 'Zone C';
   const zoneConfig = relayDriverFees.find(z => z.zone === zone) || relayDriverFees[2];
+  
+  // Déterminer la taille du colis selon le poids
+  const packageSize = getPackageSize(weightGrams);
   
   // Trouver le tarif selon la distance
   let distanceFee = zoneConfig.baseFee;
@@ -1140,7 +1951,7 @@ export const relayPoints: RelayPoint[] = [
     hours: 'Lun-Sam: 8h-18h, Dim: 9h-17h',
     distance: 2.3,
     customerFee: RELAY_CUSTOMER_FEE,
-    driverFee: calculateRelayDriverFee('Marcory', 2.3, 'small'),
+    driverFee: calculateRelayDriverFee('Marcory', 2.3),
   },
   {
     id: 'relay_2',
@@ -1152,7 +1963,7 @@ export const relayPoints: RelayPoint[] = [
     hours: 'Lun-Sam: 9h-19h',
     distance: 4.5,
     customerFee: RELAY_CUSTOMER_FEE,
-    driverFee: calculateRelayDriverFee('Plateau', 4.5, 'small'),
+    driverFee: calculateRelayDriverFee('Plateau', 4.5),
   },
   {
     id: 'relay_3',
@@ -1164,7 +1975,7 @@ export const relayPoints: RelayPoint[] = [
     hours: 'Lun-Dim: 8h-20h',
     distance: 5.8,
     customerFee: RELAY_CUSTOMER_FEE,
-    driverFee: calculateRelayDriverFee('Cocody', 5.8, 'small'),
+    driverFee: calculateRelayDriverFee('Cocody', 5.8),
   },
   {
     id: 'relay_4',
@@ -1176,7 +1987,7 @@ export const relayPoints: RelayPoint[] = [
     hours: 'Lun-Sam: 8h-17h',
     distance: 8.2,
     customerFee: RELAY_CUSTOMER_FEE,
-    driverFee: calculateRelayDriverFee('Yopougon', 8.2, 'small'),
+    driverFee: calculateRelayDriverFee('Yopougon', 8.2),
   },
   {
     id: 'relay_5',
@@ -1188,7 +1999,7 @@ export const relayPoints: RelayPoint[] = [
     hours: 'Lun-Sam: 7h-18h',
     distance: 10.5,
     customerFee: RELAY_CUSTOMER_FEE,
-    driverFee: calculateRelayDriverFee('Abobo', 10.5, 'small'),
+    driverFee: calculateRelayDriverFee('Abobo', 10.5),
   },
   {
     id: 'relay_6',
@@ -1200,6 +2011,6 @@ export const relayPoints: RelayPoint[] = [
     hours: 'Lun-Sam: 8h-19h',
     distance: 6.1,
     customerFee: RELAY_CUSTOMER_FEE,
-    driverFee: calculateRelayDriverFee('Koumassi', 6.1, 'small'),
+    driverFee: calculateRelayDriverFee('Koumassi', 6.1),
   },
 ];

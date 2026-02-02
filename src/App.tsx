@@ -2,17 +2,14 @@ import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { OrderProvider } from './context/OrderContext';
+import { ShopProvider } from './context/ShopContext';
 import { Header, Footer } from './components/layout';
 
 // Auth Pages
 import { Login, Signup } from './pages/auth';
 
 // Guest Pages
-import { Home, ProductDetail, Cart, Categories, Shops, ShopDetail, Promotions, Search, MobileMoneyPayment, CartReview } from './pages/guest';
-import { OrderReview } from './pages/guest/OrderReview';
-import { OrderConfirmation } from './pages/guest/OrderConfirmation';
-import { DeliveryInfo } from './pages/guest/DeliveryInfo';
-import { PaymentMethod } from './pages/guest/PaymentMethod';
+import { Home, ProductDetail, Cart, CartReview, DeliveryInfo, OrderReview, PaymentMethod, OrderConfirmation, Categories, Shops, ShopDetail, Promotions, Search, MobileMoneyPayment } from './pages/guest';
 
 // Buyer Pages
 import { BuyerDashboard, Profile, OrderDetail } from './pages/buyer';
@@ -178,7 +175,14 @@ function AppRoutes() {
         <Route path="/" element={<Home />} />
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/cart/review" element={<CartReview />} />
+        <Route path="/delivery/info" element={<DeliveryInfo />} />
+        <Route path="/order/review" element={<OrderReview />} />
+        <Route path="/payment/method" element={<PaymentMethod />} />
+        <Route path="/order/confirmation" element={<OrderConfirmation />} />
         <Route path="/categories" element={<Categories />} />
+        <Route path="/categories/:slug" element={<Categories />} />
+        <Route path="/categories/:slug/:subSlug" element={<Categories />} />
         <Route path="/category/:slug" element={<Categories />} />
         <Route path="/boutiques" element={<Shops />} />
         <Route path="/shop/:id" element={<ShopDetail />} />
@@ -187,14 +191,8 @@ function AppRoutes() {
         <Route path="/alimentation" element={<Categories />} />
         <Route path="/nouveautes" element={<Home />} />
 
-        {/* Panier et commande */}
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/cart/review" element={<CartReview />} />
-        <Route path="/delivery/info" element={<DeliveryInfo />} />
-        <Route path="/order/review" element={<OrderReview />} />
-        <Route path="/payment/method" element={<PaymentMethod />} />
+        {/* Page de paiement Mobile Money */}
         <Route path="/payment/mobile-money" element={<MobileMoneyPayment />} />
-        <Route path="/order/confirmation" element={<OrderConfirmation />} />
 
         {/* Création de boutique - nécessite d'être connecté */}
         <Route element={<AuthRoute />}>
@@ -244,7 +242,9 @@ function App() {
       <AuthProvider>
         <CartProvider>
           <OrderProvider>
-            <AppRoutes />
+            <ShopProvider>
+              <AppRoutes />
+            </ShopProvider>
           </OrderProvider>
         </CartProvider>
       </AuthProvider>

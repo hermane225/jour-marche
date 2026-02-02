@@ -1,4 +1,4 @@
-import { useState, type FormEvent, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Trash2, Minus, Plus } from 'lucide-react';
 import { useCart } from '../../../context/CartContext';
@@ -34,8 +34,9 @@ export function Cart() {
   const subtotal = cart.total;
   const total = subtotal + deliveryFee;
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    e.stopPropagation();
     setIsSubmitting(true);
 
     // Rediriger vers la page de révision du panier
@@ -153,6 +154,7 @@ export function Cart() {
               variant="primary"
               fullWidth
               size="lg"
+              type="button"
               onClick={handleSubmit}
               isLoading={isSubmitting}
             >

@@ -6,4 +6,8 @@ export { Shops, ShopDetail } from './Shops';
 export { Promotions } from './Promotions';
 export { Search } from './Search';
 export { default as CartReview } from './CartReview';
+export { DeliveryInfo } from './DeliveryInfo';
+export { OrderReview } from './OrderReview';
+export { PaymentMethod } from './PaymentMethod';
+export { OrderConfirmation } from './OrderConfirmation';
 export { default as MobileMoneyPayment } from './Payment/MobileMoneyPayment';

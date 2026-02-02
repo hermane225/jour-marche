@@ -1,5 +1,7 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../context/AuthContext';
+import { useShops } from '../../../context/ShopContext';
 import { 
   Store, 
   Upload, 
@@ -24,6 +26,8 @@ import {
 
 export function CreateShop() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { addShop } = useShops();
   
   // Scroll vers le haut au chargement de la page
   useEffect(() => {
@@ -193,13 +197,49 @@ export function CreateShop() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    
+    // Si on n'est pas à l'étape 5, passer à l'étape suivante au lieu de soumettre
+    if (currentStep < 5) {
+      nextStep();
+      return;
+    }
+    
     setIsLoading(true);
     
-    // Simulation de création de boutique
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    // Simulation d'un délai réseau court
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
+    // Créer la boutique avec les vraies données
+    const newShop = addShop({
+      name: formData.shopName,
+      description: formData.description || `Boutique ${formData.shopName}`,
+      logo: logo || undefined,
+      phone: formData.phone,
+      address: `${formData.city}, ${formData.commune}${formData.address ? ` - ${formData.address}` : ''}`,
+      sellerId: user?.id || 'unknown',
+      deliveryOptions: {
+        pickup: true,
+        delivery: formData.deliveryZones.length > 0,
+        deliveryFee: formData.deliveryFee ? parseInt(formData.deliveryFee) : 1000,
+        deliveryZones: formData.deliveryZones,
+      },
+    });
+    
+    console.log('Boutique créée:', newShop);
     
     setIsLoading(false);
-    navigate('/seller/dashboard');
+    // Rediriger vers la création de produit avec l'ID de la nouvelle boutique
+    navigate('/seller/products/create', { state: { shopId: newShop.id, shopName: newShop.name } });
+  };
+  
+  // Empêcher la soumission du formulaire par Entrée sauf à l'étape 5
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && currentStep < 5) {
+      e.preventDefault();
+      if (isStepValid()) {
+        nextStep();
+      }
+    }
   };
 
   const nextStep = () => {
@@ -249,6 +289,7 @@ export function CreateShop() {
         <div className="create-shop-header-inner">
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <button 
+              type="button"
               onClick={() => navigate(-1)}
               style={{ padding: '10px', background: '#f3f4f6', border: 'none', borderRadius: '10px', cursor: 'pointer' }}
             >
@@ -388,7 +429,7 @@ export function CreateShop() {
               </div>
             </div>
             
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} onKeyDown={handleKeyDown}>
               
               {/* Étape 1 - Informations de base */}
               {currentStep === 1 && (
@@ -823,6 +864,44 @@ export function CreateShop() {
                       <p style={{ margin: '0 0 16px 0', fontSize: '13px', color: '#6b7280' }}>
                         Sélectionnez les zones où vous pouvez livrer
                       </p>
+                      
+                      {/* Option Livrer partout */}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          if (formData.deliveryZones.includes('Partout en Côte d Ivoire')) {
+                            setFormData(prev => ({ ...prev, deliveryZones: [] }));
+                          } else {
+                            setFormData(prev => ({ ...prev, deliveryZones: ['Partout en Côte d Ivoire'] }));
+                          }
+                        }}
+                        style={{
+                          width: '100%',
+                          padding: '14px 20px',
+                          marginBottom: '16px',
+                          border: formData.deliveryZones.includes('Partout en Côte d Ivoire') ? '2px solid #10b981' : '2px solid #e5e7eb',
+                          borderRadius: '12px',
+                          background: formData.deliveryZones.includes('Partout en Côte d Ivoire') ? 'linear-gradient(135deg, #dcfce7, #d1fae5)' : 'white',
+                          color: formData.deliveryZones.includes('Partout en Côte d Ivoire') ? '#059669' : '#374151',
+                          fontWeight: 600,
+                          fontSize: '15px',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '10px'
+                        }}
+                      >
+                        {formData.deliveryZones.includes('Partout en Côte d Ivoire') && <span>✓</span>}
+                        🌍 Livrer partout en Côte d'Ivoire
+                      </button>
+                      
+                      {!formData.deliveryZones.includes('Partout en Côte d Ivoire') && (
+                        <>
+                          <p style={{ margin: '0 0 12px 0', fontSize: '12px', color: '#9ca3af', textAlign: 'center' }}>— ou sélectionnez des zones spécifiques —</p>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
                         {zones.map(zone => (
                           <button
@@ -846,6 +925,8 @@ export function CreateShop() {
                           </button>
                         ))}
                       </div>
+                        </>
+                      )}
                     </div>
 
                     {/* Frais de livraison */}
