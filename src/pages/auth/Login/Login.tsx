@@ -31,19 +31,22 @@ export function Login() {
     try {
       const loggedInUser = await login(email, password);
       
+      // Attendre que le state soit mis à jour
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       // Redirection immédiate selon le rôle
       const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
       if (redirectUrl) {
         sessionStorage.removeItem('redirectAfterLogin');
-        navigate(redirectUrl, { replace: true });
+        window.location.href = redirectUrl;
       } else {
-        // Rediriger selon le rôle - utiliser replace pour éviter le retour arrière
-        const targetUrl = loggedInUser.role === 'admin' 
-          ? '/admin' 
-          : loggedInUser.role === 'seller' 
-            ? '/seller/dashboard' 
-            : '/';
-        navigate(targetUrl, { replace: true });
+        // Rediriger selon le rôle
+        let targetUrl = '/';
+        if (loggedInUser.role === 'admin') targetUrl = '/admin';
+        else if (loggedInUser.role === 'seller') targetUrl = '/seller/dashboard';
+        else targetUrl = '/buyer/dashboard';
+        
+        window.location.href = targetUrl;
       }
     } catch (err) {
       // Afficher l'erreur sans recharger la page

@@ -36,15 +36,21 @@ export function Signup() {
     try {
       const registeredUser = await signup(email, password, name || email.split('@')[0], 'buyer');
       
+      // Attendre que le state soit mis à jour avant la navigation
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       // Vérifier s'il y a une redirection après inscription
       const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
       if (redirectUrl) {
         sessionStorage.removeItem('redirectAfterLogin');
-        navigate(redirectUrl, { replace: true });
+        window.location.href = redirectUrl;
       } else {
-        // Rediriger selon le rôle
-        const targetUrl = registeredUser.role === 'seller' ? '/seller/dashboard' : '/';
-        navigate(targetUrl, { replace: true });
+        // Rediriger vers le dashboard selon le rôle
+        let targetUrl = '/buyer/dashboard';
+        if (registeredUser.role === 'seller') targetUrl = '/seller/dashboard';
+        else if (registeredUser.role === 'admin') targetUrl = '/admin';
+        
+        window.location.href = targetUrl;
       }
     } catch (err) {
       // Afficher le vrai message d'erreur de l'API
