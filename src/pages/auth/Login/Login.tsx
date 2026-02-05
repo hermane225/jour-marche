@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import React, { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, ArrowRight, Sparkles, ShoppingBag, Store, Users } from 'lucide-react';
 import { GoogleLogin, type CredentialResponse } from '@react-oauth/google';
@@ -15,14 +15,16 @@ export function Login() {
   const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleSubmit = async (e?: FormEvent | React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     
     // Validation côté client
     if (!email || !password) {
       setError('Veuillez remplir tous les champs');
-      return;
+      return false;
     }
 
     // Réinitialiser l'erreur et démarrer le chargement
@@ -32,22 +34,18 @@ export function Login() {
     try {
       const loggedInUser = await login(email, password);
       
-      // Attendre que le state soit mis à jour
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      // Redirection immédiate selon le rôle
+      // Redirection selon le rôle
       const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
       if (redirectUrl) {
         sessionStorage.removeItem('redirectAfterLogin');
-        window.location.href = redirectUrl;
+        navigate(redirectUrl, { replace: true });
       } else {
         // Rediriger selon le rôle
-        let targetUrl = '/';
+        let targetUrl = '/buyer/dashboard';
         if (loggedInUser.role === 'admin') targetUrl = '/admin';
         else if (loggedInUser.role === 'seller') targetUrl = '/seller/dashboard';
-        else targetUrl = '/buyer/dashboard';
         
-        window.location.href = targetUrl;
+        navigate(targetUrl, { replace: true });
       }
     } catch (err) {
       // Afficher l'erreur sans recharger la page
@@ -57,6 +55,8 @@ export function Login() {
       setError(errorMessage);
       setIsLoading(false);
     }
+    
+    return false;
   };
 
   return (
@@ -233,7 +233,7 @@ export function Login() {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} noValidate>
+          <form onSubmit={handleSubmit} noValidate action="javascript:void(0)">
             {/* Email Input */}
             <div style={{ marginBottom: '20px' }}>
               <label style={{ 
@@ -374,8 +374,9 @@ export function Login() {
 
             {/* Submit Button */}
             <button
-              type="submit"
+              type="button"
               disabled={isLoading}
+              onClick={handleSubmit}
               style={{
                 width: '100%',
                 padding: '18px',
@@ -439,12 +440,12 @@ export function Login() {
                     const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
                     if (redirectUrl) {
                       sessionStorage.removeItem('redirectAfterLogin');
-                      window.location.href = redirectUrl;
+                      navigate(redirectUrl, { replace: true });
                     } else {
                       let targetUrl = '/buyer/dashboard';
                       if (loggedInUser.role === 'admin') targetUrl = '/admin';
                       else if (loggedInUser.role === 'seller') targetUrl = '/seller/dashboard';
-                      window.location.href = targetUrl;
+                      navigate(targetUrl, { replace: true });
                     }
                   } catch (err) {
                     setIsLoading(false);
