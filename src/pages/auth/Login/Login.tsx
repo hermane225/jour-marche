@@ -459,7 +459,6 @@ export function Login() {
               shape="rectangular"
               size="large"
               width="100%"
-              locale="fr"
             />
           </div>
 
