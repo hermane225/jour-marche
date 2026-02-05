@@ -15,11 +15,18 @@ const mapUserFromApi = (apiUser: AuthResponse['data']): User | null => {
     name = [user.firstName, user.lastName].filter(Boolean).join(' ');
   }
   
+  // Mapper le rôle API vers le rôle local (customer -> buyer)
+  let role: UserRole = 'buyer';
+  if (user.role === 'admin') role = 'admin';
+  else if (user.role === 'seller' || user.role === 'vendor') role = 'seller';
+  else if (user.role === 'driver') role = 'driver';
+  else role = 'buyer'; // customer, user, buyer -> buyer
+  
   return {
     id: user._id || user.id || '',
     email: user.email,
     name: name || user.email.split('@')[0],
-    role: user.role as UserRole,
+    role,
     phone: user.phone,
     avatar: user.avatar,
     createdAt: new Date(user.createdAt),
@@ -73,11 +80,16 @@ export const authService = {
     phone?: string
   ): Promise<User> => {
     try {
+      // Séparer le nom en firstName et lastName
+      const nameParts = name.trim().split(' ');
+      const firstName = nameParts[0] || 'Utilisateur';
+      const lastName = nameParts.slice(1).join(' ') || 'JourMarche';
+      
       const response = await apiClient.post<AuthResponse>('/api/auth/register', {
         email,
         password,
-        name,
-        role: role === 'buyer' || role === 'seller' ? role : 'buyer',
+        firstName,
+        lastName,
         phone,
       } as SignupRequest, { skipAuth: true });
 

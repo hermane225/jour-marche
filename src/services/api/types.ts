@@ -29,8 +29,8 @@ export interface LoginRequest {
 export interface SignupRequest {
   email: string;
   password: string;
-  name: string;
-  role: 'buyer' | 'seller';
+  firstName: string;
+  lastName: string;
   phone?: string;
 }
 
