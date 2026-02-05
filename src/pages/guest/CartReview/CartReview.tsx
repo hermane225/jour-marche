@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Trash2, Minus, Plus, ArrowLeft } from 'lucide-react';
 import { useCart } from '../../../context/CartContext';
+import { useAuth } from '../../../context/AuthContext';
 import { Button, Card } from '../../../components/ui';
 import './CartReview.css';
 
 export function CartReview() {
   const navigate = useNavigate();
   const { cart, updateQuantity, removeFromCart } = useCart();
+  const { isAuthenticated } = useAuth();
   const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
@@ -37,6 +39,14 @@ export function CartReview() {
   }
 
   const handleContinue = () => {
+    // Vérifier si l'utilisateur est connecté
+    if (!isAuthenticated) {
+      // Sauvegarder l'URL de retour pour après la connexion
+      sessionStorage.setItem('redirectAfterLogin', '/delivery/info');
+      navigate('/login');
+      return;
+    }
+    
     setIsProcessing(true);
     // Naviguer vers les infos de livraison
     setTimeout(() => {

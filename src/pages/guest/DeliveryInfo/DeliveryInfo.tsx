@@ -2,6 +2,7 @@ import { useState, type FormEvent, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, MapPin, Phone, User, Package, Info } from 'lucide-react';
 import { useCart } from '../../../context/CartContext';
+import { useAuth } from '../../../context/AuthContext';
 import { Button, Input, Card } from '../../../components/ui';
 import { relayPoints } from '../../../data/mockData';
 import './DeliveryInfo.css';
@@ -14,6 +15,7 @@ const formatPrice = (price: number) => {
 export default function DeliveryInfo() {
   const navigate = useNavigate();
   const { cart } = useCart();
+  const { isAuthenticated, user } = useAuth();
   
   const [step, setStep] = useState<'info' | 'delivery'>('info');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -26,6 +28,24 @@ export default function DeliveryInfo() {
   const [deliveryType, setDeliveryType] = useState<'delivery' | 'relay'>('delivery');
   const [deliveryAddress, setDeliveryAddress] = useState('');
   const [selectedRelay, setSelectedRelay] = useState<string | null>(null);
+
+  // Rediriger si non connecté
+  useEffect(() => {
+    if (!isAuthenticated) {
+      sessionStorage.setItem('redirectAfterLogin', '/delivery/info');
+      navigate('/login');
+    }
+  }, [isAuthenticated, navigate]);
+
+  // Pré-remplir avec les infos de l'utilisateur connecté
+  useEffect(() => {
+    if (user) {
+      setCustomerInfo({
+        name: user.name || '',
+        phone: user.phone || '',
+      });
+    }
+  }, [user]);
 
   // Scroller vers le haut au montage
   useEffect(() => {

@@ -32,7 +32,15 @@ export function Signup() {
     setIsLoading(true);
     try {
       await signup(email, password, name || email.split('@')[0], 'buyer');
-      navigate('/');
+      
+      // Vérifier s'il y a une redirection après inscription
+      const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
+      if (redirectUrl) {
+        sessionStorage.removeItem('redirectAfterLogin');
+        navigate(redirectUrl);
+      } else {
+        navigate('/');
+      }
     } catch {
       setError('Cet email est déjà utilisé.');
     } finally {

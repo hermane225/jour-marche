@@ -25,10 +25,33 @@ export function Login() {
 
     setIsLoading(true);
     try {
-      await login(email, password);
-      navigate('/');
-    } catch {
-      setError('Identifiants incorrects');
+      const loggedInUser = await login(email, password);
+      
+      // Vérifier s'il y a une redirection après connexion
+      const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
+      if (redirectUrl) {
+        sessionStorage.removeItem('redirectAfterLogin');
+        navigate(redirectUrl);
+      } else {
+        // Rediriger selon le rôle
+        switch (loggedInUser.role) {
+          case 'admin':
+            navigate('/admin');
+            break;
+          case 'seller':
+            navigate('/seller/dashboard');
+            break;
+          default:
+            navigate('/');
+        }
+      }
+    } catch (err) {
+      console.error('Erreur de connexion:', err);
+      if (err instanceof Error) {
+        setError(err.message || 'Identifiants incorrects');
+      } else {
+        setError('Identifiants incorrects');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -208,7 +231,7 @@ export function Login() {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} noValidate>
             {/* Email Input */}
             <div style={{ marginBottom: '20px' }}>
               <label style={{ 
@@ -235,9 +258,6 @@ export function Login() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="exemple@email.com"
-                  required
-                  pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}|[0-9+\s]+"
-                  title="Entrez un email ou un numéro de téléphone valide"
                   style={{
                     width: '100%',
                     padding: '16px 16px 16px 50px',
@@ -294,9 +314,6 @@ export function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  required
-                  minLength={6}
-                  title="Le mot de passe doit contenir au moins 6 caractères"
                   style={{
                     width: '100%',
                     padding: '16px 50px 16px 50px',

@@ -1,51 +1,35 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { User, UserRole } from '../types';
+import { authService, tokenManager } from '../services/api';
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  signup: (email: string, password: string, name: string, role: UserRole) => Promise<void>;
+  error: string | null;
+  login: (email: string, password: string) => Promise<User>;
+  signup: (email: string, password: string, name: string, role: UserRole) => Promise<User>;
   logout: () => void;
   updateUser: (updates: Partial<User>) => void;
+  clearError: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-// Données de démonstration
-const mockUsers: User[] = [
-  {
-    id: '1',
-    email: 'buyer@email.com',
-    name: 'Amara Koné',
-    role: 'buyer',
-    phone: '+225 07 12 34 56',
-    createdAt: new Date('2023-01-15'),
-  },
-  {
-    id: '2',
-    email: 'seller@email.com',
-    name: 'Nom du Vendeur',
-    role: 'seller',
-    phone: '+225 05 98 76 54',
-    createdAt: new Date('2023-02-20'),
-  },
-  {
-    id: '3',
-    email: 'admin@jourmarche.com',
-    name: 'Admin Jour Marché',
-    role: 'admin',
-    phone: '+225 07 00 00 00',
-    createdAt: new Date('2023-01-01'),
-  },
-];
 
 // Fonction d'initialisation paresseuse pour le user
 const getInitialUser = (): User | null => {
   const storedUser = localStorage.getItem('jour_marche_user');
   if (storedUser) {
-    return JSON.parse(storedUser);
+    try {
+      const parsed = JSON.parse(storedUser);
+      // Convertir la date string en objet Date
+      return {
+        ...parsed,
+        createdAt: new Date(parsed.createdAt),
+      };
+    } catch {
+      return null;
+    }
   }
   return null;
 };
@@ -53,63 +37,106 @@ const getInitialUser = (): User | null => {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(getInitialUser);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const login = async (email: string, _password: string): Promise<void> => {
-    setIsLoading(true);
-    
-    // Simulation d'appel API
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const foundUser = mockUsers.find(u => u.email === email);
-    
-    if (foundUser) {
-      setUser(foundUser);
-      localStorage.setItem('jour_marche_user', JSON.stringify(foundUser));
-    } else {
-      // Créer un utilisateur de démonstration
-      const newUser: User = {
-        id: Date.now().toString(),
-        email,
-        name: email.split('@')[0],
-        role: 'buyer',
-        createdAt: new Date(),
-      };
-      setUser(newUser);
-      localStorage.setItem('jour_marche_user', JSON.stringify(newUser));
-    }
-    
-    setIsLoading(false);
-  };
-
-  const signup = async (email: string, _password: string, name: string, role: UserRole): Promise<void> => {
-    setIsLoading(true);
-    
-    // Simulation d'appel API
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const newUser: User = {
-      id: Date.now().toString(),
-      email,
-      name,
-      role,
-      createdAt: new Date(),
+  // Écouter l'événement de déconnexion forcée (token expiré)
+  useEffect(() => {
+    const handleLogout = () => {
+      setUser(null);
+      localStorage.removeItem('jour_marche_user');
+      tokenManager.clearTokens();
     };
+
+    window.addEventListener('auth:logout', handleLogout);
+    return () => window.removeEventListener('auth:logout', handleLogout);
+  }, []);
+
+  // Vérifier le token au chargement
+  useEffect(() => {
+    const checkAuth = async () => {
+      if (tokenManager.hasToken() && !user) {
+        try {
+          setIsLoading(true);
+          const currentUser = await authService.getCurrentUser();
+          if (currentUser) {
+            setUser(currentUser);
+            localStorage.setItem('jour_marche_user', JSON.stringify(currentUser));
+          }
+        } catch {
+          // Token invalide, on le supprime
+          tokenManager.clearTokens();
+          localStorage.removeItem('jour_marche_user');
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  const clearError = () => setError(null);
+
+  const login = async (email: string, password: string): Promise<User> => {
+    setIsLoading(true);
+    setError(null);
     
-    setUser(newUser);
-    localStorage.setItem('jour_marche_user', JSON.stringify(newUser));
-    setIsLoading(false);
+    try {
+      // Appeler l'API d'authentification
+      const loggedInUser = await authService.login(email, password);
+      setUser(loggedInUser);
+      localStorage.setItem('jour_marche_user', JSON.stringify(loggedInUser));
+      return loggedInUser;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Échec de la connexion';
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('jour_marche_user');
+  const signup = async (email: string, password: string, name: string, role: UserRole): Promise<User> => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      // Appeler l'API d'inscription
+      const registeredUser = await authService.signup(email, password, name, role);
+      setUser(registeredUser);
+      localStorage.setItem('jour_marche_user', JSON.stringify(registeredUser));
+      return registeredUser;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Échec de l'inscription";
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const updateUser = (updates: Partial<User>) => {
-    if (user) {
-      const updatedUser = { ...user, ...updates };
+  const logout = async () => {
+    try {
+      await authService.logout();
+    } catch {
+      // Ignorer les erreurs de déconnexion
+    } finally {
+      setUser(null);
+      localStorage.removeItem('jour_marche_user');
+      tokenManager.clearTokens();
+    }
+  };
+
+  const updateUser = async (updates: Partial<User>) => {
+    if (!user) return;
+
+    try {
+      const updatedUser = await authService.updateProfile(updates);
       setUser(updatedUser);
       localStorage.setItem('jour_marche_user', JSON.stringify(updatedUser));
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Échec de la mise à jour du profil';
+      setError(errorMessage);
     }
   };
 
@@ -119,10 +146,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user, 
         isAuthenticated: !!user, 
         isLoading, 
+        error,
         login, 
         signup, 
         logout,
-        updateUser 
+        updateUser,
+        clearError,
       }}
     >
       {children}
