@@ -43,7 +43,7 @@ export function CartReview() {
     if (!isAuthenticated) {
       // Sauvegarder l'URL de retour pour après la connexion
       sessionStorage.setItem('redirectAfterLogin', '/delivery/info');
-      navigate('/login');
+      navigate('/login', { replace: true });
       return;
     }
     

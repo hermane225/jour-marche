@@ -33,7 +33,7 @@ export default function DeliveryInfo() {
   useEffect(() => {
     if (!isAuthenticated) {
       sessionStorage.setItem('redirectAfterLogin', '/delivery/info');
-      navigate('/login');
+      navigate('/login', { replace: true });
     }
   }, [isAuthenticated, navigate]);
 
