@@ -16,43 +16,41 @@ export function Login() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError('');
+    e.stopPropagation();
     
+    // Validation côté client
     if (!email || !password) {
       setError('Veuillez remplir tous les champs');
       return;
     }
 
+    // Réinitialiser l'erreur et démarrer le chargement
+    setError('');
     setIsLoading(true);
+    
     try {
       const loggedInUser = await login(email, password);
       
-      // Vérifier s'il y a une redirection après connexion
+      // Redirection immédiate selon le rôle
       const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
       if (redirectUrl) {
         sessionStorage.removeItem('redirectAfterLogin');
-        navigate(redirectUrl);
+        navigate(redirectUrl, { replace: true });
       } else {
-        // Rediriger selon le rôle
-        switch (loggedInUser.role) {
-          case 'admin':
-            navigate('/admin');
-            break;
-          case 'seller':
-            navigate('/seller/dashboard');
-            break;
-          default:
-            navigate('/');
-        }
+        // Rediriger selon le rôle - utiliser replace pour éviter le retour arrière
+        const targetUrl = loggedInUser.role === 'admin' 
+          ? '/admin' 
+          : loggedInUser.role === 'seller' 
+            ? '/seller/dashboard' 
+            : '/';
+        navigate(targetUrl, { replace: true });
       }
     } catch (err) {
-      console.error('Erreur de connexion:', err);
-      if (err instanceof Error) {
-        setError(err.message || 'Identifiants incorrects');
-      } else {
-        setError('Identifiants incorrects');
-      }
-    } finally {
+      // Afficher l'erreur sans recharger la page
+      const errorMessage = err instanceof Error 
+        ? (err.message || 'Email ou mot de passe incorrect') 
+        : 'Email ou mot de passe incorrect';
+      setError(errorMessage);
       setIsLoading(false);
     }
   };

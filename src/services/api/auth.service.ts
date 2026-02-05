@@ -31,24 +31,35 @@ export const authService = {
    * Connexion d'un utilisateur
    */
   login: async (email: string, password: string): Promise<User> => {
-    const response = await apiClient.post<AuthResponse>('/api/auth/login', {
-      email,
-      password,
-    } as LoginRequest, { skipAuth: true });
+    try {
+      const response = await apiClient.post<AuthResponse>('/api/auth/login', {
+        email,
+        password,
+      } as LoginRequest, { skipAuth: true });
 
-    if (!response.success || !response.data) {
-      throw new Error(response.message || 'Échec de la connexion');
+      if (!response.success || !response.data) {
+        throw new Error(response.message || 'Email ou mot de passe incorrect');
+      }
+
+      // Sauvegarder le token
+      tokenManager.setToken(response.data.token);
+
+      const user = mapUserFromApi(response.data);
+      if (!user) {
+        throw new Error('Erreur lors de la récupération du profil');
+      }
+
+      return user;
+    } catch (err) {
+      // Convertir les erreurs réseau en messages lisibles
+      if (err instanceof Error) {
+        if (err.message.includes('fetch') || err.message.includes('network')) {
+          throw new Error('Impossible de se connecter au serveur. Vérifiez votre connexion internet.');
+        }
+        throw err;
+      }
+      throw new Error('Email ou mot de passe incorrect');
     }
-
-    // Sauvegarder le token
-    tokenManager.setToken(response.data.token);
-
-    const user = mapUserFromApi(response.data);
-    if (!user) {
-      throw new Error('Données utilisateur invalides');
-    }
-
-    return user;
   },
 
   /**
