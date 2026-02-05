@@ -31,6 +31,9 @@ export const config = {
   
   // Est-ce qu'on est en développement ?
   isDevelopment: import.meta.env.DEV,
+  
+  // Google OAuth Client ID
+  googleClientId: import.meta.env.VITE_GOOGLE_CLIENT_ID || '',
 } as const;
 
 // Type pour les variables d'environnement Vite
@@ -39,6 +42,7 @@ declare global {
     readonly VITE_API_URL: string;
     readonly VITE_APP_MODE: string;
     readonly VITE_USE_MOCK_DATA: string;
+    readonly VITE_GOOGLE_CLIENT_ID: string;
   }
 
   interface ImportMeta {

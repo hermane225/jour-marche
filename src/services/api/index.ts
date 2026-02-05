@@ -1,6 +1,7 @@
 // Export de tous les services API
 export { apiClient, tokenManager, ApiException } from './client';
 export { authService } from './auth.service';
+export { googleAuthService } from './google-auth.service';
 export { productService } from './products.service';
 export { shopService } from './shops.service';
 export { orderService } from './orders.service';

@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { User, UserRole } from '../types';
 import { authService, tokenManager } from '../services/api';
+import { googleAuthService } from '../services/api/google-auth.service';
 
 interface AuthContextType {
   user: User | null;
@@ -8,6 +9,7 @@ interface AuthContextType {
   isLoading: boolean;
   error: string | null;
   login: (email: string, password: string) => Promise<User>;
+  loginWithGoogle: (credential: string) => Promise<User>;
   signup: (email: string, password: string, name: string, role: UserRole) => Promise<User>;
   logout: () => void;
   updateUser: (updates: Partial<User>) => void;
@@ -96,6 +98,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const loginWithGoogle = async (credential: string): Promise<User> => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const loggedInUser = await googleAuthService.loginWithGoogle(credential);
+      setUser(loggedInUser);
+      localStorage.setItem('jour_marche_user', JSON.stringify(loggedInUser));
+      return loggedInUser;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Échec de la connexion Google';
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const signup = async (email: string, password: string, name: string, role: UserRole): Promise<User> => {
     setIsLoading(true);
     setError(null);
@@ -147,7 +167,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAuthenticated: !!user, 
         isLoading, 
         error,
-        login, 
+        login,
+        loginWithGoogle,
         signup, 
         logout,
         updateUser,
