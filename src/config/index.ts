@@ -1,19 +1,17 @@
 // Configuration de l'application
 // Les variables d'environnement Vite sont préfixées par VITE_
 
-// En développement, on utilise une URL vide pour que le proxy Vite gère les requêtes
-// En production, on utilise l'URL de l'API
+// En développement et production avec proxy, on utilise une URL vide
+// Le proxy (Vite en dev, Vercel en prod) redirigera /api vers l'API
 const getApiUrl = () => {
-  // Si une URL est explicitement définie, l'utiliser
-  if (import.meta.env.VITE_API_URL) {
-    return import.meta.env.VITE_API_URL;
+  // Si une URL est explicitement définie (non vide), l'utiliser
+  const envUrl = import.meta.env.VITE_API_URL;
+  if (envUrl && envUrl.trim() !== '') {
+    return envUrl;
   }
-  // En développement, utiliser une chaîne vide (le proxy Vite redirigera /api vers l'API)
-  if (import.meta.env.DEV) {
-    return '';
-  }
-  // En production, utiliser l'URL par défaut
-  return 'https://jour-marche-api.onrender.com';
+  // Sinon, utiliser une chaîne vide pour que le proxy gère les requêtes
+  // En dev: proxy Vite, en prod: rewrites Vercel
+  return '';
 };
 
 export const config = {
