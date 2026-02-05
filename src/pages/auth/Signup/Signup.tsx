@@ -31,19 +31,25 @@ export function Signup() {
 
     setIsLoading(true);
     try {
-      await signup(email, password, name || email.split('@')[0], 'buyer');
+      const registeredUser = await signup(email, password, name || email.split('@')[0], 'buyer');
       
       // Vérifier s'il y a une redirection après inscription
       const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
       if (redirectUrl) {
         sessionStorage.removeItem('redirectAfterLogin');
-        navigate(redirectUrl);
+        navigate(redirectUrl, { replace: true });
       } else {
-        navigate('/');
+        // Rediriger selon le rôle
+        const targetUrl = registeredUser.role === 'seller' ? '/seller/dashboard' : '/';
+        navigate(targetUrl, { replace: true });
       }
-    } catch {
-      setError('Cet email est déjà utilisé.');
-    } finally {
+    } catch (err) {
+      // Afficher le vrai message d'erreur de l'API
+      if (err instanceof Error) {
+        setError(err.message || "Erreur lors de l'inscription");
+      } else {
+        setError("Erreur lors de l'inscription");
+      }
       setIsLoading(false);
     }
   };

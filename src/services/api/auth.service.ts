@@ -72,27 +72,38 @@ export const authService = {
     role: UserRole,
     phone?: string
   ): Promise<User> => {
-    const response = await apiClient.post<AuthResponse>('/api/auth/register', {
-      email,
-      password,
-      name,
-      role: role === 'buyer' || role === 'seller' ? role : 'buyer',
-      phone,
-    } as SignupRequest, { skipAuth: true });
+    try {
+      const response = await apiClient.post<AuthResponse>('/api/auth/register', {
+        email,
+        password,
+        name,
+        role: role === 'buyer' || role === 'seller' ? role : 'buyer',
+        phone,
+      } as SignupRequest, { skipAuth: true });
 
-    if (!response.success || !response.data) {
-      throw new Error(response.message || "Échec de l'inscription");
+      if (!response.success || !response.data) {
+        throw new Error(response.message || "Échec de l'inscription");
+      }
+
+      // Sauvegarder le token
+      tokenManager.setToken(response.data.token);
+
+      const user = mapUserFromApi(response.data);
+      if (!user) {
+        throw new Error('Erreur lors de la création du profil');
+      }
+
+      return user;
+    } catch (err) {
+      // Convertir les erreurs réseau en messages lisibles
+      if (err instanceof Error) {
+        if (err.message.includes('fetch') || err.message.includes('network')) {
+          throw new Error('Impossible de se connecter au serveur. Vérifiez votre connexion internet.');
+        }
+        throw err;
+      }
+      throw new Error("Échec de l'inscription");
     }
-
-    // Sauvegarder le token
-    tokenManager.setToken(response.data.token);
-
-    const user = mapUserFromApi(response.data);
-    if (!user) {
-      throw new Error('Données utilisateur invalides');
-    }
-
-    return user;
   },
 
   /**
