@@ -17,8 +17,9 @@ export function Signup() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError('');
+    e.stopPropagation();
     
+    // Validation côté client
     if (!email || !password) {
       setError('Veuillez remplir tous les champs');
       return;
@@ -29,6 +30,8 @@ export function Signup() {
       return;
     }
 
+    // Réinitialiser l'erreur et démarrer le chargement
+    setError('');
     setIsLoading(true);
     try {
       const registeredUser = await signup(email, password, name || email.split('@')[0], 'buyer');
@@ -235,7 +238,7 @@ export function Signup() {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} noValidate>
             {/* Name Input */}
             <div style={{ marginBottom: '20px' }}>
               <label style={{ 
