@@ -501,7 +501,7 @@ export function Home() {
                   <div
                     style={{
                       background: 'white',
-                      borderRadius: '24px',
+                      borderRadius: '12px',
                       overflow: 'hidden',
                       boxShadow: hoveredProduct === product.id
                         ? '0 25px 50px rgba(0,0,0,0.15)'
@@ -596,53 +596,50 @@ export function Home() {
                       </div>
                     </div>
                     {/* Product Info */}
-                    <div style={{ padding: '20px' }}>
+                    <div style={{ padding: '12px' }}>
                       {/* Shop name with badge */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                        <span style={{ 
-                          padding: '4px 10px', 
-                          background: 'linear-gradient(135deg, #f3e8ff, #e9d5ff)', 
-                          color: '#8b5cf6', 
-                          fontSize: '11px', 
-                          fontWeight: 700, 
-                          borderRadius: '20px',
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                        <span style={{
+                          padding: '3px 8px',
+                          background: 'linear-gradient(135deg, #f3e8ff, #e9d5ff)',
+                          color: '#8b5cf6',
+                          fontSize: '10px',
+                          fontWeight: 600,
+                          borderRadius: '12px',
                           display: 'flex',
                           alignItems: 'center',
-                          gap: '4px'
+                          gap: '3px'
                         }}>
-                          <Store size={12} />
+                          <Store size={10} />
                           {product.shopName}
                         </span>
                       </div>
                       {/* Title */}
-                      <h3 style={{ 
-                        margin: '0 0 12px 0', 
-                        fontSize: '16px', 
-                        fontWeight: 700, 
-                        color: '#1f2937', 
-                        lineHeight: 1.4, 
-                        display: '-webkit-box', 
-                        WebkitLineClamp: 2, 
-                        WebkitBoxOrient: 'vertical', 
+                      <h3 style={{
+                        margin: '0 0 8px 0',
+                        fontSize: '14px',
+                        fontWeight: 600,
+                        color: '#1f2937',
+                        lineHeight: 1.3,
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
                         overflow: 'hidden',
-                        minHeight: '44px'
+                        minHeight: '36px'
                       }}>
                         {product.title}
                       </h3>
                       {/* Price Section */}
-                      <div style={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
                         justifyContent: 'space-between',
-                        padding: '12px 16px',
-                        background: 'linear-gradient(135deg, #fafafa, #f5f5f5)',
-                        borderRadius: '14px',
-                        marginTop: '12px'
+                        marginTop: '8px'
                       }}>
                         <div>
-                          <span style={{ 
-                            fontSize: '22px', 
-                            fontWeight: 800, 
+                          <span style={{
+                            fontSize: '18px',
+                            fontWeight: 700,
                             color: '#059669',
                             display: 'block'
                           }}>
@@ -653,9 +650,9 @@ export function Home() {
                           <button type="button"
                             onClick={(e) => handleAddToCart(e, product)}
                             style={{
-                              width: '48px',
-                              height: '48px',
-                              borderRadius: '14px',
+                              width: '32px',
+                              height: '32px',
+                              borderRadius: '8px',
                               background: addedProductId === product.id
                                 ? 'linear-gradient(135deg, #10b981, #34d399)'
                                 : 'linear-gradient(135deg, #059669, #10b981)',
@@ -663,14 +660,14 @@ export function Home() {
                               alignItems: 'center',
                               justifyContent: 'center',
                               color: 'white',
-                              boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)',
+                              boxShadow: '0 2px 8px rgba(16, 185, 129, 0.2)',
                               border: 'none',
                               cursor: 'pointer',
-                              transform: addedProductId === product.id ? 'scale(1.15)' : 'scale(1)',
-                              transition: 'all 0.3s ease'
+                              transform: addedProductId === product.id ? 'scale(1.1)' : 'scale(1)',
+                              transition: 'all 0.2s ease'
                             }}
                           >
-                            {addedProductId === product.id ? <Check size={20} /> : <ShoppingCart size={20} />}
+                            {addedProductId === product.id ? <Check size={14} /> : <ShoppingCart size={14} />}
                           </button>
                         </div>
                       </div>
