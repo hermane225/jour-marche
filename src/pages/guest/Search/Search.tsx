@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { useCart } from '../../../context/CartContext';
 import { products, categories } from '../../../data/mockData';
+import '../../../styles/product-card-mobile.css';
 
 export function Search() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -373,171 +374,35 @@ export function Search() {
             gridTemplateColumns: 'repeat(auto-fill, minmax(clamp(140px, 50vw, 280px), 1fr))',
             gap: 'clamp(12px, 3vw, 24px)'
           }}>
-            {filteredProducts.map((product) => (
-              <div
-                key={product.id}
-                onMouseEnter={() => setHoveredProduct(product.id)}
-                onMouseLeave={() => setHoveredProduct(null)}
-                style={{
-                  background: 'white',
-                  borderRadius: '20px',
-                  overflow: 'hidden',
-                  boxShadow: hoveredProduct === product.id 
-                    ? '0 20px 40px rgba(5, 150, 105, 0.2)' 
-                    : '0 4px 20px rgba(0,0,0,0.08)',
-                  transform: hoveredProduct === product.id ? 'translateY(-8px)' : 'translateY(0)',
-                  transition: 'all 0.3s ease'
-                }}
-              >
-                {/* Image */}
-                <div style={{ position: 'relative', paddingTop: '100%', overflow: 'hidden' }}>
-                  <Link to={`/product/${product.id}`}>
-                    <img
-                      src={product.images[0]}
-                      alt={product.title}
+            <div className="products-grid-jumia">
+              {filteredProducts.map(product => (
+                <Link to={`/product/${product.id}`} key={product.id}>
+                  <div className="product-card" style={{ position: 'relative' }}>
+                    <div className="product-card__image">
+                      <img src={product.images[0]} alt={product.title} />
+                      {product.stock <= 5 && product.stock > 0 && (
+                        <span className="product-card__badge--stock">Plus que {product.stock}</span>
+                      )}
+                    </div>
+                    <div className="product-card__info">
+                      <div className="product-card__shop">
+                        <span className="product-card__shop-name">{product.shopName}</span>
+                      </div>
+                      <h3 className="product-card__title">{product.title}</h3>
+                      <div className="product-card__price-section">
+                        <span className="product-card__price">{formatPrice(product.price)}</span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => handleAddToCart(product)}
                       style={{
                         position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                        transform: hoveredProduct === product.id ? 'scale(1.1)' : 'scale(1)',
-                        transition: 'transform 0.5s ease'
-                      }}
-                    />
-                  </Link>
-                  
-                  {/* Quick actions */}
-                  <div style={{
-                    position: 'absolute',
-                    top: '12px',
-                    right: '12px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '8px',
-                    opacity: hoveredProduct === product.id ? 1 : 0,
-                    transform: hoveredProduct === product.id ? 'translateX(0)' : 'translateX(10px)',
-                    transition: 'all 0.3s ease'
-                  }}>
-                    <button style={{
-                      width: '40px',
-                      height: '40px',
-                      borderRadius: '50%',
-                      background: 'white',
-                      border: 'none',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
-                      <Heart size={18} color="#ef4444" />
-                    </button>
-                    <Link to={`/product/${product.id}`} style={{
-                      width: '40px',
-                      height: '40px',
-                      borderRadius: '50%',
-                      background: 'white',
-                      border: 'none',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      textDecoration: 'none'
-                    }}>
-                      <Eye size={18} color="#059669" />
-                    </Link>
-                  </div>
-
-                  {/* Badge stock */}
-                  {product.stock <= 5 && product.stock > 0 && (
-                    <div style={{
-                      position: 'absolute',
-                      top: '12px',
-                      left: '12px',
-                      background: 'linear-gradient(135deg, #f97316, #ea580c)',
-                      color: 'white',
-                      padding: '6px 12px',
-                      borderRadius: '20px',
-                      fontSize: '12px',
-                      fontWeight: '600'
-                    }}>
-                      🔥 Plus que {product.stock}
-                    </div>
-                  )}
-                </div>
-
-                {/* Infos */}
-                <div className="product-card-info" style={{ padding: '20px' }}>
-                  <Link to={`/shop/${product.shopId}`} className="product-card-shop" style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    color: '#059669',
-                    fontSize: '13px',
-                    fontWeight: '500',
-                    textDecoration: 'none',
-                    marginBottom: '8px'
-                  }}>
-                    <Store size={14} />
-                    {product.shopName}
-                  </Link>
-
-                  <Link to={`/product/${product.id}`} style={{ textDecoration: 'none' }}>
-                    <h3 className="product-card-title" style={{
-                      fontSize: '16px',
-                      fontWeight: '600',
-                      color: '#1f2937',
-                      marginBottom: '8px',
-                      lineHeight: '1.4',
-                      display: '-webkit-box',
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden'
-                    }}>
-                      {product.title}
-                    </h3>
-                  </Link>
-
-                  <div style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: '4px',
-                    marginBottom: '12px'
-                  }}>
-                    <Star size={14} fill="#fbbf24" color="#fbbf24" />
-                    <span style={{ fontSize: '13px', color: '#6b7280' }}>4.5 (12 avis)</span>
-                  </div>
-
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between'
-                  }}>
-                    <span className="product-card-price" style={{
-                      fontSize: '20px',
-                      fontWeight: '700',
-                      color: '#059669'
-                    }}>
-                      {formatPrice(product.price)}
-                    </span>
-                    
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handleAddToCart(product);
-                      }}
-                      className="product-card-btn"
-                      style={{
+                        bottom: '12px',
+                        right: '12px',
                         width: '44px',
                         height: '44px',
-                        borderRadius: '12px',
-                        background: addedProductId === product.id 
-                          ? '#10b981' 
-                          : 'linear-gradient(135deg, #059669, #10b981)',
+                        borderRadius: '50%',
+                        background: '#10b981',
                         border: 'none',
                         cursor: 'pointer',
                         display: 'flex',
@@ -565,9 +430,9 @@ export function Search() {
                       )}
                     </button>
                   </div>
-                </div>
-              </div>
-            ))}
+                </Link>
+              ))}
+            </div>
           </div>
         ) : (
           <div style={{

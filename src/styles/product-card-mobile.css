@@ -1,0 +1,406 @@
+/* Product Card Mobile Styles - Jumia-like compact design */
+
+/* Card container - compact sur mobile */
+.product-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+  position: relative;
+  cursor: pointer;
+  border: 1px solid #e5e7eb;
+}
+
+.product-card:hover {
+  box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+  transform: translateY(-4px);
+}
+
+/* Image container */
+.product-card__image {
+  aspect-ratio: 1;
+  overflow: hidden;
+  position: relative;
+  background: #f9fafb;
+}
+
+.product-card__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-card__image img {
+  transform: scale(1.05);
+}
+
+/* Badges - Discount & Stock */
+.product-card__badges {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 1;
+}
+
+.product-card__badge--discount {
+  padding: 3px 8px;
+  background: #f97316;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 4px;
+}
+
+.product-card__badge--stock {
+  padding: 3px 8px;
+  background: #fbbf24;
+  color: #1f2937;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 4px;
+}
+
+/* Action buttons (wishlist, quick view) */
+.product-card__actions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.product-card:hover .product-card__actions {
+  opacity: 1;
+}
+
+.product-card__action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Quick add button overlay - hidden on mobile */
+.product-card__quick-add-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 10px;
+  background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.product-card:hover .product-card__quick-add-overlay {
+  opacity: 1;
+}
+
+.product-card__quick-add-btn {
+  width: 100%;
+  padding: 10px;
+  background: #059669;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* Product info - compact version */
+.product-card__info {
+  padding: 12px;
+}
+
+.product-card__shop {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.product-card__shop-name {
+  font-size: 11px;
+  color: #059669;
+  font-weight: 500;
+}
+
+.product-card__rating {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+}
+
+.product-card__rating span {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.product-card__title {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #1f2937;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 34px;
+}
+
+/* Price section */
+.product-card__price-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.product-card__price-wrapper {
+  flex: 1;
+}
+
+.product-card__price {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1f2937;
+  display: block;
+}
+
+.product-card__original-price {
+  font-size: 11px;
+  color: #9ca3af;
+  text-decoration: line-through;
+}
+
+.product-card__add-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #059669;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s ease;
+}
+
+.product-card__add-btn:hover {
+  background: #047857;
+}
+
+.product-card__add-btn--added {
+  background: #10b981;
+}
+
+/* ============================================
+   MOBILE STYLES - Jumia-like compact design
+   ============================================ */
+
+@media (max-width: 768px) {
+  .product-card {
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+
+  .product-card:hover {
+    transform: none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+
+  .product-card__badges {
+    top: 6px;
+    left: 6px;
+    gap: 3px;
+  }
+
+  .product-card__badge--discount {
+    padding: 2px 6px;
+    font-size: 10px;
+    border-radius: 3px;
+  }
+
+  .product-card__badge--stock {
+    padding: 2px 5px;
+    font-size: 9px;
+  }
+
+  /* Hide hover actions on mobile */
+  .product-card__actions {
+    display: none;
+  }
+
+  .product-card__quick-add-overlay {
+    display: none;
+  }
+
+  .product-card__info {
+    padding: 8px;
+  }
+
+  .product-card__shop {
+    margin-bottom: 4px;
+  }
+
+  .product-card__shop-name {
+    font-size: 10px;
+  }
+
+  .product-card__title {
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    min-height: 31px;
+    line-height: 1.3;
+  }
+
+  .product-card__price-section {
+    gap: 6px;
+  }
+
+  .product-card__price {
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .product-card__original-price {
+    font-size: 10px;
+  }
+
+  .product-card__add-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .product-card {
+    border-radius: 6px;
+  }
+
+  .product-card__info {
+    padding: 6px 8px 8px;
+  }
+
+  .product-card__shop {
+    margin-bottom: 3px;
+  }
+
+  .product-card__shop-name {
+    font-size: 9px;
+  }
+
+  .product-card__rating span {
+    font-size: 9px;
+  }
+
+  .product-card__title {
+    font-size: 11px;
+    margin-bottom: 4px;
+    min-height: 28px;
+    -webkit-line-clamp: 2;
+  }
+
+  .product-card__price {
+    font-size: 13px;
+  }
+
+  .product-card__original-price {
+    font-size: 9px;
+  }
+
+  .product-card__add-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 5px;
+  }
+}
+
+/* Very small screens (iPhone SE, etc.) */
+@media (max-width: 375px) {
+  .product-card__info {
+    padding: 5px 6px 6px;
+  }
+
+  .product-card__title {
+    font-size: 10px;
+    min-height: 26px;
+    margin-bottom: 3px;
+  }
+
+  .product-card__price {
+    font-size: 12px;
+  }
+
+  .product-card__add-btn {
+    width: 26px;
+    height: 26px;
+  }
+}
+
+/* Products grid adjustments for Jumia-like layout */
+.products-grid-jumia {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 1280px) {
+  .products-grid-jumia {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .products-grid-jumia {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .products-grid-jumia {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .products-grid-jumia {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+}
+
+@media (max-width: 375px) {
+  .products-grid-jumia {
+    gap: 6px;
+  }
+}

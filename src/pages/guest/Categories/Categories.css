@@ -80,20 +80,27 @@
 
 .categories-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: var(--spacing-5);
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: var(--spacing-4);
+}
+
+@media (min-width: 480px) {
+  .categories-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: var(--spacing-5);
+  }
 }
 
 @media (min-width: 640px) {
   .categories-grid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: var(--spacing-6);
   }
 }
 
 @media (min-width: 1024px) {
   .categories-grid {
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: var(--spacing-7);
   }
 }
@@ -253,6 +260,68 @@
   font-weight: 600;
   border: 1px solid rgba(22, 163, 74, 0.12);
   font-size: 0.75rem;
+}
+
+/* Mobile improvements for category cards */
+@media (max-width: 768px) {
+  .categories-grid-section {
+    padding: var(--spacing-6) var(--spacing-4);
+  }
+
+  .categories-grid {
+    gap: var(--spacing-3);
+  }
+
+  .category-card {
+    min-height: 160px;
+    padding: 1.5rem 1rem;
+    gap: 0.5rem;
+  }
+
+  .category-card-icon {
+    font-size: 3rem;
+    width: 60px;
+    height: 60px;
+  }
+
+  .category-card-name {
+    font-size: 0.9rem;
+    line-height: 1.2;
+  }
+
+  .category-card-count {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.7rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .categories-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: var(--spacing-2);
+  }
+
+  .category-card {
+    min-height: 140px;
+    padding: 1.25rem 0.75rem;
+    gap: 0.4rem;
+  }
+
+  .category-card-icon {
+    font-size: 2.5rem;
+    width: 50px;
+    height: 50px;
+  }
+
+  .category-card-name {
+    font-size: 0.8rem;
+    line-height: 1.2;
+  }
+
+  .category-card-count {
+    font-size: 0.65rem;
+    padding: 0.25rem 0.6rem;
+  }
 }
 
 /* Products Section */

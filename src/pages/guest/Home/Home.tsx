@@ -4,6 +4,7 @@ import { ArrowRight, Sparkles, Store, Truck, Shield, Clock, Star, ChevronLeft, C
 import { products, categories, shops } from '../../../data/mockData';
 import { useCart } from '../../../context/CartContext';
 import type { Product } from '../../../types';
+import '../../../styles/product-card-mobile.css';
 
 
 // Extension du type Product pour inclure originalPrice
@@ -79,6 +80,97 @@ export function Home() {
   ).slice(0, 8) as ProductWithPromo[];
   
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
+
+  // Composant ProductCard compact style Jumia
+  const renderProductCard = (product: ProductWithPromo) => (
+    <Link
+      key={product.id}
+      to={`/product/${product.id}`}
+      style={{ textDecoration: 'none' }}
+      onMouseEnter={() => setHoveredProduct(product.id)}
+      onMouseLeave={() => setHoveredProduct(null)}
+    >
+      <div className="product-card">
+        {/* Image Container */}
+        <div className="product-card__image">
+          <img
+            src={product.images[0]}
+            alt={product.title}
+          />
+          {/* Badges */}
+          <div className="product-card__badges">
+            {product.originalPrice && (
+              <span className="product-card__badge--discount">
+                -{Math.round((1 - product.price / product.originalPrice) * 100)}%
+              </span>
+            )}
+            {product.stock < 10 && (
+              <span className="product-card__badge--stock">
+                Stock limité
+              </span>
+            )}
+          </div>
+          {/* Action Buttons - desktop only */}
+          <div className="product-card__actions">
+            <button type="button" className="product-card__action-btn" onClick={(e) => { e.preventDefault(); }}>
+              <Heart size={16} color="#ef4444" />
+            </button>
+            <button type="button" className="product-card__action-btn" onClick={(e) => { e.preventDefault(); }}>
+              <Eye size={16} color="#6b7280" />
+            </button>
+          </div>
+          {/* Quick Add Button - desktop only */}
+          <div className="product-card__quick-add-overlay">
+            <div onClick={(e) => e.stopPropagation()}>
+              <button 
+                type="button" 
+                className="product-card__quick-add-btn"
+                onClick={(e) => handleAddToCart(e, product)}
+              >
+                {addedProductId === product.id ? (
+                  <><Check size={16} /> Ajouté !</>
+                ) : (
+                  <><ShoppingCart size={16} /> Ajouter au panier</>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+        {/* Product Info */}
+        <div className="product-card__info">
+          {/* Shop name with rating */}
+          <div className="product-card__shop">
+            <Store size={10} color="#059669" />
+            <span className="product-card__shop-name">{product.shopName}</span>
+            <div className="product-card__rating">
+              <Star size={10} fill="#fbbf24" color="#fbbf24" />
+              <span>4.8</span>
+            </div>
+          </div>
+          {/* Title */}
+          <h3 className="product-card__title">{product.title}</h3>
+          {/* Price Section */}
+          <div className="product-card__price-section">
+            <div className="product-card__price-wrapper">
+              <span className="product-card__price">{formatPrice(product.price)}</span>
+              {product.originalPrice && (
+                <span className="product-card__original-price">{formatPrice(product.originalPrice)}</span>
+              )}
+            </div>
+            <div onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+              <button
+                type="button"
+                className={`product-card__add-btn ${addedProductId === product.id ? 'product-card__add-btn--added' : ''}`}
+                onClick={(e) => handleAddToCart(e, product)}
+              >
+                {addedProductId === product.id ? <Check size={14} /> : <ShoppingCart size={14} />}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Link>
+  );
 
   return (
     <div style={{ background: '#fafafa' }}>
@@ -278,267 +370,8 @@ export function Home() {
               Voir tout <ArrowRight size={18} />
             </Link>
           </div>
-          <div className="products-grid">
-            {trendingProducts.map((product) => (
-              <Link
-                key={product.id}
-                to={`/product/${product.id}`}
-                style={{ textDecoration: 'none' }}
-                onMouseEnter={() => setHoveredProduct(product.id)}
-                onMouseLeave={() => setHoveredProduct(null)}
-              >
-                <div
-                  style={{
-                    background: 'white',
-                    borderRadius: '24px',
-                    overflow: 'hidden',
-                    boxShadow: hoveredProduct === product.id
-                      ? '0 25px 50px rgba(0,0,0,0.15)'
-                      : '0 4px 20px rgba(0,0,0,0.08)',
-                    transform: hoveredProduct === product.id ? 'translateY(-12px) scale(1.02)' : 'translateY(0)',
-                    transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                    position: 'relative',
-                    cursor: 'pointer'
-                  }}
-                >
-                  {/* Image Container */}
-                  <div style={{
-                    aspectRatio: '1',
-                    overflow: 'hidden',
-                    position: 'relative',
-                    background: 'linear-gradient(135deg, #f8fafc, #f1f5f9)'
-                  }}>
-                    <img
-                      src={product.images[0]}
-                      alt={product.title}
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                        transition: 'transform 0.5s ease',
-                        transform: hoveredProduct === product.id ? 'scale(1.1)' : 'scale(1)'
-                      }}
-                    />
-                    {/* Badges */}
-                    <div style={{ position: 'absolute', top: '12px', left: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      {product.originalPrice && (
-                        <span style={{ 
-                          padding: '6px 14px', 
-                          background: 'linear-gradient(135deg, #dc2626, #ef4444)', 
-                          color: 'white', 
-                          fontSize: '12px', 
-                          fontWeight: 800, 
-                          borderRadius: '50px',
-                          boxShadow: '0 4px 15px rgba(220, 38, 38, 0.4)'
-                        }}>
-                          -{Math.round((1 - product.price / product.originalPrice) * 100)}%
-                        </span>
-                      )}
-                      {product.stock < 10 && (
-                        <span style={{ 
-                          padding: '6px 14px', 
-                          background: 'linear-gradient(135deg, #f59e0b, #fbbf24)', 
-                          color: 'white', 
-                          fontSize: '11px', 
-                          fontWeight: 700, 
-                          borderRadius: '50px'
-                        }}>
-                          ⚡ Stock limité
-                        </span>
-                      )}
-                    </div>
-                    {/* Action Buttons - apparaissent au hover */}
-                    <div style={{
-                      position: 'absolute',
-                      top: '12px',
-                      right: '12px',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '8px',
-                      opacity: hoveredProduct === product.id ? 1 : 0,
-                      transform: hoveredProduct === product.id ? 'translateX(0)' : 'translateX(20px)',
-                      transition: 'all 0.3s ease'
-                    }}>
-                      <button type="button" style={{
-                        width: '44px',
-                        height: '44px',
-                        borderRadius: '50%',
-                        border: 'none',
-                        background: 'white',
-                        boxShadow: '0 4px 15px rgba(0,0,0,0.15)',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        transition: 'all 0.2s'
-                      }}
-                        onClick={(e) => { e.preventDefault(); }}
-                      >
-                        <Heart size={20} color="#ef4444" />
-                      </button>
-                      <button type="button" style={{
-                        width: '44px',
-                        height: '44px',
-                        borderRadius: '50%',
-                        border: 'none',
-                        background: 'white',
-                        boxShadow: '0 4px 15px rgba(0,0,0,0.15)',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                        onClick={(e) => { e.preventDefault(); }}
-                      >
-                        <Eye size={20} color="#6b7280" />
-                      </button>
-                    </div>
-                    {/* Quick Add Button */}
-                    <div style={{
-                      position: 'absolute',
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      padding: '12px',
-                      background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)',
-                      opacity: hoveredProduct === product.id ? 1 : 0,
-                      transform: hoveredProduct === product.id ? 'translateY(0)' : 'translateY(20px)',
-                      transition: 'all 0.3s ease'
-                    }}>
-                      <div onClick={(e) => e.stopPropagation()}>
-                        <button type="button" style={{
-                          width: '100%',
-                          padding: '14px',
-                          background: addedProductId === product.id
-                            ? 'linear-gradient(135deg, #10b981, #34d399)'
-                            : 'linear-gradient(135deg, #059669, #10b981)',
-                          border: 'none',
-                          borderRadius: '14px',
-                          color: 'white',
-                          fontWeight: 700,
-                          fontSize: '14px',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: '8px',
-                          boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)',
-                          transform: addedProductId === product.id ? 'scale(1.02)' : 'scale(1)',
-                          transition: 'all 0.3s ease'
-                        }}
-                          onClick={(e) => handleAddToCart(e, product)}
-                        >
-                          {addedProductId === product.id ? (
-                            <>
-                              <Check size={18} />
-                              Ajouté !
-                            </>
-                          ) : (
-                            <>
-                              <ShoppingCart size={18} />
-                              Ajouter au panier
-                            </>
-                          )}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  {/* Product Info */}
-                  <div style={{ padding: '20px' }}>
-                    {/* Shop name with badge */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                      <span style={{ 
-                        padding: '4px 10px', 
-                        background: 'linear-gradient(135deg, #ecfdf5, #d1fae5)', 
-                        color: '#059669', 
-                        fontSize: '11px', 
-                        fontWeight: 700, 
-                        borderRadius: '20px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px'
-                      }}>
-                        <Store size={12} />
-                        {product.shopName}
-                      </span>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                        <Star size={12} fill="#fbbf24" color="#fbbf24" />
-                        <span style={{ fontSize: '12px', color: '#6b7280', fontWeight: 600 }}>4.8</span>
-                      </div>
-                    </div>
-                    {/* Title */}
-                    <h3 style={{ 
-                      margin: '0 0 12px 0', 
-                      fontSize: '16px', 
-                      fontWeight: 700, 
-                      color: '#1f2937', 
-                      lineHeight: 1.4, 
-                      display: '-webkit-box', 
-                      WebkitLineClamp: 2, 
-                      WebkitBoxOrient: 'vertical', 
-                      overflow: 'hidden',
-                      minHeight: '44px'
-                    }}>
-                      {product.title}
-                    </h3>
-                    {/* Price Section */}
-                    <div style={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      justifyContent: 'space-between',
-                      padding: '12px 16px',
-                      background: 'linear-gradient(135deg, #fafafa, #f5f5f5)',
-                      borderRadius: '14px',
-                      marginTop: '12px'
-                    }}>
-                      <div>
-                        <span style={{ 
-                          fontSize: '22px', 
-                          fontWeight: 800, 
-                          color: '#059669',
-                          display: 'block'
-                        }}>
-                          {formatPrice(product.price)}
-                        </span>
-                        {product.originalPrice && (
-                          <span style={{ 
-                            fontSize: '13px', 
-                            color: '#9ca3af', 
-                            textDecoration: 'line-through' 
-                          }}>
-                            {formatPrice(product.originalPrice)}
-                          </span>
-                        )}
-                      </div>
-                      <div onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
-                        <button type="button"
-                          onClick={(e) => handleAddToCart(e, product)}
-                          style={{
-                            width: '48px',
-                            height: '48px',
-                            borderRadius: '14px',
-                            background: addedProductId === product.id
-                              ? 'linear-gradient(135deg, #10b981, #34d399)'
-                              : 'linear-gradient(135deg, #059669, #10b981)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: 'white',
-                            boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)',
-                            border: 'none',
-                            cursor: 'pointer',
-                            transform: addedProductId === product.id ? 'scale(1.15)' : 'scale(1)',
-                            transition: 'all 0.3s ease'
-                          }}
-                        >
-                          {addedProductId === product.id ? <Check size={20} /> : <ShoppingCart size={20} />}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            ))}
+          <div className="products-grid-jumia">
+            {trendingProducts.map(renderProductCard)}
           </div>
           {/* Load More Button */}
           <div style={{ textAlign: 'center', marginTop: '48px' }}>

@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Card } from '../../../components/ui';
+import '../../../styles/product-card-mobile.css';
 import { categories, products } from '../../../data/mockData';
 import './Categories.css';
 
@@ -193,27 +194,29 @@ export function Categories() {
           <span className="products-count">{filteredProducts.length} produits</span>
         </div>
 
-        <div className="categories-products-grid">
+        <div className="products-grid-jumia">
           {filteredProducts.map(product => (
             <Link to={`/product/${product.id}`} key={product.id}>
-              <Card className="product-card" hover>
-                <div className="product-card-image">
+              <div className="product-card">
+                <div className="product-card__image">
                   <img src={product.images[0]} alt={product.title} />
                   {product.isPerishable && (
-                    <span className="product-badge perishable">Frais</span>
+                    <span className="product-card__badge--stock">Frais</span>
                   )}
                 </div>
-                <div className="product-card-content">
-                  <span className="product-shop">{product.shopName}</span>
-                  <h3 className="product-title">{product.title}</h3>
-                  <div className="product-price">
-                    <span className="price-current">{formatPrice(product.price)}</span>
+                <div className="product-card__info">
+                  <div className="product-card__shop">
+                    <span className="product-card__shop-name">{product.shopName}</span>
+                  </div>
+                  <h3 className="product-card__title">{product.title}</h3>
+                  <div className="product-card__price-section">
+                    <span className="product-card__price">{formatPrice(product.price)}</span>
                     {product.unit && product.unit !== 'piece' && (
-                      <span className="price-unit">/ {product.unit}</span>
+                      <span className="product-card__original-price">/ {product.unit}</span>
                     )}
                   </div>
                 </div>
-              </Card>
+              </div>
             </Link>
           ))}
         </div>
