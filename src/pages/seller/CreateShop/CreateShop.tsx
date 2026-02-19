@@ -1,1345 +1,678 @@
-import { useState, useEffect, type FormEvent } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { useShops } from '../../../context/ShopContext';
-import { 
-  Store, 
-  Upload, 
-  Camera, 
-  MapPin, 
-  Phone, 
-  Mail, 
-  Clock, 
-  CheckCircle, 
-  ArrowRight, 
+import { useCategories } from '../../../hooks/useCategories';
+import { uploadService } from '../../../services/api';
+import {
+  Store,
+  Camera,
+  MapPin,
+  Phone,
+  Package,
+  CheckCircle,
+  ArrowRight,
   ArrowLeft,
   Sparkles,
-  Shield,
-  TrendingUp,
-  Users,
-  Package,
-  CreditCard,
-  Globe,
-  Instagram,
-  Facebook
+  Tag,
 } from 'lucide-react';
+
+// Quartiers / communes par ville
+const QUARTIERS_PAR_VILLE: Record<string, string[]> = {
+  'Abidjan': [
+    'Abobo', 'Adjamé', 'Angré', 'Attecoubé', 'Bingerville', 'Cocody',
+    'Koumassi', 'Marcory', 'Plateau', 'Port-Bouët', 'Riviera',
+    'Treichville', 'Vridi', 'Yopougon', '2 Plateaux',
+  ],
+  'Yamoussoukro': [
+    'Centre-ville', 'Dioulakro', 'Habitat', "N'Zuia", 'Fétékro',
+  ],
+  'Bouaké': [
+    'Air France', 'Broukro', 'Commerce', 'Dar-Es-Salam', 'Koko',
+    "N'Gattakro", 'Nimbo', 'Sokoura', 'Tolakro', 'Zone industrielle',
+  ],
+  'Daloa': [
+    'Centre-ville', 'Gendarmerie', 'Kennedy', 'Lobia', 'Orly', 'Satellite',
+  ],
+  'Korhogo': [
+    'Centre-ville', 'Koko', 'Nawavogo', 'Petit-Paris', 'Zone industrielle',
+  ],
+  'San-Pédro': [
+    'Bardo', 'Centre-ville', 'Cité', 'Zone portuaire',
+  ],
+  'Gagnoa': [
+    'Centre-ville', 'Dioulabougou', 'Gnagbodougnoa', 'Zépréguhé',
+  ],
+  'Divo': [
+    'Centre-ville', 'Gbodougou', 'Guitry', 'Zone résidentielle',
+  ],
+  'Soubré': [
+    'Centre-ville', 'Gare', 'Grand-Zattry', 'Méagui',
+  ],
+  'Abengourou': [
+    'Centre-ville', 'Danguira', 'Filankro', 'Zone résidentielle',
+  ],
+  'Agboville': [
+    'Centre-ville', 'Mbatto', "N'Dotré", 'Zone résidentielle',
+  ],
+  'Bondoukou': [
+    'Centre-ville', 'Commerce', 'Tabagne',
+  ],
+  'Ferkéssédougou': [
+    'Centre-ville', 'Dioulabougou', 'Ferké 1', 'Ferké 2',
+  ],
+};
+
+const VILLES_CI = Object.keys(QUARTIERS_PAR_VILLE).concat([
+  'Adzopé', 'Daoukro', 'Dimbokro', 'Bouna', 'Odienné',
+  'Mankono', 'Duékoué', 'Danané', 'Guiglo', 'Sassandra', 'Issia',
+]);
+
 
 export function CreateShop() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { addShop } = useShops();
-  
-  // Scroll vers le haut au chargement de la page
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  const { data: categories, isLoading: catsLoading } = useCategories();
+
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    // Étape 1 - Infos de base
-    shopName: '',
-    description: '',
-    category: '',
-    // Étape 2 - Contact
-    phone: '',
-    whatsapp: '',
-    email: '',
-    // Étape 3 - Localisation
-    city: '',
-    commune: '',
-    address: '',
-    // Étape 4 - Horaires et livraison
-    openingHours: '',
-    closingHours: '',
-    deliveryZones: [] as string[],
-    deliveryFee: '',
-    // Étape 5 - Réseaux sociaux (optionnel)
-    instagram: '',
-    facebook: '',
-    website: '',
-  });
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  // logo = URL obtenue après upload sur l'API
   const [logo, setLogo] = useState<string | null>(null);
-  const [coverImage, setCoverImage] = useState<string | null>(null);
+  // logoPreview = base64 pour affichage immédiat pendant l'upload
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [logoUploading, setLogoUploading] = useState(false);
+  const [logoError, setLogoError] = useState<string | null>(null);
 
-  const categories = [
-    { id: 'legumes-fruits', name: 'Légumes & Fruits', icon: '🥦' },
-    { id: 'cereales', name: 'Céréales & Vivriers', icon: '🌾' },
-    { id: 'attieke-manioc', name: 'Attiéké & Manioc', icon: '🫘' },
-    { id: 'restaurants', name: 'Plats cuisinés', icon: '🍛' },
-    { id: 'poissons-viandes', name: 'Poissons & Viandes', icon: '🥩' },
-    { id: 'epices-condiments', name: 'Épices & Condiments', icon: '🌶️' },
-    { id: 'boissons', name: 'Boissons & Jus', icon: '🧃' },
-    { id: 'boulangerie', name: 'Boulangerie & Pâtisserie', icon: '🥐' },
-    { id: 'mode', name: 'Mode & Vêtements', icon: '👗' },
-    { id: 'beaute', name: 'Beauté & Cosmétiques', icon: '💄' },
-    { id: 'artisanat', name: 'Artisanat Local', icon: '🎨' },
-    { id: 'autre', name: 'Autre', icon: '📦' },
-  ];
+  const [formData, setFormData] = useState({
+    // Étape 1
+    name: '',
+    description: '',
+    category: '',       // MongoId depuis l'API
+    // Étape 2
+    phone: '',
+    city: '',
+    commune: '',        // utilisé comme address.street
+    addressDetail: '',
+    // Étape 3
+    pickup: true,       // 'retrait en magasin'
+    deliveryLocal: false, // 'livraison locale'
+    deliveryNational: false, // 'livraison nationale'
+    deliveryFee: '',
+    minimumOrder: '',
+  });
 
-  // Toutes les villes de Côte d'Ivoire
-  const cities = [
-    'Abidjan', 'Yamoussoukro', 'Bouaké', 'Daloa', 'Korhogo', 'San-Pédro', 
-    'Gagnoa', 'Divo', 'Soubré', 'Oumé', 'Katiola', 'Séguela', 'Tabou', 
-    'Grand-Lahou', 'Anyama', 'Tanda', 'Agboville', 'Adzopé', 'Akoupé', 
-    'Alépé', 'Daoukro', 'Dimbokro', 'Bondoukou', 'Bouna', 'Ferkéssédougou', 
-    'Odienné', 'Toumodi', 'Abengourou', 'Ayamé', 'Tiébissou', 
-    'Mankono', 'Duékoué', 'Danané', 'Guiglo', 'Biankouma', 'Sassandra', 
-    'Issia', 'Lakota', 'Vavoua', 'Bangolo', 'Béoumi', 'Boguéni', 'Buyo', 
-    'Brobo', 'Dabakala', 'Dabou', 'Guitry', 'Kossou', 'Marahoué', 'Azaguié'
-  ];
+  useEffect(() => { window.scrollTo(0, 0); }, []);
 
-  // Toutes les communes de Côte d'Ivoire
-  const communes = [
-    // District d'Abidjan
-    'Cocody', 'Plateau', 'Marcory', 'Treichville', 'Yopougon', 'Abobo', 'Adjamé', 
-    'Koumassi', 'Port-Bouët', 'Bingerville', 'Riviera', 'Angré', '2 Plateaux',
-    'Attecoubé', 'Vridi', 'Sachel', 'Azaguié', 'Bassam', 'Jacqueville',
-    
-    // District de Yamoussoukro
-    'Yamoussoukro', 'N\'Douci', 'Taabo',
-    
-    // District d'Abengourou
-    'Abengourou', 'Ayamé', 'Atuébo', 'Tangrouan',
-    
-    // District d'Agboville
-    'Agboville', 'Azaguié', 'Tiassalé', 'Akoupé',
-    
-    // District d'Adzopé
-    'Adzopé', 'Alépé', 'Akoupé', 'Anyama',
-    
-    // District de Bondoukou
-    'Bondoukou', 'Tanda', 'Guin', 'Minignan',
-    
-    // District de Bouaké
-    'Bouaké', 'Katiola', 'Nzuékro', 'Toumodi',
-    
-    // District de Bouna
-    'Bouna', 'Transua', 'Kong', 'Niellé',
-    
-    // District de Dabou
-    'Dabou', 'Grand-Lahou', 'Jacqueville', 'Mé',
-    
-    // District de Daloa
-    'Daloa', 'Duékoué', 'Zoukougbeu', 'Saïoua',
-    
-    // District de Daoukro
-    'Daoukro', 'Dimbokro', 'N\'Dako', 'Taabo',
-    
-    // District de Ferkéssédougou
-    'Ferkéssédougou', 'Bouna', 'Dikodougou', 'Tengrela',
-    
-    // District de Gagnoa
-    'Gagnoa', 'Oumé', 'Vavoua', 'Yamoussoukro',
-    
-    // District de Guiglo
-    'Guiglo', 'Danané', 'Biankouma', 'Kouibly',
-    
-    // District de Issia
-    'Issia', 'Prikro', 'Zoukougbeu',
-    
-    // District de Katiola
-    'Katiola', 'Nzuékro', 'Guitry', 'Marahoué',
-    
-    // District de Korhogo
-    'Korhogo', 'Séguela', 'Sinématiali', 'Ouangolodougou',
-    
-    // District de Mankono
-    'Mankono', 'Tengrela', 'Kasséré',
-    
-    // District de Odienné
-    'Odienné', 'Minignan', 'Séguéla', 'Guin',
-    
-    // District de San-Pédro
-    'San-Pédro', 'Sassandra', 'Soubré', 'Tabou',
-    
-    // District de Soubré
-    'Soubré', 'Divo', 'Lakota', 'Gagnoa',
-    
-    // District de Tanda
-    'Tanda', 'Tiébissou', 'Prikro', 'Toumodi',
-    
-    // District de Bondoukou
-    'Bondoukou', 'Tanda', 'Guin', 'Minignan'
-  ];
-
-  const zones = [
-    'Cocody', 'Plateau', 'Marcory', 'Treichville', 'Yopougon', 'Abobo', 'Adjamé', 
-    'Koumassi', 'Port-Bouët', 'Bingerville', 'Riviera', 'Angré', '2 Plateaux',
-    'Attecoubé', 'Vridi', 'Sachel', 'Anyama', 'Bouaké', 'Daloa', 'Korhogo', 
-    'San-Pédro', 'Gagnoa', 'Divo', 'Soubré', 'Oumé', 'Agboville', 'Yamoussoukro',
-    'Daoukro', 'Dimbokro', 'Abengourou', 'Bondoukou', 'Bouna', 'Ferkéssédougou',
-    'Odienné', 'Toumodi', 'Adzopé', 'Alépé', 'Tanda', 'Tiébissou', 'Mankono'
-  ];
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, type: 'logo' | 'cover') => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        if (type === 'logo') {
-          setLogo(reader.result as string);
-        } else {
-          setCoverImage(reader.result as string);
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const toggleDeliveryZone = (zone: string) => {
-    setFormData(prev => ({
-      ...prev,
-      deliveryZones: prev.deliveryZones.includes(zone)
-        ? prev.deliveryZones.filter(z => z !== zone)
-        : [...prev.deliveryZones, zone]
-    }));
-  };
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    
-    // Si on n'est pas à l'étape 5, passer à l'étape suivante au lieu de soumettre
-    if (currentStep < 5) {
-      nextStep();
-      return;
-    }
-    
-    setIsLoading(true);
-    
-    // Simulation d'un délai réseau court
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
-    // Créer la boutique avec les vraies données
-    const newShop = addShop({
-      name: formData.shopName,
-      description: formData.description || `Boutique ${formData.shopName}`,
-      logo: logo || undefined,
-      phone: formData.phone,
-      address: `${formData.city}, ${formData.commune}${formData.address ? ` - ${formData.address}` : ''}`,
-      sellerId: user?.id || 'unknown',
-      deliveryOptions: {
-        pickup: true,
-        delivery: formData.deliveryZones.length > 0,
-        deliveryFee: formData.deliveryFee ? parseInt(formData.deliveryFee) : 1000,
-        deliveryZones: formData.deliveryZones,
-      },
-    });
-    
-    console.log('Boutique créée:', newShop);
-    
-    setIsLoading(false);
-    // Rediriger vers la création de produit avec l'ID de la nouvelle boutique
-    navigate('/seller/products/create', { state: { shopId: newShop.id, shopName: newShop.name } });
-  };
-  
-  // Empêcher la soumission du formulaire par Entrée sauf à l'étape 5
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && currentStep < 5) {
-      e.preventDefault();
-      if (isStepValid()) {
-        nextStep();
-      }
-    }
-  };
-
-  const nextStep = () => {
-    setCurrentStep(prev => Math.min(prev + 1, 5));
-    // Scroll vers le haut immédiatement et de manière fluide
-    setTimeout(() => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 0);
-  };
-  const prevStep = () => {
-    setCurrentStep(prev => Math.max(prev - 1, 1));
-    // Scroll vers le haut immédiatement et de manière fluide
-    setTimeout(() => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 0);
-  };
-
-  const isStepValid = () => {
-    switch (currentStep) {
-      case 1:
-        return formData.shopName && formData.category;
-      case 2:
-        return formData.phone;
-      case 3:
-        return formData.city && formData.commune;
-      case 4:
-        return true;
-      case 5:
-        return true;
-      default:
-        return false;
-    }
-  };
-
+  const TOTAL_STEPS = 3;
   const steps = [
     { number: 1, title: 'Boutique', icon: Store },
     { number: 2, title: 'Contact', icon: Phone },
-    { number: 3, title: 'Localisation', icon: MapPin },
-    { number: 4, title: 'Livraison', icon: Package },
-    { number: 5, title: 'Réseaux', icon: Globe },
+    { number: 3, title: 'Livraison', icon: Package },
   ];
 
+  const isStepValid = () => {
+    if (currentStep === 1) return formData.name.trim().length >= 2 && formData.category !== '';
+    if (currentStep === 2) return formData.phone.trim() !== '' && formData.city !== '';
+    if (currentStep === 3) return formData.pickup || formData.deliveryLocal || formData.deliveryNational;
+    return false;
+  };
+
+  const scrollTop = () => setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 0);
+  const nextStep = () => { setCurrentStep(p => Math.min(p + 1, TOTAL_STEPS)); scrollTop(); };
+  const prevStep = () => { setCurrentStep(p => Math.max(p - 1, 1)); scrollTop(); };
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setLogoError(null);
+
+    // Prévisualisation base64 immédiate
+    const reader = new FileReader();
+    reader.onloadend = () => setLogoPreview(reader.result as string);
+    reader.readAsDataURL(file);
+
+    // Upload réel vers l'API
+    setLogoUploading(true);
+    try {
+      const uploaded = await uploadService.uploadSingle(file);
+      setLogo(uploaded.url);
+    } catch {
+      setLogoPreview(null);
+      setLogo(null);
+      setLogoError('Impossible d\'uploader le logo. Réessayez.');
+    } finally {
+      setLogoUploading(false);
+    }
+  };
+
+  // Soumission finale uniquement (la navigation par étapes passe par les boutons onClick)
+  const handleFinalSubmit = async () => {
+    setIsLoading(true);
+    setSubmitError(null);
+
+    // Construire deliveryOptions comme tableau de strings selon le validateur API
+    const deliveryOptions: string[] = [];
+    if (formData.pickup)          deliveryOptions.push('retrait en magasin');
+    if (formData.deliveryLocal)   deliveryOptions.push('livraison locale');
+    if (formData.deliveryNational) deliveryOptions.push('livraison nationale');
+
+    // Construire address comme objet (validateur : address.city, address.street, address.country)
+    const address = {
+      street: [formData.commune, formData.addressDetail].filter(Boolean).join(' - ') || undefined,
+      city: formData.city || undefined,
+      country: 'CI',
+    };
+
+    try {
+      const newShop = await addShop({
+        name: formData.name.trim(),
+        description: formData.description.trim() || undefined,
+        category: formData.category,
+        logo: logo || undefined,
+        phone: formData.phone.trim() || undefined,
+        address,
+        deliveryOptions: deliveryOptions.length ? deliveryOptions : undefined,
+        deliveryFee: formData.deliveryFee ? Number(formData.deliveryFee) : undefined,
+        minimumOrder: formData.minimumOrder ? Number(formData.minimumOrder) : undefined,
+      });
+
+      navigate('/seller/products/create', {
+        state: { shopId: newShop.id, shopName: newShop.name },
+      });
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : 'Echec de la creation de la boutique');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && currentStep < TOTAL_STEPS) {
+      e.preventDefault();
+      if (isStepValid()) nextStep();
+    }
+  };
+
+  //  Styles 
+  const inputStyle: React.CSSProperties = {
+    width: '100%', padding: '14px 18px', fontSize: '15px',
+    border: '2px solid #e5e7eb', borderRadius: '12px',
+    outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', background: 'white',
+  };
+  const selectStyle: React.CSSProperties = {
+    ...inputStyle, cursor: 'pointer',
+    appearance: 'none' as React.CSSProperties['appearance'],
+    background: `white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 14px center`,
+  };
+  const labelStyle: React.CSSProperties = {
+    display: 'block', marginBottom: '6px', fontSize: '14px', fontWeight: 600, color: '#374151',
+  };
+  const focusBorder = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
+    (e.target.style.borderColor = '#8b5cf6');
+  const blurBorder = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
+    (e.target.style.borderColor = '#e5e7eb');
+
+  //  �tape 1 
+  const renderStep1 = () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <div>
+        <h2 style={{ margin: '0 0 4px 0', fontSize: '22px', fontWeight: 700, color: '#1f2937' }}>
+          Informations de la boutique
+        </h2>
+        <p style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>
+          Le nom et la description sont les premieres choses vues par vos clients.
+        </p>
+      </div>
+
+      <div>
+        <label style={labelStyle}>Logo de la boutique</label>
+        <label style={{
+          display: 'flex', flexDirection: 'column', alignItems: 'center',
+          justifyContent: 'center', width: '110px', height: '110px',
+          border: logoUploading ? '3px dashed #8b5cf6' : '3px dashed #d1d5db', borderRadius: '16px',
+          cursor: logoUploading ? 'wait' : 'pointer', background: '#f9fafb', overflow: 'hidden', position: 'relative',
+        }}>
+          <input type="file" accept="image/*" onChange={handleLogoUpload} hidden disabled={logoUploading} />
+          {(logoPreview || logo) ? (
+            <span style={{ display: 'block', width: '100%', height: '100%', position: 'relative' }}>
+              <img src={logoPreview || logo!} alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              {logoUploading && (
+                <span style={{
+                  position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.45)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <span style={{
+                    width: '22px', height: '22px', border: '3px solid rgba(255,255,255,0.4)',
+                    borderTopColor: 'white', borderRadius: '50%',
+                    animation: 'spin 0.8s linear infinite', display: 'inline-block',
+                  }} />
+                </span>
+              )}
+            </span>
+          ) : (
+            <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+              <Camera size={28} color={logoUploading ? '#8b5cf6' : '#9ca3af'} />
+              <span style={{ fontSize: '12px', color: '#9ca3af' }}>
+                {logoUploading ? 'Upload...' : 'Ajouter'}
+              </span>
+            </span>
+          )}
+        </label>
+        {logoError && (
+          <p style={{ margin: '6px 0 0 0', fontSize: '12px', color: '#ef4444' }}>{logoError}</p>
+        )}
+      </div>
+
+      <div>
+        <label style={labelStyle}>
+          Nom de la boutique <span style={{ color: '#ef4444' }}>*</span>
+        </label>
+        <input
+          type="text"
+          placeholder="Ex: Chez Mariam"
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          required
+          style={inputStyle}
+          onFocus={focusBorder}
+          onBlur={blurBorder}
+        />
+      </div>
+
+      <div>
+        <label style={labelStyle}>Description (optionnel)</label>
+        <textarea
+          placeholder="Decrivez vos produits et ce qui rend votre boutique unique..."
+          value={formData.description}
+          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+          rows={4}
+          style={{ ...inputStyle, resize: 'vertical' }}
+          onFocus={focusBorder}
+          onBlur={blurBorder}
+        />
+      </div>
+
+      {/* Catégorie - obligatoire, MongoId depuis l'API */}
+      <div>
+        <label style={{ ...labelStyle, display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <Tag size={15} color="#6b7280" />
+          Catégorie <span style={{ color: '#ef4444' }}>*</span>
+        </label>
+        {catsLoading ? (
+          <div style={{ padding: '14px 18px', border: '2px solid #e5e7eb', borderRadius: '12px', color: '#9ca3af', fontSize: '14px' }}>
+            Chargement des catégories...
+          </div>
+        ) : (
+          <select
+            value={formData.category}
+            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+            required
+            style={selectStyle}
+            onFocus={focusBorder}
+            onBlur={blurBorder}
+          >
+            <option value="">Sélectionnez une catégorie</option>
+            {(categories || []).map(cat => (
+              <option key={cat.id} value={cat.id}>{cat.name}</option>
+            ))}
+          </select>
+        )}
+      </div>
+    </div>
+  );
+
+  //  �tape 2 
+  const renderStep2 = () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <div>
+        <h2 style={{ margin: '0 0 4px 0', fontSize: '22px', fontWeight: 700, color: '#1f2937' }}>
+          Contact & Localisation
+        </h2>
+        <p style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>
+          Comment vous joindre et ou se trouve votre boutique.
+        </p>
+      </div>
+
+      <div>
+        <label style={{ ...labelStyle, display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <Phone size={15} color="#6b7280" />
+          Telephone <span style={{ color: '#ef4444' }}>*</span>
+        </label>
+        <input
+          type="tel"
+          placeholder="07 XX XX XX XX"
+          value={formData.phone}
+          onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/\D/g, '') })}
+          required
+          inputMode="numeric"
+          style={inputStyle}
+          onFocus={focusBorder}
+          onBlur={blurBorder}
+        />
+      </div>
+
+      <div>
+        <label style={{ ...labelStyle, display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <MapPin size={15} color="#6b7280" />
+          Ville <span style={{ color: '#ef4444' }}>*</span>
+        </label>
+        <select
+          value={formData.city}
+          onChange={(e) => setFormData({ ...formData, city: e.target.value, commune: '' })}
+          required
+          style={selectStyle}
+          onFocus={focusBorder}
+          onBlur={blurBorder}
+        >
+          <option value="">Selectionnez une ville</option>
+          {VILLES_CI.map(v => <option key={v} value={v}>{v}</option>)}
+        </select>
+      </div>
+
+      {QUARTIERS_PAR_VILLE[formData.city]?.length > 0 && (
+        <div>
+          <label style={labelStyle}>
+            {formData.city === 'Abidjan' ? 'Commune' : 'Quartier'}
+          </label>
+          <select
+            value={formData.commune}
+            onChange={(e) => setFormData({ ...formData, commune: e.target.value })}
+            style={selectStyle}
+            onFocus={focusBorder}
+            onBlur={blurBorder}
+          >
+            <option value="">
+              {formData.city === 'Abidjan' ? 'Selectionnez une commune' : 'Selectionnez un quartier'}
+            </option>
+            {(QUARTIERS_PAR_VILLE[formData.city] || []).map(q => (
+              <option key={q} value={q}>{q}</option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      <div>
+        <label style={labelStyle}>Precision adresse (optionnel)</label>
+        <input
+          type="text"
+          placeholder="Quartier, rue, repere..."
+          value={formData.addressDetail}
+          onChange={(e) => setFormData({ ...formData, addressDetail: e.target.value })}
+          style={inputStyle}
+          onFocus={focusBorder}
+          onBlur={blurBorder}
+        />
+      </div>
+    </div>
+  );
+
+  //  �tape 3 
+  const renderStep3 = () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <div>
+        <h2 style={{ margin: '0 0 4px 0', fontSize: '22px', fontWeight: 700, color: '#1f2937' }}>
+          Options de livraison
+        </h2>
+        <p style={{ margin: 0, fontSize: '14px', color: '#6b7280' }}>
+          Choisissez comment vos clients recuperent leurs commandes.
+        </p>
+      </div>
+
+      {/* Retrait en boutique */}
+      <button
+        type="button"
+        onClick={() => setFormData(p => ({ ...p, pickup: !p.pickup }))}
+        style={{
+          display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 20px',
+          border: formData.pickup ? '2px solid #10b981' : '2px solid #e5e7eb',
+          borderRadius: '14px', background: formData.pickup ? '#f0fdf4' : 'white',
+          cursor: 'pointer', width: '100%',
+        }}
+      >
+        <span style={{ fontSize: '24px' }}>🏪</span>
+        <div style={{ flex: 1, textAlign: 'left' }}>
+          <p style={{ margin: 0, fontWeight: 600, color: '#1f2937', fontSize: '14px' }}>Retrait en boutique</p>
+          <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: '#6b7280' }}>Le client vient chercher sa commande chez vous</p>
+        </div>
+        {formData.pickup && <CheckCircle size={20} color="#10b981" />}
+      </button>
+
+      {/* Livraison locale */}
+      <button
+        type="button"
+        onClick={() => setFormData(p => ({ ...p, deliveryLocal: !p.deliveryLocal }))}
+        style={{
+          display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 20px',
+          border: formData.deliveryLocal ? '2px solid #10b981' : '2px solid #e5e7eb',
+          borderRadius: '14px', background: formData.deliveryLocal ? '#f0fdf4' : 'white',
+          cursor: 'pointer', width: '100%',
+        }}
+      >
+        <span style={{ fontSize: '24px' }}>🛵</span>
+        <div style={{ flex: 1, textAlign: 'left' }}>
+          <p style={{ margin: 0, fontWeight: 600, color: '#1f2937', fontSize: '14px' }}>Livraison locale</p>
+          <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: '#6b7280' }}>Livraison dans votre ville</p>
+        </div>
+        {formData.deliveryLocal && <CheckCircle size={20} color="#10b981" />}
+      </button>
+
+      {/* Livraison nationale */}
+      <button
+        type="button"
+        onClick={() => setFormData(p => ({ ...p, deliveryNational: !p.deliveryNational }))}
+        style={{
+          display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 20px',
+          border: formData.deliveryNational ? '2px solid #10b981' : '2px solid #e5e7eb',
+          borderRadius: '14px', background: formData.deliveryNational ? '#f0fdf4' : 'white',
+          cursor: 'pointer', width: '100%',
+        }}
+      >
+        <span style={{ fontSize: '24px' }}>🚚</span>
+        <div style={{ flex: 1, textAlign: 'left' }}>
+          <p style={{ margin: 0, fontWeight: 600, color: '#1f2937', fontSize: '14px' }}>Livraison nationale</p>
+          <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: '#6b7280' }}>Livraison partout en Cote d'Ivoire</p>
+        </div>
+        {formData.deliveryNational && <CheckCircle size={20} color="#10b981" />}
+      </button>
+
+      {/* Frais de livraison si livraison active */}
+      {(formData.deliveryLocal || formData.deliveryNational) && (
+        <div style={{ padding: '20px', background: '#f9fafb', borderRadius: '14px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div>
+            <label style={labelStyle}>Frais de livraison (FCFA)</label>
+            <div style={{ position: 'relative' }}>
+              <input
+                type="number" min={0} placeholder="Ex: 1000"
+                value={formData.deliveryFee}
+                onChange={(e) => setFormData({ ...formData, deliveryFee: e.target.value })}
+                style={{ ...inputStyle, paddingRight: '70px' }}
+                onFocus={focusBorder} onBlur={blurBorder}
+              />
+              <span style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af', fontSize: '13px', fontWeight: 600 }}>FCFA</span>
+            </div>
+          </div>
+          <div>
+            <label style={labelStyle}>Commande minimum pour livraison gratuite (optionnel)</label>
+            <div style={{ position: 'relative' }}>
+              <input
+                type="number" min={0} placeholder="Ex: 10000"
+                value={formData.minimumOrder}
+                onChange={(e) => setFormData({ ...formData, minimumOrder: e.target.value })}
+                style={{ ...inputStyle, paddingRight: '70px' }}
+                onFocus={focusBorder} onBlur={blurBorder}
+              />
+              <span style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af', fontSize: '13px', fontWeight: 600 }}>FCFA</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Resume */}
+      <div style={{ padding: '18px', background: '#f0fdf4', borderRadius: '14px', border: '1.5px solid #86efac' }}>
+        <p style={{ margin: '0 0 4px 0', fontWeight: 700, color: '#059669', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <CheckCircle size={17} /> Pret a creer votre boutique !
+        </p>
+        <p style={{ margin: 0, fontSize: '13px', color: '#166534', lineHeight: 1.6 }}>
+          <strong>"{formData.name || 'Ma Boutique'}"</strong>
+          {[formData.commune, formData.city].filter(Boolean).length > 0 ? (
+            <span> — {[formData.commune, formData.city].filter(Boolean).join(', ')}</span>
+          ) : null}
+          {formData.phone ? <span> · {formData.phone}</span> : null}
+        </p>
+      </div>
+    </div>
+  );
+
+  //  Rendu 
   return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 50%, #f5f3ff 100%)' }}>
+    <div style={{ minHeight: '100vh', background: '#f9fafb' }}>
       {/* Header */}
-      <div className="create-shop-page-header">
-        <div className="create-shop-header-inner">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <button 
-              type="button"
-              onClick={() => navigate(-1)}
-              style={{ padding: '10px', background: '#f3f4f6', border: 'none', borderRadius: '10px', cursor: 'pointer' }}
-            >
-              <ArrowLeft size={20} color="#374151" />
-            </button>
-            <div>
-              <h1 className="create-shop-header-title">
-                <Sparkles size={24} color="#8b5cf6" />
-                <span className="create-shop-header-text">Ouvrir ma boutique gratuitement</span>
-              </h1>
-              <p className="create-shop-header-subtitle">
-                Créez votre boutique en ligne en quelques minutes
-              </p>
+      <div style={{ background: 'white', borderBottom: '1px solid #e5e7eb', padding: '16px 0', position: 'sticky', top: 0, zIndex: 10 }}>
+        <div style={{ maxWidth: '640px', margin: '0 auto', padding: '0 20px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <button
+            type="button" onClick={() => navigate(-1)}
+            style={{ padding: '8px', background: '#f3f4f6', border: 'none', borderRadius: '10px', cursor: 'pointer', display: 'flex' }}
+          >
+            <ArrowLeft size={20} color="#374151" />
+          </button>
+          <div>
+            <h1 style={{ margin: 0, fontSize: '17px', fontWeight: 700, color: '#1f2937', display: 'flex', alignItems: 'center', gap: '7px' }}>
+              <Sparkles size={18} color="#8b5cf6" />
+              Creer ma boutique
+            </h1>
+            <p style={{ margin: 0, fontSize: '12px', color: '#6b7280' }}>Gratuit  En quelques minutes</p>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ maxWidth: '640px', margin: '0 auto', padding: '24px 20px' }}>
+        {/* Progression */}
+        <div style={{ marginBottom: '24px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+            <span style={{ fontSize: '13px', fontWeight: 600, color: '#374151' }}>Etape {currentStep} / {TOTAL_STEPS}</span>
+            <span style={{ fontSize: '13px', color: '#6b7280' }}>{Math.round((currentStep / TOTAL_STEPS) * 100)}%</span>
+          </div>
+          <div style={{ height: '6px', background: '#e5e7eb', borderRadius: '3px', overflow: 'hidden' }}>
+            <div style={{
+              height: '100%', width: `${(currentStep / TOTAL_STEPS) * 100}%`,
+              background: 'linear-gradient(90deg, #8b5cf6, #10b981)',
+              borderRadius: '3px', transition: 'width 0.3s ease',
+            }} />
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '10px' }}>
+            {steps.map(step => {
+              const Icon = step.icon;
+              const done = currentStep > step.number;
+              const active = currentStep === step.number;
+              return (
+                <div key={step.number} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                  <div style={{
+                    width: '36px', height: '36px', borderRadius: '10px',
+                    background: done ? '#059669' : active ? '#8b5cf6' : '#e5e7eb',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    {done ? <CheckCircle size={18} color="white" /> : <Icon size={18} color={active ? 'white' : '#9ca3af'} />}
+                  </div>
+                  <span style={{ fontSize: '11px', color: active ? '#8b5cf6' : done ? '#059669' : '#9ca3af', fontWeight: active ? 600 : 400 }}>
+                    {step.title}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Carte du formulaire */}
+        <div style={{ background: 'white', borderRadius: '20px', padding: '28px 24px', boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}>
+          <div onKeyDown={handleKeyDown}>
+            {currentStep === 1 && renderStep1()}
+            {currentStep === 2 && renderStep2()}
+            {currentStep === 3 && renderStep3()}
+
+            {submitError && (
+              <div style={{
+                marginTop: '16px', padding: '12px 16px',
+                background: '#fef2f2', border: '1.5px solid #fca5a5',
+                borderRadius: '10px', color: '#b91c1c', fontSize: '14px',
+                display: 'flex', alignItems: 'center', gap: '8px',
+              }}>
+                ⚠️ {submitError}
+              </div>
+            )}
+
+            {/* Navigation */}
+            <div style={{
+              display: 'flex', justifyContent: 'space-between',
+              marginTop: '28px', paddingTop: '20px',
+              borderTop: '1px solid #f3f4f6', gap: '12px',
+            }}>
+              {currentStep > 1 ? (
+                <button
+                  type="button" onClick={prevStep}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: '6px',
+                    padding: '12px 20px', border: '2px solid #e5e7eb',
+                    borderRadius: '12px', background: 'white',
+                    color: '#374151', fontWeight: 600, fontSize: '14px', cursor: 'pointer',
+                  }}
+                >
+                  <ArrowLeft size={16} /> Retour
+                </button>
+              ) : <div />}
+
+              {currentStep < TOTAL_STEPS ? (
+                <button
+                  type="button" onClick={nextStep} disabled={!isStepValid()}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: '8px',
+                    padding: '13px 28px', border: 'none', borderRadius: '12px',
+                    background: isStepValid() ? 'linear-gradient(135deg, #8b5cf6, #10b981)' : '#e5e7eb',
+                    color: isStepValid() ? 'white' : '#9ca3af',
+                    fontWeight: 700, fontSize: '15px',
+                    cursor: isStepValid() ? 'pointer' : 'not-allowed',
+                    flex: 1, justifyContent: 'center', maxWidth: '240px', marginLeft: 'auto',
+                  }}
+                >
+                  Continuer <ArrowRight size={17} />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleFinalSubmit}
+                  disabled={isLoading || !isStepValid()}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: '8px',
+                    padding: '13px 28px', border: 'none', borderRadius: '12px',
+                    background: 'linear-gradient(135deg, #059669, #10b981)',
+                    color: 'white', fontWeight: 700, fontSize: '15px',
+                    cursor: isLoading ? 'wait' : 'pointer',
+                    flex: 1, justifyContent: 'center', maxWidth: '240px', marginLeft: 'auto',
+                    boxShadow: '0 4px 14px rgba(16,185,129,0.35)',
+                  }}
+                >
+                  {isLoading ? (
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{
+                        width: '17px', height: '17px',
+                        border: '3px solid rgba(255,255,255,0.3)',
+                        borderTopColor: 'white', borderRadius: '50%',
+                        animation: 'spin 0.8s linear infinite', display: 'inline-block',
+                      }} />
+                      Creation...
+                    </span>
+                  ) : (
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Sparkles size={17} /> Creer ma boutique</span>
+                  )}
+                </button>
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      <div className="create-shop-container">
-        <div className="create-shop-layout">
-          
-          {/* Sidebar - Avantages */}
-          <div className="create-shop-sidebar">
-            {/* Progress Steps */}
-            <div style={{ background: 'white', borderRadius: '20px', padding: '24px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
-              <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                Progression
-              </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {steps.map((step) => {
-                  const Icon = step.icon;
-                  const isActive = currentStep === step.number;
-                  const isCompleted = currentStep > step.number;
-                  
-                  return (
-                    <div 
-                      key={step.number}
-                      style={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        gap: '14px',
-                        padding: '14px',
-                        borderRadius: '12px',
-                        background: isActive ? 'linear-gradient(135deg, #f0fdf4, #dcfce7)' : isCompleted ? '#f0fdf4' : 'transparent',
-                        border: isActive ? '2px solid #10b981' : '2px solid transparent',
-                        transition: 'all 0.2s'
-                      }}
-                    >
-                      <div style={{
-                        width: '40px',
-                        height: '40px',
-                        borderRadius: '10px',
-                        background: isCompleted ? 'linear-gradient(135deg, #059669, #10b981)' : isActive ? 'linear-gradient(135deg, #8b5cf6, #a78bfa)' : '#f3f4f6',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: isCompleted || isActive ? 'white' : '#9ca3af'
-                      }}>
-                        {isCompleted ? <CheckCircle size={20} /> : <Icon size={20} />}
-                      </div>
-                      <div>
-                        <p style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: isActive ? '#059669' : isCompleted ? '#059669' : '#6b7280' }}>
-                          {step.title}
-                        </p>
-                        <p style={{ margin: 0, fontSize: '12px', color: '#9ca3af' }}>
-                          Étape {step.number}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Avantages */}
-            <div style={{ background: 'linear-gradient(135deg, #8b5cf6, #a78bfa)', borderRadius: '20px', padding: '24px', color: 'white' }}>
-              <h3 style={{ margin: '0 0 20px 0', fontSize: '16px', fontWeight: 700 }}>
-                ✨ Créer ma boutique gratuitement
-              </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                  <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <CreditCard size={16} />
-                  </div>
-                  <div>
-                    <p style={{ margin: 0, fontWeight: 600, fontSize: '14px' }}>100% Gratuit</p>
-                    <p style={{ margin: '2px 0 0 0', fontSize: '12px', opacity: 0.9 }}>Pas de frais, pas d'abonnement</p>
-                  </div>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                  <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Users size={16} />
-                  </div>
-                  <div>
-                    <p style={{ margin: 0, fontWeight: 600, fontSize: '14px' }}>Ouvert à tous</p>
-                    <p style={{ margin: '2px 0 0 0', fontSize: '12px', opacity: 0.9 }}>Formel ou informel, bienvenue !</p>
-                  </div>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                  <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <TrendingUp size={16} />
-                  </div>
-                  <div>
-                    <p style={{ margin: 0, fontWeight: 600, fontSize: '14px' }}>Vendez plus</p>
-                    <p style={{ margin: '2px 0 0 0', fontSize: '12px', opacity: 0.9 }}>Touchez des clients partout en CI</p>
-                  </div>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                  <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Shield size={16} />
-                  </div>
-                  <div>
-                    <p style={{ margin: 0, fontWeight: 600, fontSize: '14px' }}>Simple à utiliser</p>
-                    <p style={{ margin: '2px 0 0 0', fontSize: '12px', opacity: 0.9 }}>Publiez en quelques clics</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Main Form */}
-          <div className="create-shop-form-container">
-            {/* Mobile Progress Indicator */}
-            <div className="create-shop-mobile-progress">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <span style={{ fontSize: '14px', fontWeight: 600, color: '#374151' }}>Étape {currentStep} sur 5</span>
-                <span style={{ fontSize: '13px', color: '#6b7280' }}>{Math.round((currentStep / 5) * 100)}%</span>
-              </div>
-              <div style={{ height: '6px', background: '#e5e7eb', borderRadius: '3px', overflow: 'hidden' }}>
-                <div style={{ 
-                  height: '100%', 
-                  width: `${(currentStep / 5) * 100}%`, 
-                  background: 'linear-gradient(135deg, #8b5cf6, #a78bfa)', 
-                  borderRadius: '3px',
-                  transition: 'width 0.3s ease'
-                }}></div>
-              </div>
-            </div>
-            
-            <form onSubmit={handleSubmit} onKeyDown={handleKeyDown}>
-              
-              {/* Étape 1 - Informations de base */}
-              {currentStep === 1 && (
-                <div>
-                  <h2 style={{ margin: '0 0 8px 0', fontSize: '24px', fontWeight: 700, color: '#1f2937' }}>
-                    Informations de votre boutique
-                  </h2>
-                  <p style={{ margin: '0 0 32px 0', fontSize: '15px', color: '#6b7280' }}>
-                    Commencez par les informations essentielles de votre boutique
-                  </p>
-
-                  {/* Images Upload */}
-                  <div style={{ marginBottom: '32px' }}>
-                    <h3 style={{ margin: '0 0 16px 0', fontSize: '16px', fontWeight: 600, color: '#374151' }}>
-                      Images de la boutique
-                    </h3>
-                    <div className="create-shop-images-grid">
-                      {/* Logo */}
-                      <div>
-                        <label style={{ 
-                          display: 'flex', 
-                          flexDirection: 'column', 
-                          alignItems: 'center', 
-                          justifyContent: 'center',
-                          width: '160px',
-                          height: '160px',
-                          border: '3px dashed #e5e7eb',
-                          borderRadius: '20px',
-                          cursor: 'pointer',
-                          background: '#fafafa',
-                          overflow: 'hidden',
-                          transition: 'all 0.2s'
-                        }}>
-                          <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'logo')} hidden />
-                          {logo ? (
-                            <img src={logo} alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                          ) : (
-                            <>
-                              <Camera size={32} color="#9ca3af" />
-                              <span style={{ marginTop: '8px', fontSize: '13px', color: '#6b7280', fontWeight: 500 }}>Logo</span>
-                            </>
-                          )}
-                        </label>
-                      </div>
-                      
-                      {/* Cover */}
-                      <div>
-                        <label style={{ 
-                          display: 'flex', 
-                          flexDirection: 'column', 
-                          alignItems: 'center', 
-                          justifyContent: 'center',
-                          height: '160px',
-                          border: '3px dashed #e5e7eb',
-                          borderRadius: '20px',
-                          cursor: 'pointer',
-                          background: '#fafafa',
-                          overflow: 'hidden',
-                          transition: 'all 0.2s'
-                        }}>
-                          <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'cover')} hidden />
-                          {coverImage ? (
-                            <img src={coverImage} alt="Cover" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                          ) : (
-                            <>
-                              <Upload size={32} color="#9ca3af" />
-                              <span style={{ marginTop: '8px', fontSize: '13px', color: '#6b7280', fontWeight: 500 }}>Image de couverture</span>
-                              <span style={{ fontSize: '12px', color: '#9ca3af' }}>Recommandé: 1200x400px</span>
-                            </>
-                          )}
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Shop Name */}
-                  <div style={{ marginBottom: '24px' }}>
-                    <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 600, color: '#374151' }}>
-                      Nom de la boutique <span style={{ color: '#ef4444' }}>*</span>
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Ex: Chez Mariam - Saveurs d'Afrique"
-                      value={formData.shopName}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        if (/^[a-zA-ZÀ-ÿ\s\-']*$/.test(value) || value === '') {
-                          setFormData({ ...formData, shopName: value });
-                        }
-                      }}
-                      required
-                      pattern="[a-zA-ZÀ-ÿ\s\-']+"
-                      title="Le nom doit contenir au moins des lettres"
-                      style={{
-                        width: '100%',
-                        padding: '16px 20px',
-                        fontSize: '16px',
-                        border: '2px solid #e5e7eb',
-                        borderRadius: '14px',
-                        outline: 'none',
-                        transition: 'all 0.2s',
-                        boxSizing: 'border-box'
-                      }}
-                      onFocus={(e) => e.target.style.borderColor = '#8b5cf6'}
-                      onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
-                    />
-                  </div>
-
-                  {/* Category */}
-                  <div style={{ marginBottom: '24px' }}>
-                    <label style={{ display: 'block', marginBottom: '12px', fontSize: '14px', fontWeight: 600, color: '#374151' }}>
-                      Catégorie principale <span style={{ color: '#ef4444' }}>*</span>
-                    </label>
-                    <div className="create-shop-categories-grid">
-                      {categories.map(cat => (
-                        <button
-                          key={cat.id}
-                          type="button"
-                          onClick={() => setFormData({ ...formData, category: cat.id })}
-                          style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            gap: '8px',
-                            padding: '16px 12px',
-                            border: formData.category === cat.id ? '2px solid #8b5cf6' : '2px solid #e5e7eb',
-                            borderRadius: '14px',
-                            background: formData.category === cat.id ? '#f5f3ff' : 'white',
-                            cursor: 'pointer',
-                            transition: 'all 0.2s'
-                          }}
-                        >
-                          <span style={{ fontSize: '28px' }}>{cat.icon}</span>
-                          <span style={{ fontSize: '12px', fontWeight: 500, color: formData.category === cat.id ? '#7c3aed' : '#6b7280', textAlign: 'center' }}>
-                            {cat.name}
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Description */}
-                  <div>
-                    <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 600, color: '#374151' }}>
-                      Description de la boutique
-                    </label>
-                    <textarea
-                      placeholder="Décrivez votre boutique, vos produits, ce qui vous rend unique..."
-                      value={formData.description}
-                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                      rows={4}
-                      style={{
-                        width: '100%',
-                        padding: '16px 20px',
-                        fontSize: '15px',
-                        border: '2px solid #e5e7eb',
-                        borderRadius: '14px',
-                        outline: 'none',
-                        resize: 'vertical',
-                        fontFamily: 'inherit',
-                        boxSizing: 'border-box'
-                      }}
-                      onFocus={(e) => e.target.style.borderColor = '#8b5cf6'}
-                      onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Étape 2 - Contact */}
-              {currentStep === 2 && (
-                <div>
-                  <h2 style={{ margin: '0 0 8px 0', fontSize: '24px', fontWeight: 700, color: '#1f2937' }}>
-                    Coordonnées de contact
-                  </h2>
-                  <p style={{ margin: '0 0 32px 0', fontSize: '15px', color: '#6b7280' }}>
-                    Comment vos clients peuvent vous joindre
-                  </p>
-
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                    {/* Phone */}
-                    <div>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', fontSize: '14px', fontWeight: 600, color: '#374151' }}>
-                        <Phone size={16} color="#6b7280" />
-                        Numéro de téléphone <span style={{ color: '#ef4444' }}>*</span>
-                      </label>
-                      <input
-                        type="tel"
-                        placeholder="225 07 XX XX XX XX"
-                        value={formData.phone}
-                        onChange={(e) => {
-                          const value = e.target.value.replace(/\D/g, '');
-                          setFormData({ ...formData, phone: value });
-                        }}
-                        required
-                        pattern="[0-9+\s]+"
-                        inputMode="numeric"
-                        style={{
-                          width: '100%',
-                          padding: '16px 20px',
-                          fontSize: '16px',
-                          border: '2px solid #e5e7eb',
-                          borderRadius: '14px',
-                          outline: 'none',
-                          boxSizing: 'border-box'
-                        }}
-                        onFocus={(e) => e.target.style.borderColor = '#8b5cf6'}
-                        onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
-                      />
-                    </div>
-
-                    {/* WhatsApp */}
-                    <div>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', fontSize: '14px', fontWeight: 600, color: '#374151' }}>
-                        <span style={{ width: '16px', height: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>💬</span>
-                        WhatsApp (optionnel)
-                      </label>
-                      <input
-                        type="tel"
-                        placeholder="225 07 XX XX XX XX"
-                        value={formData.whatsapp}
-                        onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
-                        style={{
-                          width: '100%',
-                          padding: '16px 20px',
-                          fontSize: '16px',
-                          border: '2px solid #e5e7eb',
-                          borderRadius: '14px',
-                          outline: 'none',
-                          boxSizing: 'border-box'
-                        }}
-                        onFocus={(e) => e.target.style.borderColor = '#25d366'}
-                        onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
-                      />
-                      <p style={{ margin: '8px 0 0 0', fontSize: '12px', color: '#6b7280' }}>
-                        Les clients pourront vous contacter directement sur WhatsApp
-                      </p>
-                    </div>
-
-                    {/* Email */}
-                    <div>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', fontSize: '14px', fontWeight: 600, color: '#374151' }}>
-                        <Mail size={16} color="#6b7280" />
-                        Email <span style={{ color: '#ef4444' }}>*</span>
-                      </label>
-                      <input
-                        type="email"
-                        placeholder="contact@maboutique.ci"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        required
-                        pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}"
-                        style={{
-                          width: '100%',
-                          padding: '16px 20px',
-                          fontSize: '16px',
-                          border: '2px solid #e5e7eb',
-                          borderRadius: '14px',
-                          outline: 'none',
-                          boxSizing: 'border-box'
-                        }}
-                        onFocus={(e) => e.target.style.borderColor = '#8b5cf6'}
-                        onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Étape 3 - Localisation */}
-              {currentStep === 3 && (
-                <div>
-                  <h2 style={{ margin: '0 0 8px 0', fontSize: '24px', fontWeight: 700, color: '#1f2937' }}>
-                    Localisation de votre boutique
-                  </h2>
-                  <p style={{ margin: '0 0 32px 0', fontSize: '15px', color: '#6b7280' }}>
-                    Où se trouve votre boutique physique ou zone d'activité
-                  </p>
-
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                    {/* City */}
-                    <div>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', fontSize: '14px', fontWeight: 600, color: '#374151' }}>
-                        <MapPin size={16} color="#6b7280" />
-                        Ville <span style={{ color: '#ef4444' }}>*</span>
-                      </label>
-                      <select
-                        value={formData.city}
-                        onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                        required
-                        style={{
-                          width: '100%',
-                          padding: '16px 20px',
-                          fontSize: '16px',
-                          border: '2px solid #e5e7eb',
-                          borderRadius: '14px',
-                          outline: 'none',
-                          cursor: 'pointer',
-                          appearance: 'none',
-                          background: 'white url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%236b7280\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpolyline points=\'6 9 12 15 18 9\'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 16px center'
-                        }}
-                      >
-                        <option value="">Sélectionnez une ville</option>
-                        {cities.map(city => (
-                          <option key={city} value={city}>{city}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    {/* Commune */}
-                    <div>
-                      <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 600, color: '#374151' }}>
-                        Commune <span style={{ color: '#ef4444' }}>*</span>
-                      </label>
-                      <select
-                        value={formData.commune}
-                        onChange={(e) => setFormData({ ...formData, commune: e.target.value })}
-                        required
-                        style={{
-                          width: '100%',
-                          padding: '16px 20px',
-                          fontSize: '16px',
-                          border: '2px solid #e5e7eb',
-                          borderRadius: '14px',
-                          outline: 'none',
-                          cursor: 'pointer',
-                          appearance: 'none',
-                          background: 'white url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%236b7280\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpolyline points=\'6 9 12 15 18 9\'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 16px center'
-                        }}
-                      >
-                        <option value="">Sélectionnez une commune</option>
-                        {communes.map(commune => (
-                          <option key={commune} value={commune}>{commune}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    {/* Address */}
-                    <div>
-                      <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 600, color: '#374151' }}>
-                        Adresse complète (optionnel)
-                      </label>
-                      <textarea
-                        placeholder="Quartier, rue, repère..."
-                        value={formData.address}
-                        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                        rows={3}
-                        style={{
-                          width: '100%',
-                          padding: '16px 20px',
-                          fontSize: '15px',
-                          border: '2px solid #e5e7eb',
-                          borderRadius: '14px',
-                          outline: 'none',
-                          resize: 'vertical',
-                          fontFamily: 'inherit',
-                          boxSizing: 'border-box'
-                        }}
-                        onFocus={(e) => e.target.style.borderColor = '#8b5cf6'}
-                        onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Étape 4 - Horaires et Livraison */}
-              {currentStep === 4 && (
-                <div>
-                  <h2 style={{ margin: '0 0 8px 0', fontSize: '24px', fontWeight: 700, color: '#1f2937' }}>
-                    Horaires et livraison
-                  </h2>
-                  <p style={{ margin: '0 0 32px 0', fontSize: '15px', color: '#6b7280' }}>
-                    Configurez vos horaires d'ouverture et zones de livraison
-                  </p>
-
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-                    {/* Horaires */}
-                    <div>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', fontSize: '14px', fontWeight: 600, color: '#374151' }}>
-                        <Clock size={16} color="#6b7280" />
-                        Horaires d'ouverture
-                      </label>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                        <div>
-                          <label style={{ display: 'block', marginBottom: '8px', fontSize: '13px', color: '#6b7280' }}>
-                            Ouverture
-                          </label>
-                          <input
-                            type="time"
-                            value={formData.openingHours}
-                            onChange={(e) => setFormData({ ...formData, openingHours: e.target.value })}
-                            style={{
-                              width: '100%',
-                              padding: '14px 16px',
-                              fontSize: '16px',
-                              border: '2px solid #e5e7eb',
-                              borderRadius: '12px',
-                              outline: 'none',
-                              boxSizing: 'border-box'
-                            }}
-                          />
-                        </div>
-                        <div>
-                          <label style={{ display: 'block', marginBottom: '8px', fontSize: '13px', color: '#6b7280' }}>
-                            Fermeture
-                          </label>
-                          <input
-                            type="time"
-                            value={formData.closingHours}
-                            onChange={(e) => setFormData({ ...formData, closingHours: e.target.value })}
-                            style={{
-                              width: '100%',
-                              padding: '14px 16px',
-                              fontSize: '16px',
-                              border: '2px solid #e5e7eb',
-                              borderRadius: '12px',
-                              outline: 'none',
-                              boxSizing: 'border-box'
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Zones de livraison */}
-                    <div>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', fontSize: '14px', fontWeight: 600, color: '#374151' }}>
-                        <Package size={16} color="#6b7280" />
-                        Zones de livraison
-                      </label>
-                      <p style={{ margin: '0 0 16px 0', fontSize: '13px', color: '#6b7280' }}>
-                        Sélectionnez les zones où vous pouvez livrer
-                      </p>
-                      
-                      {/* Option Livrer partout */}
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          if (formData.deliveryZones.includes('Partout en Côte d Ivoire')) {
-                            setFormData(prev => ({ ...prev, deliveryZones: [] }));
-                          } else {
-                            setFormData(prev => ({ ...prev, deliveryZones: ['Partout en Côte d Ivoire'] }));
-                          }
-                        }}
-                        style={{
-                          width: '100%',
-                          padding: '14px 20px',
-                          marginBottom: '16px',
-                          border: formData.deliveryZones.includes('Partout en Côte d Ivoire') ? '2px solid #10b981' : '2px solid #e5e7eb',
-                          borderRadius: '12px',
-                          background: formData.deliveryZones.includes('Partout en Côte d Ivoire') ? 'linear-gradient(135deg, #dcfce7, #d1fae5)' : 'white',
-                          color: formData.deliveryZones.includes('Partout en Côte d Ivoire') ? '#059669' : '#374151',
-                          fontWeight: 600,
-                          fontSize: '15px',
-                          cursor: 'pointer',
-                          transition: 'all 0.2s',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: '10px'
-                        }}
-                      >
-                        {formData.deliveryZones.includes('Partout en Côte d Ivoire') && <span>✓</span>}
-                        🌍 Livrer partout en Côte d'Ivoire
-                      </button>
-                      
-                      {!formData.deliveryZones.includes('Partout en Côte d Ivoire') && (
-                        <>
-                          <p style={{ margin: '0 0 12px 0', fontSize: '12px', color: '#9ca3af', textAlign: 'center' }}>— ou sélectionnez des zones spécifiques —</p>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-                        {zones.map(zone => (
-                          <button
-                            key={zone}
-                            type="button"
-                            onClick={() => toggleDeliveryZone(zone)}
-                            style={{
-                              padding: '10px 18px',
-                              border: formData.deliveryZones.includes(zone) ? '2px solid #10b981' : '2px solid #e5e7eb',
-                              borderRadius: '50px',
-                              background: formData.deliveryZones.includes(zone) ? '#dcfce7' : 'white',
-                              color: formData.deliveryZones.includes(zone) ? '#059669' : '#6b7280',
-                              fontWeight: 500,
-                              fontSize: '14px',
-                              cursor: 'pointer',
-                              transition: 'all 0.2s'
-                            }}
-                          >
-                            {formData.deliveryZones.includes(zone) && <span style={{ marginRight: '6px' }}>✓</span>}
-                            {zone}
-                          </button>
-                        ))}
-                      </div>
-                        </>
-                      )}
-                    </div>
-
-                    {/* Frais de livraison */}
-                    <div>
-                      <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 600, color: '#374151' }}>
-                        Frais de livraison moyens
-                      </label>
-                      <div style={{ position: 'relative' }}>
-                        <input
-                          type="number"
-                          placeholder="1500"
-                          value={formData.deliveryFee}
-                          onChange={(e) => setFormData({ ...formData, deliveryFee: e.target.value })}
-                          style={{
-                            width: '100%',
-                            padding: '16px 80px 16px 20px',
-                            fontSize: '16px',
-                            border: '2px solid #e5e7eb',
-                            borderRadius: '14px',
-                            outline: 'none',
-                            boxSizing: 'border-box'
-                          }}
-                        />
-                        <span style={{ position: 'absolute', right: '20px', top: '50%', transform: 'translateY(-50%)', color: '#6b7280', fontWeight: 600 }}>
-                          FCFA
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Étape 5 - Réseaux sociaux */}
-              {currentStep === 5 && (
-                <div>
-                  <h2 style={{ margin: '0 0 8px 0', fontSize: '24px', fontWeight: 700, color: '#1f2937' }}>
-                    Réseaux sociaux (optionnel)
-                  </h2>
-                  <p style={{ margin: '0 0 32px 0', fontSize: '15px', color: '#6b7280' }}>
-                    Connectez vos réseaux sociaux pour plus de visibilité
-                  </p>
-
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                    {/* Instagram */}
-                    <div>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', fontSize: '14px', fontWeight: 600, color: '#374151' }}>
-                        <Instagram size={16} color="#E4405F" />
-                        Instagram
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="@maboutique"
-                        value={formData.instagram}
-                        onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
-                        style={{
-                          width: '100%',
-                          padding: '16px 20px',
-                          fontSize: '16px',
-                          border: '2px solid #e5e7eb',
-                          borderRadius: '14px',
-                          outline: 'none',
-                          boxSizing: 'border-box'
-                        }}
-                      />
-                    </div>
-
-                    {/* Facebook */}
-                    <div>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', fontSize: '14px', fontWeight: 600, color: '#374151' }}>
-                        <Facebook size={16} color="#1877F2" />
-                        Facebook
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="facebook.com/maboutique"
-                        value={formData.facebook}
-                        onChange={(e) => setFormData({ ...formData, facebook: e.target.value })}
-                        style={{
-                          width: '100%',
-                          padding: '16px 20px',
-                          fontSize: '16px',
-                          border: '2px solid #e5e7eb',
-                          borderRadius: '14px',
-                          outline: 'none',
-                          boxSizing: 'border-box'
-                        }}
-                      />
-                    </div>
-
-                    {/* Website */}
-                    <div>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', fontSize: '14px', fontWeight: 600, color: '#374151' }}>
-                        <Globe size={16} color="#6b7280" />
-                        Site web
-                      </label>
-                      <input
-                        type="url"
-                        placeholder="https://www.maboutique.ci"
-                        value={formData.website}
-                        onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-                        style={{
-                          width: '100%',
-                          padding: '16px 20px',
-                          fontSize: '16px',
-                          border: '2px solid #e5e7eb',
-                          borderRadius: '14px',
-                          outline: 'none',
-                          boxSizing: 'border-box'
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Résumé */}
-                  <div style={{ marginTop: '40px', padding: '24px', background: 'linear-gradient(135deg, #f0fdf4, #dcfce7)', borderRadius: '16px', border: '2px solid #86efac' }}>
-                    <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: 700, color: '#059669', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <CheckCircle size={22} />
-                      Prêt à lancer votre boutique !
-                    </h3>
-                    <p style={{ margin: 0, fontSize: '14px', color: '#166534', lineHeight: 1.6 }}>
-                      Votre boutique <strong>"{formData.shopName || 'Ma Boutique'}"</strong> sera créée dans la catégorie{' '}
-                      <strong>{categories.find(c => c.id === formData.category)?.name || 'Non définie'}</strong>.
-                      Vous pourrez ajouter vos produits immédiatement après la création.
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* Navigation Buttons */}
-              <div className="create-shop-nav-buttons">
-                {currentStep > 1 ? (
-                  <button
-                    type="button"
-                    onClick={prevStep}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      padding: '14px 28px',
-                      border: '2px solid #e5e7eb',
-                      borderRadius: '12px',
-                      background: 'white',
-                      color: '#374151',
-                      fontWeight: 600,
-                      fontSize: '15px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <ArrowLeft size={18} />
-                    Retour
-                  </button>
-                ) : (
-                  <div></div>
-                )}
-
-                {currentStep < 5 ? (
-                  <button
-                    type="button"
-                    onClick={nextStep}
-                    disabled={!isStepValid()}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      padding: '16px 32px',
-                      border: 'none',
-                      borderRadius: '12px',
-                      background: isStepValid() ? 'linear-gradient(135deg, #10b981, #059669)' : '#e5e7eb',
-                      color: isStepValid() ? 'white' : '#9ca3af',
-                      fontWeight: 700,
-                      fontSize: '16px',
-                      cursor: isStepValid() ? 'pointer' : 'not-allowed',
-                      boxShadow: isStepValid() ? '0 8px 20px rgba(16, 185, 129, 0.4)' : 'none',
-                      transition: 'all 0.3s ease',
-                      transform: isStepValid() ? 'translateY(0)' : 'none'
-                    }}
-                    onMouseEnter={(e) => {
-                      if (isStepValid()) {
-                        e.currentTarget.style.transform = 'translateY(-2px)';
-                        e.currentTarget.style.boxShadow = '0 12px 28px rgba(16, 185, 129, 0.5)';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (isStepValid()) {
-                        e.currentTarget.style.transform = 'translateY(0)';
-                        e.currentTarget.style.boxShadow = '0 8px 20px rgba(16, 185, 129, 0.4)';
-                      }
-                    }}
-                  >
-                    Continuer
-                    <ArrowRight size={20} />
-                  </button>
-                ) : (
-                  <button
-                    type="submit"
-                    disabled={isLoading}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '10px',
-                      padding: '16px 32px',
-                      border: 'none',
-                      borderRadius: '12px',
-                      background: 'linear-gradient(135deg, #059669, #10b981)',
-                      color: 'white',
-                      fontWeight: 700,
-                      fontSize: '16px',
-                      cursor: isLoading ? 'wait' : 'pointer',
-                      boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)'
-                    }}
-                  >
-                    {isLoading ? (
-                      <>
-                        <span style={{ 
-                          width: '20px', 
-                          height: '20px', 
-                          border: '3px solid rgba(255,255,255,0.3)', 
-                          borderTopColor: 'white', 
-                          borderRadius: '50%', 
-                          animation: 'spin 1s linear infinite' 
-                        }}></span>
-                        Création en cours...
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles size={20} />
-                        Créer ma boutique
-                      </>
-                    )}
-                  </button>
-                )}
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-
-      <style>{`
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-        
-        .create-shop-page-header {
-          background: white;
-          border-bottom: 1px solid #e5e7eb;
-          padding: 20px 0;
-        }
-        
-        .create-shop-header-inner {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 0 24px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-        }
-        
-        .create-shop-header-title {
-          margin: 0;
-          font-size: 24px;
-          font-weight: 700;
-          color: #1f2937;
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
-        
-        .create-shop-header-subtitle {
-          margin: 4px 0 0 0;
-          font-size: 14px;
-          color: #6b7280;
-        }
-        
-        .create-shop-container {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 40px 24px;
-        }
-        
-        .create-shop-layout {
-          display: grid;
-          grid-template-columns: 300px 1fr;
-          gap: 40px;
-        }
-        
-        .create-shop-sidebar {
-          display: flex;
-          flex-direction: column;
-          gap: 24px;
-        }
-        
-        .create-shop-mobile-progress {
-          display: none;
-          margin-bottom: 24px;
-          padding-bottom: 20px;
-          border-bottom: 1px solid #f3f4f6;
-        }
-        
-        .create-shop-form-container {
-          background: white;
-          border-radius: 24px;
-          padding: 40px;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        }
-        
-        .create-shop-nav-buttons {
-          display: flex;
-          justify-content: space-between;
-          margin-top: 40px;
-          padding-top: 24px;
-          border-top: 1px solid #f3f4f6;
-        }
-        
-        .create-shop-categories-grid {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 12px;
-        }
-        
-        .create-shop-images-grid {
-          display: grid;
-          grid-template-columns: 160px 1fr;
-          gap: 20px;
-        }
-        
-        @media (max-width: 1024px) {
-          .create-shop-container {
-            padding: 24px 16px;
-          }
-          
-          .create-shop-layout {
-            grid-template-columns: 1fr;
-          }
-          
-          .create-shop-sidebar {
-            display: none;
-          }
-          
-          .create-shop-mobile-progress {
-            display: block;
-          }
-          
-          .create-shop-form-container {
-            padding: 24px;
-            border-radius: 16px;
-          }
-          
-          .create-shop-categories-grid {
-            grid-template-columns: repeat(3, 1fr);
-          }
-        }
-        
-        @media (max-width: 768px) {
-          .create-shop-header-inner {
-            padding: 0 16px;
-          }
-          
-          .create-shop-header-title {
-            font-size: 16px;
-          }
-          
-          .create-shop-header-text {
-            display: none;
-          }
-          
-          .create-shop-header-title::after {
-            content: 'Ma boutique';
-            font-size: 16px;
-          }
-          
-          .create-shop-header-subtitle {
-            display: none;
-          }
-          
-          .create-shop-container {
-            padding: 16px 12px;
-          }
-          
-          .create-shop-categories-grid {
-            grid-template-columns: repeat(2, 1fr);
-          }
-          
-          .create-shop-images-grid {
-            grid-template-columns: 1fr;
-          }
-          
-          .create-shop-form-container {
-            padding: 16px;
-            border-radius: 12px;
-          }
-          
-          .create-shop-nav-buttons {
-            flex-direction: column;
-            gap: 12px;
-          }
-          
-          .create-shop-nav-buttons button {
-            width: 100%;
-            justify-content: center;
-          }
-        }
-        
-        @media (max-width: 480px) {
-          .create-shop-categories-grid {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-          }
-          
-          .create-shop-form-container {
-            padding: 12px;
-          }
-        }
-      `}</style>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }
