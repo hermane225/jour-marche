@@ -1,26 +1,45 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ShoppingCart, ChevronDown, Check } from 'lucide-react';
 import { useCart } from '../../../context/CartContext';
 import { Button, Card, Badge } from '../../../components/ui';
-import { products } from '../../../data/mockData';
+import { useProduct } from '../../../hooks/useProducts';
+import { useProducts } from '../../../hooks/useProducts';
 import './ProductDetail.css';
 
 export function ProductDetail() {
   const { id } = useParams<{ id: string }>();
   const { addToCart } = useCart();
   
-  const product = products.find(p => p.id === id);
+  // Fetch product from API
+  const { data: product, isLoading: productLoading } = useProduct(id || '');
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState('');
   const [activeTab, setActiveTab] = useState('description');
   const [addedToCart, setAddedToCart] = useState(false);
 
+  // Fetch similar products
+  const similarProductsResult = useProducts({ category: product?.category, limit: 5 });
+  const similarProducts = useMemo(() => {
+    if (!product || !similarProductsResult.data) return [];
+    return similarProductsResult.data
+      .filter(p => p.category === product.category && p.id !== product.id)
+      .slice(0, 4);
+  }, [product, similarProductsResult.data]);
+
   // Scroll vers le haut quand le produit change
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [id]);
+
+  if (productLoading) {
+    return (
+      <div className="product-not-found" style={{ textAlign: 'center', padding: '60px 20px' }}>
+        <div style={{ fontSize: '18px', color: '#6b7280' }}>Chargement du produit...</div>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -42,11 +61,6 @@ export function ProductDetail() {
     setAddedToCart(true);
     setTimeout(() => setAddedToCart(false), 2000);
   };
-
-  // Produits similaires (même catégorie)
-  const similarProducts = products
-    .filter(p => p.category === product.category && p.id !== product.id)
-    .slice(0, 4);
 
   return (
     <div className="product-detail-page">

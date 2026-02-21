@@ -1,120 +1,108 @@
+import { useEffect, useMemo, useState } from 'react';
+import { BarChart3, Download, TrendingUp } from 'lucide-react';
+import { adminService } from '../../../services/api';
 import './AdminReports.css';
 
 export function AdminReports() {
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState<any>({});
+  const [ordersCount, setOrdersCount] = useState(0);
+  const [usersCount, setUsersCount] = useState(0);
+  const [productsCount, setProductsCount] = useState(0);
+  const [shopsCount, setShopsCount] = useState(0);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        setLoading(true);
+        const [statsData, orders, users, products, shops] = await Promise.all([
+          adminService.getStats(),
+          adminService.getOrders(),
+          adminService.getUsers(),
+          adminService.getProducts(),
+          adminService.getShops(),
+        ]);
+        setStats(statsData || {});
+        setOrdersCount(orders.length);
+        setUsersCount(users.length);
+        setProductsCount(products.length);
+        setShopsCount(shops.length);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  const distribution = useMemo(() => {
+    const total = Math.max(usersCount + shopsCount + productsCount + ordersCount, 1);
+    return [
+      { label: 'Utilisateurs', value: usersCount, pct: Math.round((usersCount / total) * 100), tone: 'blue' },
+      { label: 'Boutiques', value: shopsCount, pct: Math.round((shopsCount / total) * 100), tone: 'green' },
+      { label: 'Produits', value: productsCount, pct: Math.round((productsCount / total) * 100), tone: 'violet' },
+      { label: 'Commandes', value: ordersCount, pct: Math.round((ordersCount / total) * 100), tone: 'amber' },
+    ];
+  }, [ordersCount, productsCount, shopsCount, usersCount]);
+
+  if (loading) {
+    return <div className="admin-page-loading">Chargement des rapports...</div>;
+  }
+
   return (
-    <div className="admin-reports">
-      <div className="page-header">
-        <h2>Rapports & Statistiques</h2>
-        <button className="download-btn">📥 Télécharger Rapport</button>
+    <section className="admin-reports-pro">
+      <header className="admin-page-head">
+        <div>
+          <h2>Rapports</h2>
+          <p>Vue consolid�e performance plateforme et activit�.</p>
+        </div>
+        <button className="primary-export-btn">
+          <Download size={16} />
+          Exporter
+        </button>
+      </header>
+
+      <div className="report-top-grid">
+        <article className="report-stat-card">
+          <p>Revenu total</p>
+          <strong>{Number(stats.totalRevenue || 0).toLocaleString('fr-FR')} FCFA</strong>
+          <span><TrendingUp size={14} /> Aujourd'hui: {Number(stats.revenueToday || 0).toLocaleString('fr-FR')} FCFA</span>
+        </article>
+        <article className="report-stat-card">
+          <p>Commandes</p>
+          <strong>{Number(stats.totalOrders || ordersCount).toLocaleString('fr-FR')}</strong>
+          <span><BarChart3 size={14} /> Aujourd'hui: {Number(stats.ordersToday || 0).toLocaleString('fr-FR')}</span>
+        </article>
       </div>
 
-      <div className="reports-grid">
-        {/* Revenue Chart */}
-        <div className="report-card">
-          <h3>Revenus Mensuels</h3>
-          <div className="chart-placeholder">
-            <p>📊 Graphique de revenus</p>
+      <div className="report-grid-two">
+        <article className="report-panel">
+          <h3>Distribution activit�</h3>
+          <div className="distribution-list">
+            {distribution.map((item) => (
+              <div key={item.label} className="distribution-item">
+                <div className="distribution-head">
+                  <span>{item.label}</span>
+                  <strong>{item.value}</strong>
+                </div>
+                <div className="distribution-track">
+                  <div className={`distribution-fill tone-${item.tone}`} style={{ width: `${item.pct}%` }} />
+                </div>
+                <small>{item.pct}%</small>
+              </div>
+            ))}
           </div>
-          <div className="chart-stats">
-            <div className="stat-item">
-              <span>Total Janvier</span>
-              <strong>3,245,600 FCFA</strong>
-            </div>
-            <div className="stat-item">
-              <span>Moyenne/jour</span>
-              <strong>104,700 FCFA</strong>
-            </div>
-          </div>
-        </div>
+        </article>
 
-        {/* Orders Chart */}
-        <div className="report-card">
-          <h3>Commandes par Jour</h3>
-          <div className="chart-placeholder">
-            <p>📈 Graphique de commandes</p>
-          </div>
-          <div className="chart-stats">
-            <div className="stat-item">
-              <span>Total Commandes</span>
-              <strong>1,248</strong>
-            </div>
-            <div className="stat-item">
-              <span>Moyenne/jour</span>
-              <strong>40 commandes</strong>
-            </div>
-          </div>
-        </div>
-
-        {/* Categories Distribution */}
-        <div className="report-card">
-          <h3>Distribution par Catégorie</h3>
-          <div className="categories-list">
-            <div className="category-item">
-              <span>🍎 Fruits & Légumes</span>
-              <div className="progress-bar">
-                <div className="progress-fill" style={{width: '35%'}}></div>
-              </div>
-              <span className="percent">35%</span>
-            </div>
-            <div className="category-item">
-              <span>🐟 Poisson & Viande</span>
-              <div className="progress-bar">
-                <div className="progress-fill" style={{width: '28%'}}></div>
-              </div>
-              <span className="percent">28%</span>
-            </div>
-            <div className="category-item">
-              <span>🍞 Boulangerie</span>
-              <div className="progress-bar">
-                <div className="progress-fill" style={{width: '22%'}}></div>
-              </div>
-              <span className="percent">22%</span>
-            </div>
-            <div className="category-item">
-              <span>🥫 Épicerie</span>
-              <div className="progress-bar">
-                <div className="progress-fill" style={{width: '15%'}}></div>
-              </div>
-              <span className="percent">15%</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Top Metrics */}
-        <div className="report-card">
-          <h3>Métriques Clés</h3>
-          <div className="metrics-list">
-            <div className="metric-item">
-              <div className="metric-icon">⭐</div>
-              <div className="metric-content">
-                <p>Rating Moyen</p>
-                <strong>4.7/5.0</strong>
-              </div>
-            </div>
-            <div className="metric-item">
-              <div className="metric-icon">✅</div>
-              <div className="metric-content">
-                <p>Taux Livraison</p>
-                <strong>98.5%</strong>
-              </div>
-            </div>
-            <div className="metric-item">
-              <div className="metric-icon">😊</div>
-              <div className="metric-content">
-                <p>Satisfaction</p>
-                <strong>96.2%</strong>
-              </div>
-            </div>
-            <div className="metric-item">
-              <div className="metric-icon">⚡</div>
-              <div className="metric-content">
-                <p>Délai Moyen</p>
-                <strong>2.3 jours</strong>
-              </div>
-            </div>
-          </div>
-        </div>
+        <article className="report-panel">
+          <h3>Indicateurs cl�s</h3>
+          <ul className="kpi-list">
+            <li><span>Utilisateurs actifs</span><strong>{Number(stats.totalUsers || usersCount).toLocaleString('fr-FR')}</strong></li>
+            <li><span>Boutiques actives</span><strong>{Number(stats.totalShops || shopsCount).toLocaleString('fr-FR')}</strong></li>
+            <li><span>Produits publi�s</span><strong>{Number(stats.totalProducts || productsCount).toLocaleString('fr-FR')}</strong></li>
+            <li><span>Commandes en attente</span><strong>{Number(stats.pendingOrders || 0).toLocaleString('fr-FR')}</strong></li>
+            <li><span>Nouveaux users (jour)</span><strong>{Number(stats.newUsersToday || 0).toLocaleString('fr-FR')}</strong></li>
+          </ul>
+        </article>
       </div>
-    </div>
+    </section>
   );
 }

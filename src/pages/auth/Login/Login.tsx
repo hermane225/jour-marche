@@ -1,7 +1,6 @@
-import React, { useState, type FormEvent } from 'react';
+import React, { useState, useEffect, useRef, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, ArrowRight, Sparkles, ShoppingBag, Store, Users } from 'lucide-react';
-import { GoogleLogin, type CredentialResponse } from '@react-oauth/google';
 import { useAuth } from '../../../context/AuthContext';
 import logoImage from '../../../assets/jour_marché.png';
 
@@ -11,63 +10,119 @@ export function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  
+  const googleButtonRef = useRef<HTMLDivElement>(null);
+
   const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
+
+  // Monter le bouton Google natif via useEffect pour éviter les conflits DOM React
+  useEffect(() => {
+    const container = googleButtonRef.current;
+    if (!container) return;
+
+    // Attendre que le SDK Google soit chargé
+    const initializeGoogleButton = () => {
+      // @ts-ignore — google est chargé globalement via le script dans index.html
+      if (typeof window !== 'undefined' && window.google?.accounts?.id) {
+        // @ts-ignore
+        window.google.accounts.id.renderButton(container, {
+        theme: 'outline',
+        size: 'large',
+        text: 'continue_with',
+        shape: 'rectangular',
+        width: container.offsetWidth || 360,
+        locale: 'fr',
+        callback: async (response: { credential: string }) => {
+          if (!response.credential) return;
+          try {
+            setError('');
+            setIsLoading(true);
+            const loggedInUser = await loginWithGoogle(response.credential);
+            const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
+            if (redirectUrl) {
+              sessionStorage.removeItem('redirectAfterLogin');
+              navigate(redirectUrl, { replace: true });
+            } else {
+              let targetUrl = '/buyer/dashboard';
+              if (loggedInUser.role === 'admin') targetUrl = '/admin/dashboard';
+              else if (loggedInUser.role === 'seller') targetUrl = '/seller/dashboard';
+              navigate(targetUrl, { replace: true });
+            }
+          } catch (err) {
+            setIsLoading(false);
+            setError(err instanceof Error ? err.message : 'Échec de la connexion Google');
+          }
+        },
+        });
+      }
+    };
+
+    // Vérifier si le SDK est déjà chargé
+    if (window.google?.accounts?.id) {
+      initializeGoogleButton();
+    } else {
+      // Attendre le chargement du SDK
+      const checkGoogleLoaded = setInterval(() => {
+        if (window.google?.accounts?.id) {
+          clearInterval(checkGoogleLoaded);
+          initializeGoogleButton();
+        }
+      }, 100);
+
+      // Nettoyer après 5 secondes
+      setTimeout(() => clearInterval(checkGoogleLoaded), 5000);
+
+      return () => clearInterval(checkGoogleLoaded);
+    }
+  }, [loginWithGoogle, navigate]);
 
   const handleSubmit = async (e?: FormEvent | React.MouseEvent) => {
     if (e) {
       e.preventDefault();
       e.stopPropagation();
     }
-    
-    // Validation côté client
+
     if (!email || !password) {
       setError('Veuillez remplir tous les champs');
       return false;
     }
 
-    // Réinitialiser l'erreur et démarrer le chargement
     setError('');
     setIsLoading(true);
-    
+
     try {
       const loggedInUser = await login(email, password);
-      
-      // Redirection selon le rôle
+
       const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
       if (redirectUrl) {
         sessionStorage.removeItem('redirectAfterLogin');
         navigate(redirectUrl, { replace: true });
       } else {
-        // Rediriger selon le rôle
         let targetUrl = '/buyer/dashboard';
-        if (loggedInUser.role === 'admin') targetUrl = '/admin';
+        if (loggedInUser.role === 'admin') targetUrl = '/admin/dashboard';
         else if (loggedInUser.role === 'seller') targetUrl = '/seller/dashboard';
-        
         navigate(targetUrl, { replace: true });
       }
     } catch (err) {
-      // Afficher l'erreur sans recharger la page
-      const errorMessage = err instanceof Error 
-        ? (err.message || 'Email ou mot de passe incorrect') 
+      const errorMessage = err instanceof Error
+        ? (err.message || 'Email ou mot de passe incorrect')
         : 'Email ou mot de passe incorrect';
       setError(errorMessage);
       setIsLoading(false);
     }
-    
+
     return false;
   };
 
   return (
-    <div style={{ 
-      minHeight: '100vh', 
+    <div style={{
+      minHeight: '100vh',
       display: 'flex',
       background: 'linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 50%, #d1fae5 100%)'
     }}>
       {/* Left Side - Branding */}
-      <div style={{ 
-        flex: 1, 
+      <div style={{
+        flex: 1,
         display: 'none',
         padding: '40px',
         position: 'relative',
@@ -78,7 +133,7 @@ export function Login() {
             .login-left-panel { display: flex !important; flex-direction: column; }
           }
         `}</style>
-        
+
         {/* Background Pattern */}
         <div style={{
           position: 'absolute',
@@ -86,7 +141,7 @@ export function Login() {
           background: 'linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%)',
           zIndex: 0
         }} />
-        
+
         {/* Decorative circles */}
         <div style={{
           position: 'absolute',
@@ -118,9 +173,9 @@ export function Login() {
 
           {/* Main Text */}
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            <div style={{ 
-              display: 'inline-flex', 
-              alignItems: 'center', 
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
               gap: '8px',
               background: 'rgba(255,255,255,0.2)',
               padding: '10px 20px',
@@ -132,10 +187,10 @@ export function Login() {
               <span style={{ color: 'white', fontWeight: 600, fontSize: '14px' }}>La marketplace à l'ivoirienne</span>
             </div>
 
-            <h1 style={{ 
-              fontSize: '48px', 
-              fontWeight: 800, 
-              color: 'white', 
+            <h1 style={{
+              fontSize: '48px',
+              fontWeight: 800,
+              color: 'white',
               lineHeight: 1.2,
               marginBottom: '20px'
             }}>
@@ -143,14 +198,14 @@ export function Login() {
               Jour de Marché
             </h1>
 
-            <p style={{ 
-              fontSize: '18px', 
-              color: 'rgba(255,255,255,0.9)', 
+            <p style={{
+              fontSize: '18px',
+              color: 'rgba(255,255,255,0.9)',
               lineHeight: 1.7,
               maxWidth: '450px',
               marginBottom: '40px'
             }}>
-              Découvrez des milliers de produits locaux, du village à la ville. 
+              Découvrez des milliers de produits locaux, du village à la ville.
               Poulets, garba, légumes frais, mode, artisanat... Tout est là !
             </p>
 
@@ -190,15 +245,15 @@ export function Login() {
       </div>
 
       {/* Right Side - Form */}
-      <div style={{ 
-        flex: 1, 
-        display: 'flex', 
-        alignItems: 'center', 
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        alignItems: 'center',
         justifyContent: 'center',
         padding: '40px 20px'
       }} className="login-form-container">
-        <div style={{ 
-          width: '100%', 
+        <div style={{
+          width: '100%',
           maxWidth: '440px',
           background: 'white',
           borderRadius: '32px',
@@ -219,9 +274,9 @@ export function Login() {
 
           {/* Header */}
           <div style={{ textAlign: 'center', marginBottom: '28px' }}>
-            <h2 style={{ 
-              fontSize: '28px', 
-              fontWeight: 800, 
+            <h2 style={{
+              fontSize: '28px',
+              fontWeight: 800,
               color: '#1f2937',
               marginBottom: '8px'
             }}>
@@ -236,10 +291,10 @@ export function Login() {
           <form onSubmit={handleSubmit} noValidate action="javascript:void(0)">
             {/* Email Input */}
             <div style={{ marginBottom: '20px' }}>
-              <label style={{ 
-                display: 'block', 
-                fontSize: '14px', 
-                fontWeight: 600, 
+              <label style={{
+                display: 'block',
+                fontSize: '14px',
+                fontWeight: 600,
                 color: '#374151',
                 marginBottom: '8px'
               }}>
@@ -260,6 +315,7 @@ export function Login() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="exemple@email.com"
+                  autoComplete="email"
                   style={{
                     width: '100%',
                     padding: '16px 16px 16px 50px',
@@ -268,7 +324,8 @@ export function Login() {
                     fontSize: '15px',
                     outline: 'none',
                     transition: 'all 0.2s',
-                    background: '#f9fafb'
+                    background: '#f9fafb',
+                    boxSizing: 'border-box',
                   }}
                   onFocus={(e) => {
                     e.target.style.borderColor = '#10b981';
@@ -285,15 +342,15 @@ export function Login() {
             {/* Password Input */}
             <div style={{ marginBottom: '24px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <label style={{ 
-                  fontSize: '14px', 
-                  fontWeight: 600, 
+                <label style={{
+                  fontSize: '14px',
+                  fontWeight: 600,
                   color: '#374151'
                 }}>
                   Mot de passe
                 </label>
-                <Link to="/forgot-password" style={{ 
-                  fontSize: '13px', 
+                <Link to="/forgot-password" style={{
+                  fontSize: '13px',
                   color: '#059669',
                   textDecoration: 'none',
                   fontWeight: 500
@@ -316,6 +373,7 @@ export function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
+                  autoComplete="current-password"
                   style={{
                     width: '100%',
                     padding: '16px 50px 16px 50px',
@@ -324,7 +382,8 @@ export function Login() {
                     fontSize: '15px',
                     outline: 'none',
                     transition: 'all 0.2s',
-                    background: '#f9fafb'
+                    background: '#f9fafb',
+                    boxSizing: 'border-box',
                   }}
                   onFocus={(e) => {
                     e.target.style.borderColor = '#10b981';
@@ -374,9 +433,8 @@ export function Login() {
 
             {/* Submit Button */}
             <button
-              type="button"
+              type="submit"
               disabled={isLoading}
-              onClick={handleSubmit}
               style={{
                 width: '100%',
                 padding: '18px',
@@ -414,10 +472,10 @@ export function Login() {
           </form>
 
           {/* Divider */}
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '16px', 
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '16px',
             margin: '28px 0'
           }}>
             <div style={{ flex: 1, height: '1px', background: '#e5e7eb' }} />
@@ -425,55 +483,24 @@ export function Login() {
             <div style={{ flex: 1, height: '1px', background: '#e5e7eb' }} />
           </div>
 
-          {/* Google Button */}
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <GoogleLogin
-              onSuccess={async (credentialResponse: CredentialResponse) => {
-                if (credentialResponse.credential) {
-                  try {
-                    setError('');
-                    setIsLoading(true);
-                    const loggedInUser = await loginWithGoogle(credentialResponse.credential);
-                    
-                    await new Promise(resolve => setTimeout(resolve, 100));
-                    
-                    const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
-                    if (redirectUrl) {
-                      sessionStorage.removeItem('redirectAfterLogin');
-                      navigate(redirectUrl, { replace: true });
-                    } else {
-                      let targetUrl = '/buyer/dashboard';
-                      if (loggedInUser.role === 'admin') targetUrl = '/admin';
-                      else if (loggedInUser.role === 'seller') targetUrl = '/seller/dashboard';
-                      navigate(targetUrl, { replace: true });
-                    }
-                  } catch (err) {
-                    setIsLoading(false);
-                    setError(err instanceof Error ? err.message : 'Échec de la connexion Google');
-                  }
-                }
-              }}
-              onError={() => {
-                setError('Échec de la connexion Google');
-              }}
-              text="continue_with"
-              shape="rectangular"
-              size="large"
-              width="100%"
-            />
-          </div>
+          {/* Google Button — rendu natif via ref pour éviter les conflits React DOM */}
+          <div
+            ref={googleButtonRef}
+            id="google-signin-btn"
+            style={{ width: '100%', minHeight: '44px', display: 'flex', justifyContent: 'center' }}
+          />
 
           {/* Sign Up Link */}
-          <p style={{ 
-            textAlign: 'center', 
-            marginTop: '28px', 
+          <p style={{
+            textAlign: 'center',
+            marginTop: '28px',
             color: '#6b7280',
             fontSize: '15px'
           }}>
             Pas encore de compte ?{' '}
-            <Link to="/signup" style={{ 
-              color: '#059669', 
-              fontWeight: 700, 
+            <Link to="/signup" style={{
+              color: '#059669',
+              fontWeight: 700,
               textDecoration: 'none'
             }}>
               S'inscrire gratuitement

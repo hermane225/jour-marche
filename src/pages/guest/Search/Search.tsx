@@ -14,7 +14,8 @@ import {
   Check
 } from 'lucide-react';
 import { useCart } from '../../../context/CartContext';
-import { products, categories } from '../../../data/mockData';
+import { useProductSearch } from '../../../hooks/useProducts';
+import { useCategories } from '../../../hooks/useCategories';
 import '../../../styles/product-card-mobile.css';
 
 export function Search() {
@@ -32,7 +33,11 @@ export function Search() {
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
   const [addedProductId, setAddedProductId] = useState<string | null>(null);
 
-  const handleAddToCart = (product: typeof products[0]) => {
+  // Fetch data from API
+  const { data: searchResults, isLoading: searchLoading } = useProductSearch(query || '', 100);
+  const { data: allCategories, isLoading: categoriesLoading } = useCategories();
+
+  const handleAddToCart = (product: any) => {
     addToCart(product, 1);
     setAddedProductId(product.id);
     setTimeout(() => setAddedProductId(null), 1500);
@@ -51,23 +56,18 @@ export function Search() {
     }
   };
 
+  // Filter and sort products from API results
   const filteredProducts = useMemo(() => {
-    let results = products.filter(product => {
-      // Recherche par texte
-      const searchLower = query.toLowerCase();
-      const matchesSearch = !query || 
-        product.title.toLowerCase().includes(searchLower) ||
-        product.description.toLowerCase().includes(searchLower) ||
-        product.shopName.toLowerCase().includes(searchLower) ||
-        product.category.toLowerCase().includes(searchLower);
-      
+    if (!searchResults || searchResults.length === 0) return [];
+    
+    let results = searchResults.filter(product => {
       // Filtre par catégorie
       const matchesCategory = !selectedCategory || product.category === selectedCategory;
       
       // Filtre par prix
       const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1];
       
-      return matchesSearch && matchesCategory && matchesPrice;
+      return matchesCategory && matchesPrice;
     });
 
     // Tri
@@ -90,7 +90,7 @@ export function Search() {
     }
 
     return results;
-  }, [query, selectedCategory, priceRange, sortBy]);
+  }, [searchResults, selectedCategory, priceRange, sortBy]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('fr-FR').format(price) + ' F';
@@ -308,7 +308,7 @@ export function Search() {
                   }}
                 >
                   <option value="">Toutes les catégories</option>
-                  {categories.map(cat => (
+                  {(allCategories || []).map(cat => (
                     <option key={cat.id} value={cat.slug}>{cat.icon} {cat.name}</option>
                   ))}
                 </select>
@@ -368,7 +368,11 @@ export function Search() {
         )}
 
         {/* Résultats */}
-        {filteredProducts.length > 0 ? (
+        {searchLoading ? (
+          <div style={{ textAlign: 'center', padding: '60px 20px' }}>
+            <div style={{ fontSize: '18px', color: '#6b7280' }}>Recherche en cours...</div>
+          </div>
+        ) : filteredProducts.length > 0 ? (
           <div className="search-results-grid" style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fill, minmax(clamp(140px, 50vw, 280px), 1fr))',

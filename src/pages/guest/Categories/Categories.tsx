@@ -1,8 +1,9 @@
 import { Link, useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Card } from '../../../components/ui';
 import '../../../styles/product-card-mobile.css';
-import { categories, products } from '../../../data/mockData';
+import { useCategories } from '../../../hooks/useCategories';
+import { useProducts } from '../../../hooks/useProducts';
 import './Categories.css';
 
 export function Categories() {
@@ -11,24 +12,39 @@ export function Categories() {
   const selectedSubCategory = subSlug || null;
   const [showSubcategories, setShowSubcategories] = useState(true);
 
+  // Fetch data from API
+  const { data: allCategories, isLoading: categoriesLoading } = useCategories();
+  const productsResult = useProducts({ category: selectedCategory || undefined, limit: 100 });
+  const allProducts = productsResult.data || [];
+  const productsLoading = productsResult.isLoading;
+
   // Scroll vers le haut quand la catégorie change
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [slug, subSlug]);
 
-  const currentCategory = categories.find(c => c.slug === selectedCategory);
-  const currentSubCategory = currentCategory?.subcategories?.find(s => s.slug === selectedSubCategory);
+  const currentCategory = useMemo(() => {
+    if (!allCategories) return null;
+    return allCategories.find(c => c.slug === selectedCategory) || null;
+  }, [allCategories, selectedCategory]);
+
+  const currentSubCategory = useMemo(() => {
+    if (!currentCategory || !selectedSubCategory) return null;
+    return currentCategory.subcategories?.find(s => s.slug === selectedSubCategory) || null;
+  }, [currentCategory, selectedSubCategory]);
 
   // Filtrer les produits selon la catégorie et sous-catégorie
-  const filteredProducts = selectedCategory 
-    ? products.filter(p => {
-        if (selectedSubCategory) {
-          // Si une sous-catégorie est sélectionnée, filtrer par sous-catégorie
-          return p.category === selectedCategory || p.category === selectedSubCategory;
-        }
-        return p.category === selectedCategory;
-      })
-    : products;
+  const filteredProducts = useMemo(() => {
+    if (!selectedCategory || allProducts.length === 0) return allProducts;
+    
+    return allProducts.filter(p => {
+      if (selectedSubCategory) {
+        // Si une sous-catégorie est sélectionnée, filtrer par sous-catégorie
+        return p.category === selectedCategory || p.category === selectedSubCategory;
+      }
+      return p.category === selectedCategory;
+    });
+  }, [selectedCategory, selectedSubCategory, allProducts]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('fr-FR').format(price) + ' FCFA';
@@ -170,12 +186,12 @@ export function Categories() {
       {!selectedCategory && (
         <section className="categories-grid-section">
           <div className="categories-grid">
-            {categories.map(category => (
+            {(allCategories || []).map(category => (
               <Link to={`/categories/${category.slug}`} key={category.slug} className={`category-card ${selectedCategory === category.slug ? 'active' : ''}`}>
                 <span className="category-card-icon">{category.icon}</span>
                 <span className="category-card-name">{category.name}</span>
                 <span className="category-card-count">
-                  {products.filter(p => p.category === category.slug).length} produits
+                  {allProducts.filter(p => p.category === category.slug).length} produits
                 </span>
               </Link>
             ))}
@@ -195,7 +211,12 @@ export function Categories() {
         </div>
 
         <div className="products-grid-jumia">
-          {filteredProducts.map(product => (
+          {productsLoading ? (
+            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px' }}>
+              <div style={{ fontSize: '16px', color: '#6b7280' }}>Chargement des produits...</div>
+            </div>
+          ) : filteredProducts.length > 0 ? (
+            filteredProducts.map(product => (
             <Link to={`/product/${product.id}`} key={product.id}>
               <div className="product-card">
                 <div className="product-card__image">
@@ -218,14 +239,13 @@ export function Categories() {
                 </div>
               </div>
             </Link>
-          ))}
+          ))
+          ) : (
+            <div className="no-products" style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px' }}>
+              <p>Aucun produit trouvé dans cette catégorie</p>
+            </div>
+          )}
         </div>
-
-        {filteredProducts.length === 0 && (
-          <div className="no-products">
-            <p>Aucun produit trouvé dans cette catégorie</p>
-          </div>
-        )}
       </section>
     </div>
   );

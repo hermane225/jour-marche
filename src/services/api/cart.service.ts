@@ -20,7 +20,7 @@ export interface CartItemDTO {
         shopId: string;
         shopName: string;
         variants?: { type: 'size' | 'color'; options: string[] }[];
-        status: 'published' | 'draft' | 'low_stock';
+        status: 'active' | 'inactive' | 'discontinued' | 'published' | 'draft' | 'low_stock';
         createdAt: string;
         isPerishable?: boolean;
         expirationDate?: string;

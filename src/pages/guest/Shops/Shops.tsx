@@ -2,10 +2,13 @@ import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Star } from 'lucide-react';
 import { Card } from '../../../components/ui';
-import { shops } from '../../../data/mockData';
+import { useShops } from '../../../hooks/useShops';
 import './Shops.css';
 
 export function Shops() {
+  // Fetch shops from API
+  const { data: shops, isLoading } = useShops({ limit: 100 });
+
   // Scroll vers le haut au chargement de la page
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -72,12 +75,17 @@ export function Shops() {
       {/* Grille boutiques améliorée */}
       <section className="shops-grid-section">
         <div className="shops-grid">
-          {shops.map(shop => (
+          {isLoading ? (
+            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '60px 20px' }}>
+              <div style={{ fontSize: '18px', color: '#6b7280' }}>Chargement des boutiques...</div>
+            </div>
+          ) : (shops || []).length > 0 ? (
+            shops.map(shop => (
             <Link to={`/shop/${shop.id}`} key={shop.id} style={{ textDecoration: 'none' }}>
               <Card className="shop-card" hover>
                 <div className="shop-card-header" style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '24px 24px 0 24px' }}>
                   <img 
-                    src={shop.logo}
+                    src={shop.logo || '/jour_marché.png'}
                     alt={shop.name}
                     className="shop-logo"
                     style={{ width: 64, height: 64, borderRadius: '50%', objectFit: 'cover', boxShadow: '0 2px 8px rgba(0,0,0,0.10)', border: '3px solid #fff', background: '#f3f4f6' }}
@@ -152,7 +160,12 @@ export function Shops() {
                 </div>
               </Card>
             </Link>
-          ))}
+          ))
+          ) : (
+            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '60px 20px' }}>
+              <div style={{ fontSize: '18px', color: '#6b7280' }}>Aucune boutique disponible</div>
+            </div>
+          )}
         </div>
       </section>
 

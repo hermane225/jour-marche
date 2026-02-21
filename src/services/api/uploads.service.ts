@@ -43,7 +43,10 @@ export const uploadService = {
       throw new Error(result.message || "Échec de l'upload");
     }
 
-    return result.data;
+    return {
+      ...result.data,
+      url: resolveUploadedFileUrl(result.data.url),
+    };
   },
 
   /**
@@ -76,7 +79,10 @@ export const uploadService = {
       throw new Error(result.message || "Échec de l'upload");
     }
 
-    return result.data;
+    return result.data.map((fileData) => ({
+      ...fileData,
+      url: resolveUploadedFileUrl(fileData.url),
+    }));
   },
 
   /**
@@ -105,3 +111,20 @@ export const uploadService = {
 };
 
 export default uploadService;
+
+function resolveUploadedFileUrl(url: string): string {
+  if (!url) return url;
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
+    return url;
+  }
+  const normalizedPath = url.startsWith('/') ? url : `/${url}`;
+  if (normalizedPath.startsWith('/uploads/')) {
+    return config.apiUrl ? `${config.apiUrl}${normalizedPath}` : normalizedPath;
+  }
+  // Si l'API renvoie seulement un nom de fichier, le placer sous /uploads
+  if (!url.includes('/')) {
+    const uploadPath = `/uploads/${url}`;
+    return config.apiUrl ? `${config.apiUrl}${uploadPath}` : uploadPath;
+  }
+  return normalizedPath;
+}

@@ -1,4 +1,5 @@
 // Export de tous les services API
+export { cartService } from './cart.service';
 export { apiClient, tokenManager, ApiException } from './client';
 export { authService } from './auth.service';
 export { googleAuthService } from './google-auth.service';
@@ -29,5 +30,5 @@ export type {
 
 export type { Transaction, PaymentRequest } from './payments.service';
 export type { Delivery, DeliveryStatusUpdate } from './drivers.service';
-export type { PlatformSettings, DashboardStats, AdminUser } from './admin.service';
+export type { PlatformSettings, DashboardStats, AdminUser, AdminShop, AdminOrder, AdminProduct, NotifyPayload } from './admin.service';
 export type { UploadedFile } from './uploads.service';

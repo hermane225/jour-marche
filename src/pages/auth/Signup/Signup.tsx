@@ -1,7 +1,6 @@
-import React, { useState, type FormEvent } from 'react';
+import React, { useState, useEffect, useRef, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, ArrowRight, Sparkles, User, Check } from 'lucide-react';
-import { GoogleLogin, type CredentialResponse } from '@react-oauth/google';
 import { useAuth } from '../../../context/AuthContext';
 import logoImage from '../../../assets/jour_marché.png';
 
@@ -12,16 +11,78 @@ export function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  
+  const googleButtonRef = useRef<HTMLDivElement>(null);
+
   const { signup, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
+
+  // Bouton Google natif via ref pour éviter les conflits DOM React
+  useEffect(() => {
+    const container = googleButtonRef.current;
+    if (!container) return;
+
+    // Attendre que le SDK Google soit chargé
+    const initializeGoogleButton = () => {
+      // @ts-ignore
+      if (typeof window !== 'undefined' && window.google?.accounts?.id) {
+        // @ts-ignore
+        window.google.accounts.id.renderButton(container, {
+          theme: 'outline',
+          size: 'large',
+          text: 'signup_with',
+          shape: 'rectangular',
+          width: container.offsetWidth || 360,
+          locale: 'fr',
+          callback: async (response: { credential: string }) => {
+            if (!response.credential) return;
+            try {
+              setError('');
+              setIsLoading(true);
+              const loggedInUser = await loginWithGoogle(response.credential);
+              const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
+              if (redirectUrl) {
+                sessionStorage.removeItem('redirectAfterLogin');
+                navigate(redirectUrl, { replace: true });
+              } else {
+                let targetUrl = '/buyer/dashboard';
+                if (loggedInUser.role === 'admin') targetUrl = '/admin/dashboard';
+                else if (loggedInUser.role === 'seller') targetUrl = '/seller/dashboard';
+                navigate(targetUrl, { replace: true });
+              }
+            } catch (err) {
+              setIsLoading(false);
+              setError(err instanceof Error ? err.message : 'Connexion Google échouée');
+            }
+          },
+        });
+      }
+    };
+
+    // Vérifier si le SDK est déjà chargé
+    if (window.google?.accounts?.id) {
+      initializeGoogleButton();
+    } else {
+      // Attendre le chargement du SDK
+      const checkGoogleLoaded = setInterval(() => {
+        if (window.google?.accounts?.id) {
+          clearInterval(checkGoogleLoaded);
+          initializeGoogleButton();
+        }
+      }, 100);
+
+      // Nettoyer après 5 secondes
+      setTimeout(() => clearInterval(checkGoogleLoaded), 5000);
+
+      return () => clearInterval(checkGoogleLoaded);
+    }
+  }, [loginWithGoogle, navigate]);
 
   const handleSubmit = async (e?: FormEvent | React.MouseEvent) => {
     if (e) {
       e.preventDefault();
       e.stopPropagation();
     }
-    
+
     // Validation côté client
     if (!email || !password) {
       setError('Veuillez remplir tous les champs');
@@ -33,30 +94,22 @@ export function Signup() {
       return false;
     }
 
-    // Réinitialiser l'erreur et démarrer le chargement
     setError('');
     setIsLoading(true);
     try {
       const registeredUser = await signup(email, password, name || email.split('@')[0], 'buyer');
-      
-      // Attendre que le state soit mis à jour avant la navigation
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      // Vérifier s'il y a une redirection après inscription
+
       const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
       if (redirectUrl) {
         sessionStorage.removeItem('redirectAfterLogin');
         navigate(redirectUrl, { replace: true });
       } else {
-        // Rediriger vers le dashboard selon le rôle
         let targetUrl = '/buyer/dashboard';
         if (registeredUser.role === 'seller') targetUrl = '/seller/dashboard';
-        else if (registeredUser.role === 'admin') targetUrl = '/admin';
-        
+        else if (registeredUser.role === 'admin') targetUrl = '/admin/dashboard';
         navigate(targetUrl, { replace: true });
       }
     } catch (err) {
-      // Afficher le vrai message d'erreur de l'API
       if (err instanceof Error) {
         setError(err.message || "Erreur lors de l'inscription");
       } else {
@@ -64,7 +117,7 @@ export function Signup() {
       }
       setIsLoading(false);
     }
-    
+
     return false;
   };
 
@@ -78,14 +131,14 @@ export function Signup() {
   const strength = passwordStrength();
 
   return (
-    <div style={{ 
-      minHeight: '100vh', 
+    <div style={{
+      minHeight: '100vh',
       display: 'flex',
       background: 'linear-gradient(135deg, #faf5ff 0%, #f3e8ff 50%, #e9d5ff 100%)'
     }}>
       {/* Left Side - Branding */}
-      <div style={{ 
-        flex: 1, 
+      <div style={{
+        flex: 1,
         display: 'none',
         padding: '40px',
         position: 'relative',
@@ -96,7 +149,7 @@ export function Signup() {
             .signup-left-panel { display: flex !important; flex-direction: column; }
           }
         `}</style>
-        
+
         {/* Background Pattern */}
         <div style={{
           position: 'absolute',
@@ -104,7 +157,7 @@ export function Signup() {
           background: 'linear-gradient(135deg, #7c3aed 0%, #8b5cf6 50%, #a78bfa 100%)',
           zIndex: 0
         }} />
-        
+
         {/* Decorative circles */}
         <div style={{
           position: 'absolute',
@@ -136,9 +189,9 @@ export function Signup() {
 
           {/* Main Text */}
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            <div style={{ 
-              display: 'inline-flex', 
-              alignItems: 'center', 
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
               gap: '8px',
               background: 'rgba(255,255,255,0.2)',
               padding: '10px 20px',
@@ -150,10 +203,10 @@ export function Signup() {
               <span style={{ color: 'white', fontWeight: 600, fontSize: '14px' }}>Rejoignez la communauté</span>
             </div>
 
-            <h1 style={{ 
-              fontSize: '48px', 
-              fontWeight: 800, 
-              color: 'white', 
+            <h1 style={{
+              fontSize: '48px',
+              fontWeight: 800,
+              color: 'white',
               lineHeight: 1.2,
               marginBottom: '20px'
             }}>
@@ -161,14 +214,14 @@ export function Signup() {
               compte gratuit
             </h1>
 
-            <p style={{ 
-              fontSize: '18px', 
-              color: 'rgba(255,255,255,0.9)', 
+            <p style={{
+              fontSize: '18px',
+              color: 'rgba(255,255,255,0.9)',
               lineHeight: 1.7,
               maxWidth: '450px',
               marginBottom: '40px'
             }}>
-              Achetez des produits locaux ou vendez les vôtres. 
+              Achetez des produits locaux ou vendez les vôtres.
               Du village à la ville, tout le monde est bienvenu !
             </p>
 
@@ -206,15 +259,15 @@ export function Signup() {
       </div>
 
       {/* Right Side - Form */}
-      <div style={{ 
-        flex: 1, 
-        display: 'flex', 
-        alignItems: 'center', 
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        alignItems: 'center',
         justifyContent: 'center',
         padding: '40px 20px'
       }} className="signup-form-container">
-        <div style={{ 
-          width: '100%', 
+        <div style={{
+          width: '100%',
           maxWidth: '440px',
           background: 'white',
           borderRadius: '32px',
@@ -235,9 +288,9 @@ export function Signup() {
 
           {/* Header */}
           <div style={{ textAlign: 'center', marginBottom: '28px' }}>
-            <h2 style={{ 
-              fontSize: '28px', 
-              fontWeight: 800, 
+            <h2 style={{
+              fontSize: '28px',
+              fontWeight: 800,
               color: '#1f2937',
               marginBottom: '8px'
             }} className="signup-title">
@@ -252,10 +305,10 @@ export function Signup() {
           <form onSubmit={handleSubmit} noValidate action="javascript:void(0)">
             {/* Name Input */}
             <div style={{ marginBottom: '20px' }}>
-              <label style={{ 
-                display: 'block', 
-                fontSize: '14px', 
-                fontWeight: 600, 
+              <label style={{
+                display: 'block',
+                fontSize: '14px',
+                fontWeight: 600,
                 color: '#374151',
                 marginBottom: '8px'
               }}>
@@ -307,10 +360,10 @@ export function Signup() {
 
             {/* Email Input */}
             <div style={{ marginBottom: '20px' }}>
-              <label style={{ 
-                display: 'block', 
-                fontSize: '14px', 
-                fontWeight: 600, 
+              <label style={{
+                display: 'block',
+                fontSize: '14px',
+                fontWeight: 600,
                 color: '#374151',
                 marginBottom: '8px'
               }}>
@@ -358,10 +411,10 @@ export function Signup() {
 
             {/* Password Input */}
             <div style={{ marginBottom: '24px' }}>
-              <label style={{ 
+              <label style={{
                 display: 'block',
-                fontSize: '14px', 
-                fontWeight: 600, 
+                fontSize: '14px',
+                fontWeight: 600,
                 color: '#374151',
                 marginBottom: '8px'
               }}>
@@ -422,7 +475,7 @@ export function Signup() {
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
-              
+
               {/* Password Strength */}
               {password.length > 0 && (
                 <div style={{ marginTop: '10px' }}>
@@ -466,9 +519,8 @@ export function Signup() {
 
             {/* Submit Button */}
             <button
-              type="button"
+              type="submit"
               disabled={isLoading}
-              onClick={handleSubmit}
               style={{
                 width: '100%',
                 padding: '18px',
@@ -506,10 +558,10 @@ export function Signup() {
           </form>
 
           {/* Divider */}
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '16px', 
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '16px',
             margin: '28px 0'
           }}>
             <div style={{ flex: 1, height: '1px', background: '#e5e7eb' }} />
@@ -517,55 +569,24 @@ export function Signup() {
             <div style={{ flex: 1, height: '1px', background: '#e5e7eb' }} />
           </div>
 
-          {/* Google Button */}
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <GoogleLogin
-              onSuccess={async (credentialResponse: CredentialResponse) => {
-                if (credentialResponse.credential) {
-                  try {
-                    setError('');
-                    setIsLoading(true);
-                    const loggedInUser = await loginWithGoogle(credentialResponse.credential);
-                    
-                    await new Promise(resolve => setTimeout(resolve, 100));
-                    
-                    const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
-                    if (redirectUrl) {
-                      sessionStorage.removeItem('redirectAfterLogin');
-                      navigate(redirectUrl, { replace: true });
-                    } else {
-                      let targetUrl = '/buyer/dashboard';
-                      if (loggedInUser.role === 'admin') targetUrl = '/admin';
-                      else if (loggedInUser.role === 'seller') targetUrl = '/seller/dashboard';
-                      navigate(targetUrl, { replace: true });
-                    }
-                  } catch (err) {
-                    setIsLoading(false);
-                    setError(err instanceof Error ? err.message : 'Échec de la connexion Google');
-                  }
-                }
-              }}
-              onError={() => {
-                setError('Échec de l\'inscription Google');
-              }}
-              text="signup_with"
-              shape="rectangular"
-              size="large"
-              width="100%"
-            />
-          </div>
+          {/* Google Button — rendu natif via ref */}
+          <div
+            ref={googleButtonRef}
+            id="google-signup-btn"
+            style={{ width: '100%', minHeight: '44px', display: 'flex', justifyContent: 'center' }}
+          />
 
           {/* Login Link */}
-          <p style={{ 
-            textAlign: 'center', 
-            marginTop: '28px', 
+          <p style={{
+            textAlign: 'center',
+            marginTop: '28px',
             color: '#6b7280',
             fontSize: '15px'
           }}>
             Déjà un compte ?{' '}
-            <Link to="/login" style={{ 
-              color: '#7c3aed', 
-              fontWeight: 700, 
+            <Link to="/login" style={{
+              color: '#7c3aed',
+              fontWeight: 700,
               textDecoration: 'none'
             }}>
               Se connecter
@@ -573,9 +594,9 @@ export function Signup() {
           </p>
 
           {/* Terms */}
-          <p style={{ 
-            textAlign: 'center', 
-            marginTop: '20px', 
+          <p style={{
+            textAlign: 'center',
+            marginTop: '20px',
             color: '#9ca3af',
             fontSize: '12px',
             lineHeight: 1.6

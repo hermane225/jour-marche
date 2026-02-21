@@ -18,35 +18,54 @@ export function useApi<T>(
   const [data, setData] = useState<T | null>(null);
   const [isLoading, setIsLoading] = useState(options.immediate ?? true);
   const [error, setError] = useState<Error | null>(null);
+  const [refetchCounter, setRefetchCounter] = useState(0);
 
-  const fetch = useCallback(async () => {
+  useEffect(() => {
     // Si on utilise les données mockées, ne pas appeler l'API
     if (config.useMockData) {
       setIsLoading(false);
       return;
     }
 
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const result = await apiCall();
-      setData(result);
-    } catch (err) {
-      setError(err instanceof Error ? err : new Error('Une erreur est survenue'));
-    } finally {
-      setIsLoading(false);
+    if (!options.immediate && refetchCounter === 0) {
+      return;
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, dependencies);
 
-  useEffect(() => {
-    if (options.immediate) {
-      fetch();
-    }
-  }, [fetch, options.immediate]);
+    let cancelled = false;
+    
+    const fetch = async () => {
+      setIsLoading(true);
+      setError(null);
 
-  return { data, isLoading, error, refetch: fetch };
+      try {
+        const result = await apiCall();
+        if (!cancelled) {
+          setData(result);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof Error ? err : new Error('Une erreur est survenue'));
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetch();
+
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [...dependencies, refetchCounter]);
+
+  const refetch = useCallback(async () => {
+    setRefetchCounter(prev => prev + 1);
+  }, []);
+
+  return { data, isLoading, error, refetch };
 }
 
 // Hook pour les mutations (POST, PUT, DELETE)
@@ -127,32 +146,45 @@ export function usePaginatedApi<T>(
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
+  const [refetchCounter, setRefetchCounter] = useState(0);
 
-  const fetch = useCallback(async () => {
+  useEffect(() => {
     if (config.useMockData) {
       setIsLoading(false);
       return;
     }
 
-    setIsLoading(true);
-    setError(null);
+    let cancelled = false;
 
-    try {
-      const result = await apiCall(page, limit);
-      setData(result.data);
-      setTotalPages(result.pagination.totalPages);
-      setTotal(result.pagination.total);
-    } catch (err) {
-      setError(err instanceof Error ? err : new Error('Une erreur est survenue'));
-    } finally {
-      setIsLoading(false);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, limit, ...dependencies]);
+    const fetch = async () => {
+      setIsLoading(true);
+      setError(null);
 
-  useEffect(() => {
+      try {
+        const result = await apiCall(page, limit);
+        if (!cancelled) {
+          setData(result.data);
+          setTotalPages(result.pagination.totalPages);
+          setTotal(result.pagination.total);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof Error ? err : new Error('Une erreur est survenue'));
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    };
+
     fetch();
-  }, [fetch]);
+
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, limit, ...dependencies, refetchCounter]);
 
   const goToPage = useCallback((newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
@@ -168,6 +200,10 @@ export function usePaginatedApi<T>(
     goToPage(page - 1);
   }, [page, goToPage]);
 
+  const refetch = useCallback(async () => {
+    setRefetchCounter(prev => prev + 1);
+  }, []);
+
   return {
     data,
     isLoading,
@@ -180,7 +216,7 @@ export function usePaginatedApi<T>(
     goToPage,
     nextPage,
     previousPage,
-    refetch: fetch,
+    refetch,
   };
 }
 

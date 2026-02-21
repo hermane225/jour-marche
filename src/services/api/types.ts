@@ -81,11 +81,13 @@ export interface ProductsResponse {
 
 export interface ProductDTO {
   id: string;
+  name?: string;
   title: string;
   description: string;
   price: number;
   originalPrice?: number;
   stock: number;
+  quantity?: number;
   images: string[];
   category: string;
   shopId: string;
@@ -94,7 +96,7 @@ export interface ProductDTO {
     type: 'size' | 'color';
     options: string[];
   }[];
-  status: 'published' | 'draft' | 'low_stock';
+  status: 'active' | 'inactive' | 'discontinued' | 'published' | 'draft' | 'low_stock';
   createdAt: string;
   isPerishable?: boolean;
   expirationDate?: string;
@@ -108,6 +110,7 @@ export interface ShopDTO {
   name: string;
   description: string;
   logo?: string;
+  banner?: string;
   phone: string;
   address: string;
   sellerId: string;
@@ -196,4 +199,5 @@ export interface ApiError {
   code?: string;
   status?: number;
   details?: Record<string, string[]>;
+  requestId?: string;
 }

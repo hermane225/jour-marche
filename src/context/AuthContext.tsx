@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+﻿import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { User, UserRole } from '../types';
 import { authService, tokenManager } from '../services/api';
 import { googleAuthService } from '../services/api/google-auth.service';
@@ -41,7 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Écouter l'événement de déconnexion forcée (token expiré)
+  // Ã‰couter l'Ã©vÃ©nement de dÃ©connexion forcÃ©e (token expirÃ©)
   useEffect(() => {
     const handleLogout = () => {
       setUser(null);
@@ -53,7 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener('auth:logout', handleLogout);
   }, []);
 
-  // Vérifier le token au chargement
+  // VÃ©rifier le token au chargement
   useEffect(() => {
     const checkAuth = async () => {
       if (tokenManager.hasToken() && !user) {
@@ -82,15 +82,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string): Promise<User> => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
       // Appeler l'API d'authentification
       const loggedInUser = await authService.login(email, password);
       setUser(loggedInUser);
       localStorage.setItem('jour_marche_user', JSON.stringify(loggedInUser));
+      // DiffÃ©rer l'Ã©vÃ©nement pour que la navigation parte d'abord
+      setTimeout(() => window.dispatchEvent(new CustomEvent('auth:login', { detail: loggedInUser })), 0);
       return loggedInUser;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Échec de la connexion';
+      const errorMessage = err instanceof Error ? err.message : 'Ã‰chec de la connexion';
       setError(errorMessage);
       throw err;
     } finally {
@@ -101,14 +103,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loginWithGoogle = async (credential: string): Promise<User> => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const loggedInUser = await googleAuthService.loginWithGoogle(credential);
       setUser(loggedInUser);
       localStorage.setItem('jour_marche_user', JSON.stringify(loggedInUser));
+      setTimeout(() => window.dispatchEvent(new CustomEvent('auth:login', { detail: loggedInUser })), 0);
       return loggedInUser;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Échec de la connexion Google';
+      const errorMessage = err instanceof Error ? err.message : 'Ã‰chec de la connexion Google';
       setError(errorMessage);
       throw err;
     } finally {
@@ -119,15 +122,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signup = async (email: string, password: string, name: string, role: UserRole): Promise<User> => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
       // Appeler l'API d'inscription
       const registeredUser = await authService.signup(email, password, name, role);
       setUser(registeredUser);
       localStorage.setItem('jour_marche_user', JSON.stringify(registeredUser));
+      setTimeout(() => window.dispatchEvent(new CustomEvent('auth:login', { detail: registeredUser })), 0);
       return registeredUser;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Échec de l'inscription";
+      const errorMessage = err instanceof Error ? err.message : "Ã‰chec de l'inscription";
       setError(errorMessage);
       throw err;
     } finally {
@@ -139,7 +143,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await authService.logout();
     } catch {
-      // Ignorer les erreurs de déconnexion
+      // Ignorer les erreurs de dÃ©connexion
     } finally {
       setUser(null);
       localStorage.removeItem('jour_marche_user');
@@ -155,21 +159,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(updatedUser);
       localStorage.setItem('jour_marche_user', JSON.stringify(updatedUser));
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Échec de la mise à jour du profil';
+      const errorMessage = err instanceof Error ? err.message : 'Ã‰chec de la mise Ã  jour du profil';
       setError(errorMessage);
+      throw err;
     }
   };
 
   return (
-    <AuthContext.Provider 
-      value={{ 
-        user, 
-        isAuthenticated: !!user, 
-        isLoading, 
+    <AuthContext.Provider
+      value={{
+        user,
+        isAuthenticated: !!user,
+        isLoading,
         error,
         login,
         loginWithGoogle,
-        signup, 
+        signup,
         logout,
         updateUser,
         clearError,
@@ -187,3 +192,7 @@ export function useAuth() {
   }
   return context;
 }
+
+
+
+

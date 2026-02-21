@@ -10,6 +10,11 @@ export default defineConfig({
         target: 'https://jour-marche-api.onrender.com',
         changeOrigin: true,
         secure: true,
+      },
+      '/uploads': {
+        target: 'https://jour-marche-api.onrender.com',
+        changeOrigin: true,
+        secure: true,
       }
     }
   }

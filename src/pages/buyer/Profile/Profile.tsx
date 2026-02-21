@@ -37,10 +37,14 @@ const Profile: React.FC = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    updateUser(form);
-    setEditMode(false);
+    try {
+      await updateUser(form);
+      setEditMode(false);
+    } catch {
+      // L'erreur est deja geree dans le contexte auth.
+    }
   };
 
   const handleAddAddress = (e: React.FormEvent) => {
@@ -340,7 +344,7 @@ const Profile: React.FC = () => {
                     <div className="payment-content">
                       {payment.isDefault && <span className="badge-default">Paiement par défaut</span>}
                       <p className="payment-name">{payment.name}</p>
-                      {payment.lastDigits && <p className="payment-digits">****{payment.lastDigits}</p>}
+                      {!!payment.lastDigits && <p className="payment-digits">****{payment.lastDigits}</p>}
                     </div>
                     <div className="payment-actions">
                       {!payment.isDefault && (

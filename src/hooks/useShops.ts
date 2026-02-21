@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 import { shopService } from '../services/api';
 import { useApi, usePaginatedApi, useMutation } from './useApi';
 import type { Shop } from '../types';
+import type { CreateShopPayload, UpdateShopPayload } from '../services/api/shops.service';
 
 // Hook pour récupérer une boutique par ID
 export function useShop(shopId: string) {
@@ -72,7 +73,7 @@ export function useShopSearch(searchTerm: string, limit: number = 12) {
 // Hook pour créer une boutique
 export function useCreateShop() {
   return useMutation(
-    (shopData: Omit<Shop, 'id' | 'createdAt' | 'totalProducts' | 'monthlySales' | 'rating'>) => 
+    (shopData: CreateShopPayload) => 
       shopService.createShop(shopData)
   );
 }
@@ -80,7 +81,7 @@ export function useCreateShop() {
 // Hook pour mettre à jour une boutique
 export function useUpdateShop() {
   return useMutation(
-    ({ id, updates }: { id: string; updates: Partial<Shop> }) => 
+    ({ id, updates }: { id: string; updates: Partial<UpdateShopPayload> }) => 
       shopService.updateShop(id, updates)
   );
 }

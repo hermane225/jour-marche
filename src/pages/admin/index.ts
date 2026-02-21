@@ -5,3 +5,4 @@ export { AdminOrders } from './Orders';
 export { AdminUsers } from './Users';
 export { AdminReports } from './Reports';
 export { AdminLoginGuide } from './AdminLoginGuide';
+export { AdminProfile } from './Profile';

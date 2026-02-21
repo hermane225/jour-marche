@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 import { productService } from '../services/api';
 import { useApi, usePaginatedApi, useMutation } from './useApi';
 import type { Product } from '../types';
+import type { CreateProductPayload, UpdateProductPayload } from '../services/api/products.service';
 
 // Hook pour récupérer un produit par ID
 export function useProduct(productId: string) {
@@ -92,7 +93,7 @@ export function usePromotionalProducts(limit: number = 10) {
 // Hook pour créer un produit
 export function useCreateProduct() {
   return useMutation(
-    (productData: Omit<Product, 'id' | 'createdAt' | 'status'>) => 
+    (productData: CreateProductPayload) =>
       productService.createProduct(productData)
   );
 }
@@ -100,7 +101,7 @@ export function useCreateProduct() {
 // Hook pour mettre à jour un produit
 export function useUpdateProduct() {
   return useMutation(
-    ({ id, updates }: { id: string; updates: Partial<Product> }) => 
+    ({ id, updates }: { id: string; updates: UpdateProductPayload }) =>
       productService.updateProduct(id, updates)
   );
 }

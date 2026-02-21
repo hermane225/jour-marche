@@ -1,9 +1,8 @@
-﻿import { useState, useEffect } from 'react';
+﻿import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../../context/AuthContext';
 import { useShops } from '../../../context/ShopContext';
 import { useCategories } from '../../../hooks/useCategories';
-import { uploadService } from '../../../services/api';
+import { uploadService, ApiException } from '../../../services/api';
 import {
   Store,
   Camera,
@@ -16,6 +15,9 @@ import {
   Sparkles,
   Tag,
 } from 'lucide-react';
+
+const PHONE_REGEX = /^\+?[0-9]{8,15}$/;
+const normalizePhone = (value: string): string => value.replace(/[\s\-().]/g, '');
 
 // Quartiers / communes par ville
 const QUARTIERS_PAR_VILLE: Record<string, string[]> = {
@@ -71,9 +73,12 @@ const VILLES_CI = Object.keys(QUARTIERS_PAR_VILLE).concat([
 
 export function CreateShop() {
   const navigate = useNavigate();
-  const { user } = useAuth();
   const { addShop } = useShops();
   const { data: categories, isLoading: catsLoading } = useCategories();
+
+  // ✅ Ref pour suivre le statut de montage du composant
+  const isMountedRef = useRef(true);
+  const isNavigatingRef = useRef(false);
 
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -84,6 +89,10 @@ export function CreateShop() {
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [logoUploading, setLogoUploading] = useState(false);
   const [logoError, setLogoError] = useState<string | null>(null);
+  const [banner, setBanner] = useState<string | null>(null);
+  const [bannerPreview, setBannerPreview] = useState<string | null>(null);
+  const [bannerUploading, setBannerUploading] = useState(false);
+  const [bannerError, setBannerError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     // Étape 1
@@ -103,7 +112,28 @@ export function CreateShop() {
     minimumOrder: '',
   });
 
-  useEffect(() => { window.scrollTo(0, 0); }, []);
+  // ✅ Protection contre les mises à jour après démontage
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    
+    return () => {
+      // ✅ Marquer le composant comme démonté au nettoyage
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  // ✅ Fonction sécurisée pour naviguer avec vérification de montage
+  const safeNavigate = useCallback((to: string, options?: { replace?: boolean }) => {
+    if (!isMountedRef.current || isNavigatingRef.current) {
+      console.log('⚠️ Navigation ignorée: composant démonté ou navigation en cours');
+      return;
+    }
+    
+    isNavigatingRef.current = true;
+    
+    // ✅ Utiliser replace pour éviter l'historique problématique
+    navigate(to, { replace: options?.replace ?? true });
+  }, [navigate]);
 
   const TOTAL_STEPS = 3;
   const steps = [
@@ -119,7 +149,15 @@ export function CreateShop() {
     return false;
   };
 
-  const scrollTop = () => setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 0);
+  const scrollTop = () => {
+    // ✅ Scroll simple et immédiat pour éviter les problèmes pendant démontage
+    try {
+      window.scrollTo(0, 0);
+    } catch (e) {
+      // Ignorer si le composant est démonté
+      console.debug('scrollTop ignoré:', e);
+    }
+  };
   const nextStep = () => { setCurrentStep(p => Math.min(p + 1, TOTAL_STEPS)); scrollTop(); };
   const prevStep = () => { setCurrentStep(p => Math.max(p - 1, 1)); scrollTop(); };
 
@@ -147,8 +185,59 @@ export function CreateShop() {
     }
   };
 
+  const handleBannerUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setBannerError(null);
+
+    const reader = new FileReader();
+    reader.onloadend = () => setBannerPreview(reader.result as string);
+    reader.readAsDataURL(file);
+
+    setBannerUploading(true);
+    try {
+      const uploaded = await uploadService.uploadSingle(file);
+      setBanner(uploaded.url);
+    } catch {
+      setBannerPreview(null);
+      setBanner(null);
+      setBannerError('Impossible d uploader la banniere. Reessayez.');
+    } finally {
+      setBannerUploading(false);
+    }
+  };
+
   // Soumission finale uniquement (la navigation par étapes passe par les boutons onClick)
   const handleFinalSubmit = async () => {
+    // ✅ Empêcher les soumissions multiples
+    if (isLoading) {
+      console.warn('⚠️ [CREATE SHOP] Soumission déjà en cours, ignorée');
+      return;
+    }
+
+    // ✅ Validation : Vérifier que la catégorie existe
+    const categoryValue = formData.category.trim();
+    if (!categoryValue) {
+      setSubmitError('Veuillez sélectionner une catégorie valide.');
+      setCurrentStep(1); // Retour à l'étape 1
+      return;
+    }
+
+    // Vérifier que la catégorie sélectionnée existe bien dans la liste
+    const categoryExists = categories?.some(cat => cat.id === categoryValue);
+    if (!categoryExists) {
+      setSubmitError(`Catégorie invalide. Veuillez en sélectionner une dans la liste.`);
+      setCurrentStep(1);
+      return;
+    }
+
+    const phoneNormalized = normalizePhone(formData.phone.trim());
+    if (!PHONE_REGEX.test(phoneNormalized)) {
+      setSubmitError('Numero de telephone invalide. Utilisez 8 a 15 chiffres (option + autorisee).');
+      setCurrentStep(2);
+      return;
+    }
+
     setIsLoading(true);
     setSubmitError(null);
 
@@ -165,26 +254,111 @@ export function CreateShop() {
       country: 'CI',
     };
 
-    try {
-      const newShop = await addShop({
-        name: formData.name.trim(),
-        description: formData.description.trim() || undefined,
-        category: formData.category,
-        logo: logo || undefined,
-        phone: formData.phone.trim() || undefined,
-        address,
-        deliveryOptions: deliveryOptions.length ? deliveryOptions : undefined,
-        deliveryFee: formData.deliveryFee ? Number(formData.deliveryFee) : undefined,
-        minimumOrder: formData.minimumOrder ? Number(formData.minimumOrder) : undefined,
-      });
+    const payload = {
+      name: formData.name.trim(),
+      description: formData.description.trim() || undefined,
+      category: categoryValue,
+      logo: logo || undefined,
+      banner: banner || undefined,
+      phone: phoneNormalized || undefined,
+      address,
+      deliveryOptions: deliveryOptions.length ? deliveryOptions : undefined,
+      deliveryFee: formData.deliveryFee ? Number(formData.deliveryFee) : undefined,
+      minimumOrder: formData.minimumOrder ? Number(formData.minimumOrder) : undefined,
+    };
 
-      navigate('/seller/products/create', {
-        state: { shopId: newShop.id, shopName: newShop.name },
-      });
+    console.group('🏪 [CREATE SHOP] Soumission formulaire');
+    console.log('Données formulaire:', formData);
+    console.log('Catégorie validée:', categoryExists ? `✅ ${categoryValue}` : '❌ Invalide');
+    console.log('Payload final:', payload);
+    console.log('Token présent:', !!localStorage.getItem('jour_marche_token'));
+    console.groupEnd();
+
+    try {
+      const newShop = await addShop(payload);
+
+      console.log('✅ [CREATE SHOP] Boutique créée avec succès:', newShop);
+      
+      // ✅ Différer la navigation pour laisser React terminer ses mises à jour
+      // Cela évite l'erreur "removeChild" causée par la mise à jour du state pendant le démontage
+      // Utiliser safeNavigate pour vérifier que le composant est toujoursmounted
+      setTimeout(() => {
+        if (isMountedRef.current && !isNavigatingRef.current) {
+          isNavigatingRef.current = true;
+          navigate('/seller/products/create', {
+            state: { shopId: newShop.id, shopName: newShop.name },
+            replace: true,
+          });
+        }
+      }, 100);
+      
+      // Retourner immédiatement pour éviter toute autre mise à jour
+      return;
     } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : 'Echec de la creation de la boutique');
-    } finally {
-      setIsLoading(false);
+      console.error('❌ [CREATE SHOP] Erreur finale:', err);
+      
+      // ✅ Affichage amélioré des erreurs avec err.details
+      let errorMessage = 'Echec de la creation de la boutique';
+      
+      if (err instanceof ApiException) {
+        errorMessage = err.message || errorMessage;
+
+        // 🔍 Afficher précisément err.details
+        if (err.details && Object.keys(err.details).length > 0) {
+          console.group('📋 [CREATE SHOP] Détails de l\'erreur');
+          console.table(err.details);
+          console.groupEnd();
+          
+          const detailsText = Object.entries(err.details)
+            .map(([field, messages]) => {
+              const fieldLabel = field === 'category' ? 'Catégorie' :
+                                 field === 'name' ? 'Nom' :
+                                 field === 'phone' ? 'Téléphone' : field;
+              return `${fieldLabel}: ${(messages || []).join(', ')}`;
+            })
+            .join(' | ');
+          if (detailsText) {
+            errorMessage += ` \n\n📋 Détails : ${detailsText}`;
+          }
+        }
+
+        // Messages spécifiques selon le code HTTP
+        if (err.status === 401) {
+          errorMessage += '\n\n🔐 Vous devez être connecté.';
+        } else if (err.status === 403) {
+          errorMessage += '\n\n⛔ Permission refusée.';
+        } else if (err.status === 404) {
+          errorMessage += '\n\n🏷️ Catégorie introuvable. Rechargez la page et sélectionnez une catégorie active.';
+        } else if (err.status === 409) {
+          errorMessage += '\n\n🏪 Une boutique avec ce nom existe déjà.';
+        } else if (err.status === 400 || err.status === 422 || err.code === 'VALIDATION_ERROR') {
+          errorMessage += '\n\n⚠️ Vérifiez les données saisies (voir détails ci-dessus).';
+        } else if (err.status >= 500) {
+          errorMessage += '\n\n🔧 Erreur serveur. Consultez la console (F12).';
+        }
+
+        // Afficher le code d'erreur si disponible
+        if (err.code) {
+          errorMessage += `\n\n🏷️ Code: ${err.code}`;
+        }
+        if (err.requestId) {
+          errorMessage += `\n\n🧾 Référence: ${err.requestId}`;
+        }
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+        
+        // Suggestions contextuelles
+        if (err.message.includes('401') || err.message.includes('authentification')) {
+          errorMessage += '\n\n🔐 Vous devez être connecté.';
+        } else if (err.message.includes('category') || err.message.includes('categorie')) {
+          errorMessage += '\n\n🏷️ Catégorie invalide ou manquante.';
+        } else if (err.message.includes('500')) {
+          errorMessage += '\n\n🔧 Erreur serveur. Consultez la console (F12).';
+        }
+      }
+
+      setSubmitError(errorMessage);
+      setIsLoading(false); // Seulement en cas d'erreur
     }
   };
 
@@ -262,6 +436,33 @@ export function CreateShop() {
         </label>
         {logoError && (
           <p style={{ margin: '6px 0 0 0', fontSize: '12px', color: '#ef4444' }}>{logoError}</p>
+        )}
+      </div>
+
+      <div>
+        <label style={labelStyle}>Banniere de la boutique (optionnel)</label>
+        <label style={{
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          width: '100%', minHeight: '120px', border: bannerUploading ? '3px dashed #8b5cf6' : '3px dashed #d1d5db',
+          borderRadius: '16px', cursor: bannerUploading ? 'wait' : 'pointer', background: '#f9fafb',
+          overflow: 'hidden', position: 'relative',
+        }}>
+          <input type="file" accept="image/*" onChange={handleBannerUpload} hidden disabled={bannerUploading} />
+          {(bannerPreview || banner) ? (
+            <span style={{ display: 'block', width: '100%', height: '100%', position: 'relative' }}>
+              <img src={bannerPreview || banner!} alt="Banniere" style={{ width: '100%', height: '140px', objectFit: 'cover' }} />
+            </span>
+          ) : (
+            <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', padding: '16px' }}>
+              <Camera size={28} color={bannerUploading ? '#8b5cf6' : '#9ca3af'} />
+              <span style={{ fontSize: '12px', color: '#9ca3af' }}>
+                {bannerUploading ? 'Upload...' : 'Ajouter une banniere'}
+              </span>
+            </span>
+          )}
+        </label>
+        {bannerError && (
+          <p style={{ margin: '6px 0 0 0', fontSize: '12px', color: '#ef4444' }}>{bannerError}</p>
         )}
       </div>
 
@@ -344,7 +545,7 @@ export function CreateShop() {
           type="tel"
           placeholder="07 XX XX XX XX"
           value={formData.phone}
-          onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/\D/g, '') })}
+          onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/[^0-9+\s\-().]/g, '') })}
           required
           inputMode="numeric"
           style={inputStyle}
@@ -676,3 +877,4 @@ export function CreateShop() {
     </div>
   );
 }
+

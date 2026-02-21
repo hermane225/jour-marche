@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Sparkles, Store, Truck, Shield, Clock, Star, ChevronLeft, ChevronRight, TrendingUp, Users, ShoppingBag, Heart, ShoppingCart, Eye, Check } from 'lucide-react';
-import { products, categories, shops } from '../../../data/mockData';
 import { useCart } from '../../../context/CartContext';
 import type { Product } from '../../../types';
+import { useProducts } from '../../../hooks/useProducts';
+import { useCategories } from '../../../hooks/useCategories';
+import { usePopularShops } from '../../../hooks/useShops';
 import '../../../styles/product-card-mobile.css';
 
 
@@ -66,18 +68,47 @@ export function Home() {
     window.scrollTo(0, 0);
   }, []);
 
+  // Fetch data from API
+  const productsResult = useProducts({ limit: 50 });
+  const categoriesResult = useCategories();
+  const shopsResult = usePopularShops(10);
+  
+  const allCategories = categoriesResult.data;
+  const categoriesLoading = categoriesResult.isLoading;
+  const popularShops = shopsResult.data;
+  const shopsLoading = shopsResult.isLoading;
+
+  // Extract products array from paginated response
+  const allProducts = productsResult.data || [];
+  const productsLoading = productsResult.isLoading;
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('fr-FR').format(price) + ' FCFA';
   };
 
-  const trendingProducts = products.slice(0, 12) as ProductWithPromo[];
-  const featuredShops = shops.slice(0, 4);
-  const mainCategories = categories.slice(0, 8);
+  // Use memoized data with fallback to empty arrays
+  const trendingProducts = useMemo(() => {
+    if (!allProducts || allProducts.length === 0) return [];
+    return allProducts.slice(0, 12) as ProductWithPromo[];
+  }, [allProducts]);
+
+  const featuredShops = useMemo(() => {
+    if (!popularShops || popularShops.length === 0) return [];
+    return popularShops.slice(0, 4);
+  }, [popularShops]);
+
+  const mainCategories = useMemo(() => {
+    if (!allCategories || allCategories.length === 0) return [];
+    return allCategories.slice(0, 8);
+  }, [allCategories]);
 
   // Produits des boutiques populaires
-  const featuredShopProducts = products.filter(product =>
-    featuredShops.some(shop => shop.id === product.shopId)
-  ).slice(0, 8) as ProductWithPromo[];
+  const featuredShopProducts = useMemo(() => {
+    if (!allProducts || !featuredShops || allProducts.length === 0 || featuredShops.length === 0) return [];
+    return allProducts.filter(product =>
+      featuredShops.some(shop => shop.id === product.shopId)
+    ).slice(0, 8) as ProductWithPromo[];
+  }, [allProducts, featuredShops]);
   
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
 
@@ -99,7 +130,7 @@ export function Home() {
           />
           {/* Badges */}
           <div className="product-card__badges">
-            {product.originalPrice && (
+            {!!product.originalPrice && (
               <span className="product-card__badge--discount">
                 -{Math.round((1 - product.price / product.originalPrice) * 100)}%
               </span>
@@ -153,7 +184,7 @@ export function Home() {
           <div className="product-card__price-section">
             <div className="product-card__price-wrapper">
               <span className="product-card__price">{formatPrice(product.price)}</span>
-              {product.originalPrice && (
+              {!!product.originalPrice && (
                 <span className="product-card__original-price">{formatPrice(product.originalPrice)}</span>
               )}
             </div>
@@ -371,7 +402,21 @@ export function Home() {
             </Link>
           </div>
           <div className="products-grid-jumia">
-            {trendingProducts.map(renderProductCard)}
+            {productsLoading ? (
+              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px' }}>
+                <div style={{ fontSize: '16px', color: '#6b7280' }}>Chargement des produits...</div>
+              </div>
+            ) : productsResult.error ? (
+              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px' }}>
+                <div style={{ fontSize: '16px', color: '#ef4444' }}>Erreur: {productsResult.error.message}</div>
+              </div>
+            ) : trendingProducts.length > 0 ? (
+              trendingProducts.map(renderProductCard)
+            ) : (
+              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px' }}>
+                <div style={{ fontSize: '16px', color: '#6b7280' }}>Aucun produit disponible pour le moment</div>
+              </div>
+            )}
           </div>
           {/* Load More Button */}
           <div style={{ textAlign: 'center', marginTop: '48px' }}>
@@ -712,7 +757,16 @@ export function Home() {
             gap: '28px',
             marginBottom: '48px'
           }}>
-            {mainCategories.map((category, idx) => {
+            {categoriesLoading ? (
+              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px' }}>
+                <div style={{ fontSize: '16px', color: '#6b7280' }}>Chargement des catégories...</div>
+              </div>
+            ) : categoriesResult.error ? (
+              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px' }}>
+                <div style={{ fontSize: '16px', color: '#ef4444' }}>Erreur: {categoriesResult.error.message}</div>
+              </div>
+            ) : mainCategories.length > 0 ? (
+              mainCategories.map((category, idx) => {
               const categoryColors = [
                 { bg: '#10b981', light: '#dcfce7', icon: '🥬' },
                 { bg: '#8b5cf6', light: '#f3e8ff', icon: '🥣' },
@@ -724,7 +778,7 @@ export function Home() {
                 { bg: '#3b82f6', light: '#dbeafe', icon: '🥐' },
               ];
               const color = categoryColors[idx % categoryColors.length];
-              const productCount = products.filter(p => p.category === category.slug).length;
+              const productCount = allProducts.filter(p => p.category === category.slug).length;
               
               return (
                 <Link 
@@ -867,7 +921,12 @@ export function Home() {
                   </div>
                 </Link>
               );
-            })}
+            })
+            ) : (
+              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px' }}>
+                <div style={{ fontSize: '16px', color: '#6b7280' }}>Aucune catégorie disponible</div>
+              </div>
+            )}
           </div>
 
 
@@ -988,7 +1047,16 @@ export function Home() {
           </div>
 
           <div className="shops-grid">
-            {featuredShops.map((shop, index) => {
+            {shopsLoading ? (
+              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px' }}>
+                <div style={{ fontSize: '16px', color: '#6b7280' }}>Chargement des boutiques...</div>
+              </div>
+            ) : shopsResult.error ? (
+              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px' }}>
+                <div style={{ fontSize: '16px', color: '#ef4444' }}>Erreur: {shopsResult.error.message}</div>
+              </div>
+            ) : featuredShops.length > 0 ? (
+              featuredShops.map((shop, index) => {
               const gradients = [
                 'linear-gradient(135deg, #059669 0%, #34d399 100%)',
                 'linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%)',
@@ -1161,7 +1229,12 @@ export function Home() {
                   </div>
                 </Link>
               );
-            })}
+            })
+            ) : (
+              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px' }}>
+                <div style={{ fontSize: '16px', color: '#6b7280' }}>Aucune boutique disponible</div>
+              </div>
+            )}
           </div>
 
           <div style={{ textAlign: 'center', marginTop: '48px' }}>
@@ -1227,7 +1300,16 @@ export function Home() {
           </div>
 
           <div className="all-products-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(clamp(140px, 50vw, 240px), 1fr))', gap: 'clamp(12px, 3vw, 24px)' }}>
-            {(products as ProductWithPromo[]).map((product) => (
+            {productsLoading ? (
+              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px' }}>
+                <div style={{ fontSize: '16px', color: '#6b7280' }}>Chargement des produits...</div>
+              </div>
+            ) : productsResult.error ? (
+              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px' }}>
+                <div style={{ fontSize: '16px', color: '#ef4444' }}>Erreur: {productsResult.error.message}</div>
+              </div>
+            ) : allProducts.length > 0 ? (
+              (allProducts as ProductWithPromo[]).map((product) => (
               <div 
                 key={product.id}
                 style={{ position: 'relative' }}
@@ -1273,7 +1355,7 @@ export function Home() {
                       />
                       
                       {/* Badge promo */}
-                      {product.originalPrice && (
+                      {!!product.originalPrice && (
                         <span style={{ 
                           position: 'absolute',
                           top: '10px',
@@ -1363,7 +1445,7 @@ export function Home() {
                           }}>
                             {formatPrice(product.price)}
                           </span>
-                          {product.originalPrice && (
+                          {!!product.originalPrice && (
                             <span style={{ 
                               display: 'block',
                               fontSize: '12px', 
@@ -1412,7 +1494,12 @@ export function Home() {
                   </button>
                 </div>
               </div>
-            ))}
+            ))
+            ) : (
+              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px' }}>
+                <div style={{ fontSize: '16px', color: '#6b7280' }}>Aucun produit disponible</div>
+              </div>
+            )}
           </div>
 
           <div style={{ textAlign: 'center', marginTop: '48px' }}>

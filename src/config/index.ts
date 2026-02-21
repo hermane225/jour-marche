@@ -1,35 +1,42 @@
 // Configuration de l'application
-// Les variables d'environnement Vite sont préfixées par VITE_
+// Les variables d'environnement Vite sont prefixees par VITE_
 
-// En développement et production avec proxy, on utilise une URL vide
-// Le proxy (Vite en dev, Vercel en prod) redirigera /api vers l'API
+// Configuration de l'URL de l'API
 const getApiUrl = () => {
-  // Si une URL est explicitement définie (non vide), l'utiliser
+  // En dev: passer par le proxy Vite (/api -> onrender) pour eviter CORS
+  if (import.meta.env.DEV) {
+    return '';
+  }
+
+  // Si une URL est explicitement definie (non vide), l'utiliser
   const envUrl = import.meta.env.VITE_API_URL;
   if (envUrl && envUrl.trim() !== '') {
     return envUrl;
   }
-  // Sinon, utiliser une chaîne vide pour que le proxy gère les requêtes
-  // En dev: proxy Vite, en prod: rewrites Vercel
-  return '';
+
+  // En production: API reelle par defaut
+  return 'https://jour-marche-api.onrender.com';
 };
 
 export const config = {
   // URL de l'API backend
   apiUrl: getApiUrl(),
-  
+
   // Mode de l'application
   appMode: import.meta.env.VITE_APP_MODE || 'development',
-  
-  // Utiliser les données mockées au lieu de l'API
+
+  // Utiliser les donnees mockees au lieu de l'API
   useMockData: import.meta.env.VITE_USE_MOCK_DATA === 'true',
-  
+
   // Est-ce qu'on est en production ?
   isProduction: import.meta.env.PROD,
-  
-  // Est-ce qu'on est en développement ?
+
+  // Est-ce qu'on est en developpement ?
   isDevelopment: import.meta.env.DEV,
-  
+
+  // Activer les logs detailles de l'API (seulement en dev)
+  enableApiLogs: import.meta.env.DEV && import.meta.env.VITE_ENABLE_API_LOGS !== 'false',
+
   // Google OAuth Client ID
   googleClientId: import.meta.env.VITE_GOOGLE_CLIENT_ID || '',
 } as const;
@@ -40,6 +47,7 @@ declare global {
     readonly VITE_API_URL: string;
     readonly VITE_APP_MODE: string;
     readonly VITE_USE_MOCK_DATA: string;
+    readonly VITE_ENABLE_API_LOGS: string;
     readonly VITE_GOOGLE_CLIENT_ID: string;
   }
 

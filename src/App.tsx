@@ -4,6 +4,7 @@ import { CartProvider } from './context/CartContext';
 import { OrderProvider } from './context/OrderContext';
 import { ShopProvider } from './context/ShopContext';
 import { Header, Footer } from './components/layout';
+import { DebugPanel, useDebugPanel } from './components/ui/DebugPanel';
 
 // Auth Pages
 import { Login, Signup } from './pages/auth';
@@ -15,10 +16,10 @@ import { Home, ProductDetail, Cart, CartReview, DeliveryInfo, OrderReview, Payme
 import { BuyerDashboard, Profile, OrderDetail } from './pages/buyer';
 
 // Seller Pages
-import { SellerDashboard, CreateShop, ShopPage, CreateProduct } from './pages/seller';
+import { SellerDashboard, CreateShop, ShopPage, CreateProduct, OwnerShopDashboard } from './pages/seller';
 
 // Admin Pages
-import { AdminLayout, AdminDashboard, AdminSellers, AdminOrders, AdminUsers, AdminReports, AdminLoginGuide } from './pages/admin';
+import { AdminLayout, AdminDashboard, AdminSellers, AdminOrders, AdminUsers, AdminReports, AdminLoginGuide, AdminProfile } from './pages/admin';
 
 import './index.css';
 
@@ -43,13 +44,13 @@ function AuthLayout() {
 // Route protégée pour les buyers
 function BuyerRoute() {
   const { user, isAuthenticated, isLoading } = useAuth();
-  
+
   if (isLoading) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center', 
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
         height: '100vh',
         background: 'linear-gradient(135deg, #f9fafb, #f3f4f6)',
         fontSize: '1.1rem',
@@ -70,28 +71,28 @@ function BuyerRoute() {
       </div>
     );
   }
-  
+
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
-  
+
   if (user?.role === 'seller') {
     return <Navigate to="/seller/dashboard" replace />;
   }
-  
+
   return <Outlet />;
 }
 
 // Route protégée pour les sellers
 function SellerRoute() {
   const { user, isAuthenticated, isLoading } = useAuth();
-  
+
   if (isLoading) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center', 
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
         height: '100vh',
         background: '#f9fafb',
         fontSize: '1.1rem',
@@ -101,29 +102,29 @@ function SellerRoute() {
       </div>
     );
   }
-  
+
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
-  
+
   // Les sellers ont accès direct, les buyers non
   if (user?.role !== 'seller') {
     return <Navigate to="/buyer/dashboard" replace />;
   }
-  
+
   return <Outlet />;
 }
 
 // Route protégée pour les admins
 function AdminRoute() {
   const { user, isAuthenticated, isLoading } = useAuth();
-  
+
   if (isLoading) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center', 
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
         height: '100vh',
         background: 'linear-gradient(135deg, #f9fafb, #f3f4f6)',
       }}>
@@ -131,31 +132,31 @@ function AdminRoute() {
       </div>
     );
   }
-  
+
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
-  
+
   // Vérifier si l'utilisateur est admin (vous devez adapter selon votre système)
   if (user?.role !== 'admin') {
     return <Navigate to="/buyer/dashboard" replace />;
   }
-  
+
   return <Outlet />;
 }
 
 // Route qui nécessite juste d'être connecté (pas de rôle spécifique)
 function AuthRoute() {
   const { isAuthenticated, isLoading } = useAuth();
-  
+
   if (isLoading) {
     return <div>Chargement...</div>;
   }
-  
+
   if (!isAuthenticated) {
     return <Navigate to="/login" />;
   }
-  
+
   return <Outlet />;
 }
 
@@ -194,9 +195,10 @@ function AppRoutes() {
         {/* Page de paiement Mobile Money */}
         <Route path="/payment/mobile-money" element={<MobileMoneyPayment />} />
 
-        {/* Création de boutique - nécessite d'être connecté */}
+        {/* Création de boutique - accessible à tout utilisateur connecté */}
         <Route element={<AuthRoute />}>
           <Route path="/seller/create-shop" element={<CreateShop />} />
+          <Route path="/seller/boutiques/create" element={<CreateShop />} />
         </Route>
 
         {/* Routes Buyer protégées */}
@@ -212,11 +214,21 @@ function AppRoutes() {
       <Route element={<SellerRoute />}>
         <Route path="/seller/dashboard" element={<SellerDashboard />} />
         <Route path="/seller/boutiques" element={<ShopPage />} />
-        <Route path="/seller/boutiques/create" element={<CreateShop />} />
         <Route path="/seller/products" element={<ShopPage />} />
-        <Route path="/seller/products/create" element={<CreateProduct />} />
+        <Route path="/seller/products/create" element={<Navigate to="/dashboard/shop/add-product" replace />} />
         <Route path="/seller/orders" element={<SellerDashboard />} />
         <Route path="/seller/profile" element={<SellerDashboard />} />
+      </Route>
+
+      <Route element={<AuthRoute />}>
+        <Route path="/dashboard/shop" element={<OwnerShopDashboard />} />
+        <Route path="/shop/:id/manage" element={<OwnerShopDashboard />} />
+        <Route path="/shop/:id/manage/add-product" element={<OwnerShopDashboard />} />
+        <Route path="/dashboard/shop/edit" element={<OwnerShopDashboard />} />
+        <Route path="/dashboard/shop/products" element={<OwnerShopDashboard />} />
+        <Route path="/dashboard/shop/add-product" element={<OwnerShopDashboard />} />
+        <Route path="/dashboard/shop/images" element={<OwnerShopDashboard />} />
+        <Route path="/dashboard/shop/settings" element={<OwnerShopDashboard />} />
       </Route>
 
       {/* Routes Admin */}
@@ -227,6 +239,7 @@ function AppRoutes() {
           <Route path="/admin/orders" element={<AdminOrders />} />
           <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/admin/reports" element={<AdminReports />} />
+          <Route path="/admin/profile" element={<AdminProfile />} />
         </Route>
       </Route>
 
@@ -237,6 +250,8 @@ function AppRoutes() {
 }
 
 function App() {
+  const showDebug = useDebugPanel();
+  
   return (
     <Router>
       <AuthProvider>
@@ -244,6 +259,7 @@ function App() {
           <OrderProvider>
             <ShopProvider>
               <AppRoutes />
+              {showDebug && <DebugPanel />}
             </ShopProvider>
           </OrderProvider>
         </CartProvider>

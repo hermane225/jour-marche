@@ -106,6 +106,109 @@
   margin-bottom: 2.5rem;
   padding-bottom: 1.5rem;
   border-bottom: 2px solid #e5e7eb;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.buyer-hero-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.buyer-hero-avatar {
+  width: 62px;
+  height: 62px;
+  border-radius: 18px;
+  border: 1px solid #dbeafe;
+  display: grid;
+  place-items: center;
+  color: #0369a1;
+  background: linear-gradient(135deg, #f0f9ff, #ecfeff);
+  overflow: hidden;
+}
+
+.buyer-hero-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.buyer-member-since {
+  margin: 0.3rem 0 0;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.buyer-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.buyer-refresh-btn {
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  color: #334155;
+  border-radius: 10px;
+  padding: 0.55rem 0.75rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+}
+
+.buyer-refresh-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.buyer-source-badge {
+  border-radius: 999px;
+  padding: 0.38rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.buyer-source-badge.api {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.buyer-source-badge.local {
+  background: #ffedd5;
+  color: #9a3412;
+  border: 1px solid #fed7aa;
+}
+
+.buyer-dashboard-alert {
+  margin: -0.7rem 0 1.2rem;
+  border: 1px solid #fed7aa;
+  background: #fff7ed;
+  color: #9a3412;
+  border-radius: 10px;
+  padding: 0.75rem 0.9rem;
+  font-size: 0.87rem;
+}
+
+.buyer-dashboard-loading {
+  min-height: 45vh;
+  display: grid;
+  place-items: center;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.buyer-empty-state {
+  padding: 1.4rem;
+  text-align: center;
+  color: #64748b;
+  font-weight: 600;
 }
 
 .buyer-title {
@@ -367,6 +470,15 @@
   background-color: #f0fdf4;
 }
 
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .buyer-dashboard {
@@ -403,6 +515,15 @@
 @media (max-width: 768px) {
   .buyer-main {
     padding: 1.2rem;
+  }
+
+  .buyer-header {
+    align-items: stretch;
+  }
+
+  .buyer-header-actions {
+    width: 100%;
+    justify-content: space-between;
   }
 
   .stats-grid {
@@ -443,6 +564,12 @@
 @media (max-width: 480px) {
   .buyer-main {
     padding: 1rem;
+  }
+
+  .buyer-hero-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
   }
 
   .buyer-header {

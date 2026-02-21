@@ -1,60 +1,143 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { Trash2, ShieldCheck, UserCog, RefreshCw } from 'lucide-react';
+import { adminService } from '../../../services/api';
+import type { AdminUser } from '../../../services/api/admin.service';
 import './AdminUsers.css';
 
 export function AdminUsers() {
-  const [users] = useState([
-    { id: 1, name: 'Jean Dupont', email: 'jean@example.com', role: 'Buyer', status: 'Actif', joined: '2026-01-15' },
-    { id: 2, name: 'Marie Traore', email: 'marie@example.com', role: 'Buyer', status: 'Actif', joined: '2026-01-10' },
-    { id: 3, name: 'Pierre Kone', email: 'pierre@example.com', role: 'Seller', status: 'Actif', joined: '2025-12-20' },
-    { id: 4, name: 'Aissatou Diallo', email: 'aissatou@example.com', role: 'Seller', status: 'Inactif', joined: '2025-11-05' },
-    { id: 5, name: 'Kofi Mensah', email: 'kofi@example.com', role: 'Buyer', status: 'Actif', joined: '2026-01-22' },
-  ]);
+  const [users, setUsers] = useState<AdminUser[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [search, setSearch] = useState('');
+  const [roleFilter, setRoleFilter] = useState('all');
+
+  const loadUsers = async () => {
+    const data = await adminService.getUsers();
+    setUsers(data);
+  };
+
+  useEffect(() => {
+    (async () => {
+      try {
+        setLoading(true);
+        await loadUsers();
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  const filtered = useMemo(
+    () => users.filter((u) => {
+      const term = search.toLowerCase();
+      const matchesSearch = !term || u.name.toLowerCase().includes(term) || u.email.toLowerCase().includes(term);
+      const matchesRole = roleFilter === 'all' || String(u.role) === roleFilter;
+      return matchesSearch && matchesRole;
+    }),
+    [roleFilter, search, users]
+  );
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await loadUsers();
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  const handleRole = async (id: string, role: string) => {
+    const updated = await adminService.updateUserRole(id, role);
+    setUsers((prev) => prev.map((u) => (u.id === id ? updated : u)));
+  };
+
+  const handleStatus = async (id: string, status: string) => {
+    const updated = await adminService.updateUserStatus(id, status);
+    setUsers((prev) => prev.map((u) => (u.id === id ? updated : u)));
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Supprimer cet utilisateur ?')) return;
+    await adminService.deleteUser(id);
+    setUsers((prev) => prev.filter((u) => u.id !== id));
+  };
+
+  if (loading) {
+    return <div className="admin-page-loading">Chargement des utilisateurs...</div>;
+  }
 
   return (
-    <div className="admin-users">
-      <div className="page-header">
-        <h2>Gestion des Utilisateurs</h2>
-        <button className="add-btn">➕ Ajouter Utilisateur</button>
+    <section className="admin-users-pro">
+      <header className="admin-page-head">
+        <div>
+          <h2>Utilisateurs</h2>
+          <p>Gestion roles, status et moderation comptes.</p>
+        </div>
+        <button className="ghost-btn" onClick={handleRefresh} disabled={refreshing}>
+          <RefreshCw size={15} className={refreshing ? 'spinning' : ''} />
+          {refreshing ? 'Refresh...' : 'Rafraichir'}
+        </button>
+      </header>
+
+      <div className="admin-filters-row">
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Rechercher un utilisateur"
+        />
+        <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
+          <option value="all">Tous les roles</option>
+          <option value="buyer">buyer</option>
+          <option value="seller">seller</option>
+          <option value="driver">driver</option>
+          <option value="admin">admin</option>
+        </select>
       </div>
 
-      <div className="users-table-container">
-        <table className="users-table">
+      <div className="admin-table-card">
+        <table>
           <thead>
             <tr>
               <th>Utilisateur</th>
               <th>Email</th>
-              <th>Rôle</th>
-              <th>Statut</th>
-              <th>Date d'inscription</th>
-              <th>Actions</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
-            {users.map((user) => (
+            {filtered.map((user) => (
               <tr key={user.id}>
                 <td>
-                  <div className="user-name-cell">
-                    <span className="user-avatar">{user.name.charAt(0)}</span>
-                    <span>{user.name}</span>
+                  <div className="entity-cell">
+                    <span className="entity-avatar">{(user.name || 'U').charAt(0).toUpperCase()}</span>
+                    <div>
+                      <strong>{user.name}</strong>
+                      <small>{user.phone || '-'}</small>
+                    </div>
                   </div>
                 </td>
                 <td>{user.email}</td>
                 <td>
-                  <span className={`role-badge role-${user.role.toLowerCase()}`}>
-                    {user.role}
-                  </span>
+                  <select value={String(user.role)} onChange={(e) => handleRole(user.id, e.target.value)}>
+                    <option value="buyer">buyer</option>
+                    <option value="seller">seller</option>
+                    <option value="driver">driver</option>
+                    <option value="admin">admin</option>
+                  </select>
                 </td>
                 <td>
-                  <span className={`status-badge status-${user.status.toLowerCase()}`}>
-                    {user.status}
-                  </span>
+                  <select value={user.status || (user.isActive ? 'active' : 'inactive')} onChange={(e) => handleStatus(user.id, e.target.value)}>
+                    <option value="active">active</option>
+                    <option value="inactive">inactive</option>
+                    <option value="suspended">suspended</option>
+                  </select>
                 </td>
-                <td>{user.joined}</td>
                 <td>
-                  <div className="action-buttons">
-                    <button className="btn-icon" title="Voir">👁️</button>
-                    <button className="btn-icon" title="Éditer">✏️</button>
-                    <button className="btn-icon" title="Supprimer">🗑️</button>
+                  <div className="table-actions">
+                    <button className="icon-btn"><ShieldCheck size={14} /></button>
+                    <button className="icon-btn"><UserCog size={14} /></button>
+                    <button className="icon-btn danger" onClick={() => handleDelete(user.id)}><Trash2 size={14} /></button>
                   </div>
                 </td>
               </tr>
@@ -62,6 +145,6 @@ export function AdminUsers() {
           </tbody>
         </table>
       </div>
-    </div>
+    </section>
   );
 }

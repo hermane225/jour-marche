@@ -3,11 +3,12 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Upload, X, Plus, Check } from 'lucide-react';
 import { Button, Input, Card } from '../../../components/ui';
 import { SellerLayout } from '../Layout/SellerLayout';
-import { categories } from '../../../data/mockData';
+import { useCategories } from '../../../hooks/useCategories';
 import './CreateProduct.css';
 
 export function CreateProduct() {
   const navigate = useNavigate();
+  const { data: categories } = useCategories();
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [formData, setFormData] = useState({
@@ -161,7 +162,7 @@ export function CreateProduct() {
                     required
                   >
                     <option value="">Sélectionner une catégorie</option>
-                    {categories.map(cat => (
+                    {(categories || []).map(cat => (
                       <option key={cat.id} value={cat.slug}>
                         {cat.icon} {cat.name}
                       </option>

@@ -1,24 +1,56 @@
 import { useParams, Link } from 'react-router-dom';
 import { useEffect } from 'react';
 import { MapPin, Star, Phone, Clock, Truck, Package, ArrowLeft, ShoppingCart, Heart, Store, MessageCircle, Share2 } from 'lucide-react';
-import { shops, products } from '../../../data/mockData';
+import { useShop } from '../../../hooks/useShops';
+import { useShopProducts } from '../../../hooks/useProducts';
 import { useCart } from '../../../context/CartContext';
+import { useAuth } from '../../../context/AuthContext';
 
 export function ShopDetail() {
   const { id } = useParams<{ id: string }>();
   const { addToCart } = useCart();
+  const { user } = useAuth();
+  const normalizeId = (value: unknown): string => {
+    if (typeof value === 'string') return value.trim();
+    if (value && typeof value === 'object') {
+      const candidate = (value as { _id?: string; id?: string })._id || (value as { _id?: string; id?: string }).id || '';
+      return String(candidate).trim();
+    }
+    return '';
+  };
+  
+  // Fetch shop and products from API
+  const { data: shop, isLoading: shopLoading } = useShop(id || '');
+  const { data: shopProducts, isLoading: productsLoading } = useShopProducts(id || '', 100);
+  const isOwner = !!normalizeId(user?.id) && !!normalizeId(shop?.sellerId) && normalizeId(user?.id) === normalizeId(shop?.sellerId);
+  const purchasableProducts = (shopProducts || []).filter(
+    (product) => product.stock > 0 && (product.status === 'active' || product.status === 'published')
+  );
   
   // Scroll vers le haut quand la boutique change
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [id]);
-  
-  const shop = shops.find(s => s.id === id);
-  const shopProducts = products.filter(p => p.shopId === id);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('fr-FR').format(price) + ' FCFA';
   };
+
+  if (shopLoading) {
+    return (
+      <div style={{ 
+        minHeight: '60vh', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        flexDirection: 'column',
+        gap: '20px',
+        padding: '40px'
+      }}>
+        <div style={{ fontSize: '18px', color: '#6b7280' }}>Chargement de la boutique...</div>
+      </div>
+    );
+  }
 
   if (!shop) {
     return (
@@ -59,7 +91,9 @@ export function ShopDetail() {
     <div style={{ background: '#fafafa', minHeight: '100vh' }}>
       {/* Header de la boutique */}
       <section style={{ 
-        background: 'linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%)',
+        background: shop.banner
+          ? `linear-gradient(rgba(5,150,105,0.72), rgba(16,185,129,0.72)), url(${shop.banner}) center/cover no-repeat`
+          : 'linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%)',
         position: 'relative',
         overflow: 'hidden'
       }}>
@@ -121,7 +155,7 @@ export function ShopDetail() {
               background: 'white'
             }}>
               <img 
-                src={shop.logo} 
+                src={shop.logo || '/jour_marché.png'} 
                 alt={shop.name}
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               />
@@ -178,6 +212,63 @@ export function ShopDetail() {
 
             {/* Actions */}
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+              {isOwner && (
+                <>
+                  <Link
+                    to="/dashboard/shop/edit"
+                    style={{
+                      padding: '14px 24px',
+                      background: 'white',
+                      color: '#065f46',
+                      borderRadius: '14px',
+                      fontWeight: 700,
+                      fontSize: '15px',
+                      textDecoration: 'none',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                    }}
+                  >
+                    Modifier boutique
+                  </Link>
+                  <Link
+                    to="/dashboard/shop/add-product"
+                    style={{
+                      padding: '14px 24px',
+                      background: '#f59e0b',
+                      color: '#111827',
+                      border: '1px solid #fcd34d',
+                      borderRadius: '14px',
+                      fontWeight: 700,
+                      fontSize: '15px',
+                      textDecoration: 'none',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      boxShadow: '0 6px 18px rgba(245, 158, 11, 0.45)',
+                    }}
+                  >
+                    Ajouter produit
+                  </Link>
+                  <Link
+                    to="/dashboard/shop"
+                    style={{
+                      padding: '14px 24px',
+                      background: '#022c22',
+                      color: 'white',
+                      borderRadius: '14px',
+                      fontWeight: 700,
+                      fontSize: '15px',
+                      textDecoration: 'none',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                    }}
+                  >
+                    Dashboard admin
+                  </Link>
+                </>
+              )}
               <button style={{
                 padding: '14px 24px',
                 background: 'white',
@@ -340,12 +431,22 @@ export function ShopDetail() {
               Produits de {shop.name}
             </h2>
             <p style={{ margin: 0, color: '#6b7280' }}>
-              {shopProducts.length} produit{shopProducts.length !== 1 ? 's' : ''} disponible{shopProducts.length !== 1 ? 's' : ''}
+              {purchasableProducts.length} produit{purchasableProducts.length !== 1 ? 's' : ''} disponible{purchasableProducts.length !== 1 ? 's' : ''}
             </p>
           </div>
         </div>
 
-        {shopProducts.length === 0 ? (
+        {productsLoading ? (
+          <div style={{
+            textAlign: 'center',
+            padding: '60px 24px',
+            background: 'white',
+            borderRadius: '20px',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.05)'
+          }}>
+            <div style={{ fontSize: '16px', color: '#6b7280' }}>Chargement des produits...</div>
+          </div>
+        ) : purchasableProducts.length === 0 ? (
           <div style={{
             textAlign: 'center',
             padding: '60px 24px',
@@ -364,7 +465,7 @@ export function ShopDetail() {
             gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
             gap: '24px'
           }}>
-            {shopProducts.map(product => (
+            {purchasableProducts.map(product => (
               <div key={product.id} style={{
                 background: 'white',
                 borderRadius: '24px',
@@ -413,6 +514,18 @@ export function ShopDetail() {
                       {product.title}
                     </h3>
                   </Link>
+                  <p style={{
+                    margin: '0',
+                    color: '#6b7280',
+                    fontSize: '14px',
+                    lineHeight: 1.5,
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden'
+                  }}>
+                    {product.description || 'Aucune description disponible.'}
+                  </p>
                   
                   <div style={{
                     display: 'flex',

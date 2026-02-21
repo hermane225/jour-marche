@@ -17,12 +17,13 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { useCart } from '../../../context/CartContext';
-import { categories } from '../../../data/mockData';
+import { useCategories } from '../../../hooks/useCategories';
 import logoImage from '../../../assets/jour_marché.png';
 
 export function Header() {
   const { user, isAuthenticated } = useAuth();
   const { cart, itemCount, removeFromCart, updateQuantity } = useCart();
+  const { data: categories } = useCategories();
   const [showCartDrawer, setShowCartDrawer] = useState(false);
   const [showPaymentOptions, setShowPaymentOptions] = useState(false);
   const navigate = useNavigate();
@@ -32,14 +33,16 @@ export function Header() {
 
   const [searchQuery, setSearchQuery] = useState('');
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
-    }
-  };
+  // ✅ Cleanup all drawer/menu states on navigation
+  useEffect(() => {
+    // Close all overlays when route changes
+    setShowCartDrawer(false);
+    setShowPaymentOptions(false);
+    setMobileMenuOpen(false);
+    setShowCategories(false);
+  }, [location.pathname]);
 
-  // Prevent body scroll when mobile menu is open
+  // ✅ Cleanup body overflow on mobile menu close and unmount
   useEffect(() => {
     if (mobileMenuOpen) {
       document.body.style.overflow = 'hidden';
@@ -53,8 +56,15 @@ export function Header() {
     };
   }, [mobileMenuOpen]);
 
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+    }
+  };
+
   return (
-    <header className="sticky top-0 z-50" style={{ overflow: 'hidden' }}>
+    <header>
       {/* Top Bar - Announcement */}
       <div className="header-top-bar-container" style={{ background: 'linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%)', width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem', width: '100%', boxSizing: 'border-box' }}>
@@ -223,7 +233,6 @@ export function Header() {
                   <p style={{ margin: '0.75rem 0 0 0', fontSize: '0.9rem', color: '#9ca3af', maxWidth: '200px' }}>Explorez nos produits et ajoutez vos favoris !</p>
                   <Link 
                     to="/" 
-                    onClick={() => setShowCartDrawer(false)}
                     style={{
                       marginTop: '1.5rem',
                       padding: '0.75rem 1.5rem',
@@ -241,9 +250,9 @@ export function Header() {
                   </Link>
                 </div>
               ) : (
-                cart.items.map((it, idx) => (
+                cart.items.map((it) => (
                   <div 
-                    key={it.product.id + '-' + idx} 
+                    key={it.product.id} 
                     style={{ 
                       display: 'flex', 
                       gap: '1rem', 
@@ -484,7 +493,6 @@ export function Header() {
                     </button> */}
                     <Link 
                       to="/cart" 
-                      onClick={() => setShowCartDrawer(false)} 
                       style={{ 
                         textAlign: 'center', 
                         padding: '1rem', 
@@ -527,7 +535,6 @@ export function Header() {
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                         <Link 
                           to="/payment/mobile-money" 
-                          onClick={() => { setShowCartDrawer(false); setShowPaymentOptions(false); }} 
                           style={{ 
                             padding: '1rem', 
                             borderRadius: 10, 
@@ -549,7 +556,7 @@ export function Header() {
                         </Link>
                         <button 
                           type="button" 
-                          onClick={() => { setShowCartDrawer(false); setShowPaymentOptions(false); navigate('/payment/cash-on-delivery'); }} 
+                          onClick={() => navigate('/payment/cash-on-delivery')} 
                           style={{ 
                             padding: '1rem', 
                             borderRadius: 10, 
@@ -695,7 +702,7 @@ export function Header() {
                   zIndex: 100
                 }}>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
-                    {categories.map(cat => (
+                    {(categories || []).map(cat => (
                       <Link 
                         key={cat.id}
                         to={`/category/${cat.slug}`}
@@ -1007,7 +1014,7 @@ export function Header() {
                 Catégories
               </h3>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
-                {categories.slice(0, 8).map(cat => (
+                {(categories || []).slice(0, 8).map(cat => (
                   <Link
                     key={cat.id}
                     to={`/category/${cat.slug}`}

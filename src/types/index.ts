@@ -36,6 +36,7 @@ export interface Shop {
   name: string;
   description: string;
   logo?: string;
+  banner?: string;
   phone: string;
   address: string;
   sellerId: string;
@@ -51,6 +52,13 @@ export interface Shop {
     freeDeliveryMinimum?: number; // Livraison gratuite à partir de X FCFA
     deliveryZones?: string[]; // Zones de livraison
   };
+  socialMedia?: {
+    facebook?: string;
+    instagram?: string;
+    whatsapp?: string;
+    tiktok?: string;
+  };
+  businessHours?: string;
 }
 
 export interface ProductVariant {
@@ -70,7 +78,7 @@ export interface Product {
   shopId: string;
   shopName: string;
   variants?: ProductVariant[];
-  status: 'published' | 'draft' | 'low_stock';
+  status: 'active' | 'inactive' | 'discontinued' | 'published' | 'draft' | 'low_stock';
   createdAt: Date;
   // Options spécifiques aux produits alimentaires
   isPerishable?: boolean; // Produit périssable

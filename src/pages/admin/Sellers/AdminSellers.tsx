@@ -1,61 +1,110 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { Trash2, RefreshCw, Store, ShieldAlert } from 'lucide-react';
+import { adminService } from '../../../services/api';
+import type { AdminShop } from '../../../services/api/admin.service';
 import './AdminSellers.css';
 
 export function AdminSellers() {
-  const [sellers] = useState([
-    { id: 1, name: 'Marché Frais', owner: 'Jean Traore', status: 'Actif', products: 324, rating: 4.8 },
-    { id: 2, name: 'Épicerie du Centre', owner: 'Marie Dupont', status: 'Actif', products: 287, rating: 4.5 },
-    { id: 3, name: 'Fruits & Légumes Premium', owner: 'Pierre Kone', status: 'Actif', products: 198, rating: 4.9 },
-    { id: 4, name: 'Poissonnerie Océan', owner: 'Aissatou Diallo', status: 'Suspendu', products: 156, rating: 4.2 },
-    { id: 5, name: 'Boulangerie Excellence', owner: 'Kofi Mensah', status: 'Actif', products: 245, rating: 4.7 },
-  ]);
+  const [shops, setShops] = useState<AdminShop[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [search, setSearch] = useState('');
+
+  const loadShops = async () => {
+    const data = await adminService.getShops();
+    setShops(data);
+  };
+
+  useEffect(() => {
+    (async () => {
+      try {
+        setLoading(true);
+        await loadShops();
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  const filtered = useMemo(
+    () => shops.filter((s) => !search || s.name.toLowerCase().includes(search.toLowerCase()) || (s.ownerName || '').toLowerCase().includes(search.toLowerCase())),
+    [search, shops]
+  );
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await loadShops();
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  const handleStatus = async (shopId: string, status: string) => {
+    const updated = await adminService.updateShopStatus(shopId, status);
+    setShops((prev) => prev.map((s) => (s.id === shopId ? updated : s)));
+  };
+
+  const handleDelete = async (shopId: string) => {
+    if (!window.confirm('Supprimer cette boutique ?')) return;
+    await adminService.deleteShop(shopId);
+    setShops((prev) => prev.filter((s) => s.id !== shopId));
+  };
+
+  if (loading) {
+    return <div className="admin-page-loading">Chargement des boutiques...</div>;
+  }
 
   return (
-    <div className="admin-sellers">
-      <div className="page-header">
-        <h2>Gestion des Vendeurs</h2>
-        <button className="add-btn">➕ Ajouter Vendeur</button>
+    <section className="admin-sellers-pro">
+      <header className="admin-page-head">
+        <div>
+          <h2>Boutiques</h2>
+          <p>Moderation des boutiques vendeurs.</p>
+        </div>
+        <button className="ghost-btn" onClick={handleRefresh} disabled={refreshing}>
+          <RefreshCw size={15} className={refreshing ? 'spinning' : ''} />
+          {refreshing ? 'Refresh...' : 'Rafraichir'}
+        </button>
+      </header>
+
+      <div className="admin-filters-row single">
+        <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Rechercher boutique ou owner" />
       </div>
 
-      <div className="sellers-table-container">
-        <table className="sellers-table">
+      <div className="admin-table-card">
+        <table>
           <thead>
             <tr>
-              <th>Vendeur</th>
-              <th>Propriétaire</th>
-              <th>Statut</th>
+              <th>Boutique</th>
+              <th>Owner</th>
+              <th>Status</th>
               <th>Produits</th>
-              <th>Évaluation</th>
-              <th>Actions</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
-            {sellers.map((seller) => (
-              <tr key={seller.id}>
+            {filtered.map((shop) => (
+              <tr key={shop.id}>
                 <td>
-                  <div className="seller-name-cell">
-                    <span className="seller-avatar">🏪</span>
-                    <span>{seller.name}</span>
+                  <div className="entity-cell">
+                    <span className="entity-avatar"><Store size={14} /></span>
+                    <strong>{shop.name}</strong>
                   </div>
                 </td>
-                <td>{seller.owner}</td>
+                <td>{shop.ownerName || '-'}</td>
                 <td>
-                  <span className={`status-badge status-${seller.status.toLowerCase()}`}>
-                    {seller.status}
-                  </span>
+                  <select value={shop.status || 'active'} onChange={(e) => handleStatus(shop.id, e.target.value)}>
+                    <option value="active">active</option>
+                    <option value="inactive">inactive</option>
+                    <option value="suspended">suspended</option>
+                  </select>
                 </td>
-                <td>{seller.products}</td>
+                <td>{shop.totalProducts || 0}</td>
                 <td>
-                  <div className="rating">
-                    <span className="stars">{'⭐'.repeat(Math.floor(seller.rating))}</span>
-                    <span>{seller.rating}</span>
-                  </div>
-                </td>
-                <td>
-                  <div className="action-buttons">
-                    <button className="btn-icon" title="Voir">👁️</button>
-                    <button className="btn-icon" title="Éditer">✏️</button>
-                    <button className="btn-icon" title="Supprimer">🗑️</button>
+                  <div className="table-actions">
+                    <button className="icon-btn"><ShieldAlert size={14} /></button>
+                    <button className="icon-btn danger" onClick={() => handleDelete(shop.id)}><Trash2 size={14} /></button>
                   </div>
                 </td>
               </tr>
@@ -63,6 +112,6 @@ export function AdminSellers() {
           </tbody>
         </table>
       </div>
-    </div>
+    </section>
   );
 }

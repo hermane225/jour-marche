@@ -122,7 +122,7 @@ export function SellerDashboard() {
               <p className="seller-stat-label">{stat.label}</p>
               <div className="seller-stat-value">
                 <span>{stat.value}</span>
-                {stat.unit && <span className="seller-stat-unit">{stat.unit}</span>}
+                {!!stat.unit && <span className="seller-stat-unit">{stat.unit}</span>}
               </div>
               <div className={`seller-stat-change ${stat.positive ? 'positive' : 'negative'}`}>
                 {stat.positive ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
