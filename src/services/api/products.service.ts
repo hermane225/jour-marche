@@ -44,17 +44,15 @@ const resolveUploadUrl = (value?: string): string => {
   if (value.startsWith('http://') || value.startsWith('https://') || value.startsWith('data:')) {
     return value;
   }
-  const mediaBaseUrl = (import.meta.env.VITE_API_URL || config.apiUrl || 'https://jour-marche-api.onrender.com').replace(/\/$/, '');
+
   const normalizedPath = value.startsWith('/') ? value : `/${value}`;
+  // En dev et en prod (Vercel), utiliser le chemin relatif pour passer par le proxy
   if (normalizedPath.startsWith('/uploads/')) {
-    if (import.meta.env.DEV) return normalizedPath;
-    return `${mediaBaseUrl}${normalizedPath}`;
+    return normalizedPath;
   }
   // Si l'API renvoie seulement un nom de fichier, le placer sous /uploads
   if (!value.includes('/')) {
-    const uploadPath = `/uploads/${value}`;
-    if (import.meta.env.DEV) return uploadPath;
-    return `${mediaBaseUrl}${uploadPath}`;
+    return `/uploads/${value}`;
   }
   return normalizedPath;
 };

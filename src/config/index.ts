@@ -14,8 +14,9 @@ const getApiUrl = () => {
     return envUrl;
   }
 
-  // En production: API reelle par defaut
-  return 'https://jour-marche-api.onrender.com';
+  // En production sur Vercel: utiliser le proxy Vercel (rewrites dans vercel.json)
+  // pour eviter les erreurs CORS. Les requetes /api/* sont relayees vers le backend.
+  return '';
 };
 
 export const config = {
