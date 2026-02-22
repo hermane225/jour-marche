@@ -197,6 +197,46 @@ export function AdminDashboard() {
     [orders.length, products.length, shops.length, stats.totalOrders, stats.totalProducts, stats.totalShops, stats.totalUsers, users.length]
   );
 
+  const getShopProducts = (shop: AdminShop) => {
+    const shopId = String(shop.id || '').trim();
+    const shopName = String(shop.name || '').trim().toLowerCase();
+
+    return products.filter((product) => {
+      const productShopId = String(product.shopId || '').trim();
+      const productShopName = String(product.shopName || '').trim().toLowerCase();
+
+      if (shopId && productShopId) {
+        return productShopId === shopId;
+      }
+
+      if (shopName && productShopName) {
+        return productShopName === shopName;
+      }
+
+      return false;
+    });
+  };
+
+  const productsWithShop = useMemo(() => {
+    const knownShopIds = new Set(shops.map((shop) => String(shop.id || '').trim()).filter(Boolean));
+    const knownShopNames = new Set(shops.map((shop) => String(shop.name || '').trim().toLowerCase()).filter(Boolean));
+
+    return products.filter((product) => {
+      const productShopId = String(product.shopId || '').trim();
+      const productShopName = String(product.shopName || '').trim().toLowerCase();
+
+      if (productShopId && knownShopIds.has(productShopId)) {
+        return true;
+      }
+
+      if (productShopName && knownShopNames.has(productShopName)) {
+        return true;
+      }
+
+      return false;
+    });
+  }, [products, shops]);
+
   if (loading) {
     return <div className="admin-dashboard-loading">Chargement des donnees admin...</div>;
   }
@@ -245,9 +285,9 @@ export function AdminDashboard() {
               <tbody>
                 {users.slice(0, 8).map((u) => (
                   <tr key={u.id}>
-                    <td>{u.name}</td>
-                    <td>{u.email}</td>
-                    <td>
+                    <td data-label="Nom">{u.name}</td>
+                    <td data-label="Email">{u.email}</td>
+                    <td data-label="Role">
                       <select value={String(u.role)} onChange={(e) => handleUpdateUserRole(u.id, e.target.value)}>
                         <option value="buyer">buyer</option>
                         <option value="seller">seller</option>
@@ -255,14 +295,14 @@ export function AdminDashboard() {
                         <option value="admin">admin</option>
                       </select>
                     </td>
-                    <td>
+                    <td data-label="Status">
                       <select value={u.status || (u.isActive ? 'active' : 'inactive')} onChange={(e) => handleUpdateUserStatus(u.id, e.target.value)}>
                         <option value="active">active</option>
                         <option value="inactive">inactive</option>
                         <option value="suspended">suspended</option>
                       </select>
                     </td>
-                    <td>
+                    <td data-label="Actions">
                       <button className="row-icon danger" onClick={() => handleDeleteUser(u.id)}><Trash2 size={14} /></button>
                     </td>
                   </tr>
@@ -287,24 +327,31 @@ export function AdminDashboard() {
                   <th></th>
                 </tr>
               </thead>
-              <tbody>
-                {shops.slice(0, 8).map((shop) => (
-                  <tr key={shop.id}>
-                    <td>{shop.name}</td>
-                    <td>{shop.ownerName || '-'}</td>
-                    <td>
-                      <select value={shop.status || 'active'} onChange={(e) => handleUpdateShopStatus(shop.id, e.target.value)}>
-                        <option value="active">active</option>
-                        <option value="inactive">inactive</option>
-                        <option value="suspended">suspended</option>
-                      </select>
-                    </td>
-                    <td>{shop.totalProducts || 0}</td>
-                    <td>
-                      <button className="row-icon danger" onClick={() => handleDeleteShop(shop.id)}><Trash2 size={14} /></button>
-                    </td>
-                  </tr>
-                ))}
+                <tbody>
+                {shops.slice(0, 8).map((shop) => {
+                  const shopProducts = getShopProducts(shop);
+                  const hasProducts = shopProducts.length > 0;
+
+                  return (
+                    <tr key={shop.id}>
+                      <td data-label="Boutique">{shop.name}</td>
+                      <td data-label="Owner">{shop.ownerName || '-'}</td>
+                      <td data-label="Status">
+                        <select value={shop.status || 'active'} onChange={(e) => handleUpdateShopStatus(shop.id, e.target.value)}>
+                          <option value="active">active</option>
+                          <option value="inactive">inactive</option>
+                          <option value="suspended">suspended</option>
+                        </select>
+                      </td>
+                      <td data-label="Produits">
+                        <strong>{hasProducts ? shopProducts.length : shop.totalProducts || 0}</strong>
+                      </td>
+                      <td data-label="Actions">
+                        <button className="row-icon danger" onClick={() => handleDeleteShop(shop.id)}><Trash2 size={14} /></button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -329,10 +376,10 @@ export function AdminDashboard() {
               <tbody>
                 {orders.slice(0, 8).map((order) => (
                   <tr key={order.id}>
-                    <td>{order.orderNumber || order.id.slice(0, 8)}</td>
-                    <td>{order.customerName || '-'}</td>
-                    <td>{Number(order.total || 0).toLocaleString('fr-FR')} FCFA</td>
-                    <td>
+                    <td data-label="ID">{order.orderNumber || order.id.slice(0, 8)}</td>
+                    <td data-label="Client">{order.customerName || '-'}</td>
+                    <td data-label="Total">{Number(order.total || 0).toLocaleString('fr-FR')} FCFA</td>
+                    <td data-label="Status">
                       <select value={order.status || 'pending'} onChange={(e) => handleUpdateOrderStatus(order.id, e.target.value)}>
                         <option value="pending">pending</option>
                         <option value="confirmed">confirmed</option>
@@ -365,17 +412,23 @@ export function AdminDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {products.slice(0, 8).map((product) => (
-                  <tr key={product.id}>
-                    <td>{product.name}</td>
-                    <td>{product.shopName || '-'}</td>
-                    <td>{Number(product.price || 0).toLocaleString('fr-FR')} FCFA</td>
-                    <td>{product.quantity || 0}</td>
-                    <td>
-                      <button className="row-icon danger" onClick={() => handleDeleteProduct(product.id)}><Trash2 size={14} /></button>
-                    </td>
+                {productsWithShop.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="admin-empty-cell">Aucun produit de boutique disponible</td>
                   </tr>
-                ))}
+                ) : (
+                  productsWithShop.slice(0, 8).map((product) => (
+                    <tr key={product.id}>
+                      <td data-label="Produit">{product.name}</td>
+                      <td data-label="Boutique">{product.shopName || '-'}</td>
+                      <td data-label="Prix">{Number(product.price || 0).toLocaleString('fr-FR')} FCFA</td>
+                      <td data-label="Qte">{product.quantity || 0}</td>
+                      <td data-label="Actions">
+                        <button className="row-icon danger" onClick={() => handleDeleteProduct(product.id)}><Trash2 size={14} /></button>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

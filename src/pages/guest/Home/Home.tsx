@@ -726,37 +726,24 @@ export function Home() {
       )}
 
       {/* Categories */}
-      <section style={{ padding: '80px 0', background: 'linear-gradient(180deg, #ffffff 0%, #f9fafb 100%)' }}>
+      <section className="home-categories-section">
         <div className="container" style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 24px' }}>
-          <div style={{ textAlign: 'center', marginBottom: '50px' }}>
-            <div style={{ 
-              display: 'inline-flex', 
-              alignItems: 'center', 
-              gap: '10px', 
-              background: 'linear-gradient(135deg, #dcfce7, #bbf7d0)',
-              padding: '10px 24px',
-              borderRadius: '50px',
-              marginBottom: '16px'
-            }}>
+          <div className="home-categories-header">
+            <div className="home-categories-badge">
               <ShoppingBag size={18} color="#059669" />
-              <span style={{ fontSize: '13px', fontWeight: 700, color: '#059669', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              <span className="home-categories-badge-text">
                 Catégories
               </span>
             </div>
-            <h2 style={{ fontSize: '42px', fontWeight: 800, color: '#1f2937', margin: '0 0 16px 0', lineHeight: 1.2 }}>
+            <h2 className="home-categories-title">
               Explorez nos catégories
             </h2>
-            <p style={{ fontSize: '18px', color: '#6b7280', margin: 0, maxWidth: '600px', marginLeft: 'auto', marginRight: 'auto', lineHeight: 1.6 }}>
+            <p className="home-categories-subtitle">
               Du marché traditionnel aux boutiques modernes, trouvez tout ce dont vous avez besoin
             </p>
           </div>
 
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: '28px',
-            marginBottom: '48px'
-          }}>
+          <div className="categories-grid home-categories-grid">
             {categoriesLoading ? (
               <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px' }}>
                 <div style={{ fontSize: '16px', color: '#6b7280' }}>Chargement des catégories...</div>
@@ -784,22 +771,8 @@ export function Home() {
                 <Link 
                   key={category.id}
                   to={`/category/${category.slug}`}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'flex-start',
-                    padding: '0',
-                    background: 'white',
-                    borderRadius: '24px',
-                    textDecoration: 'none',
-                    boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
-                    border: '2px solid transparent',
-                    transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                    position: 'relative',
-                    overflow: 'hidden',
-                    cursor: 'pointer',
-                    height: '100%'
-                  }}
+                  className="home-category-card"
+                  style={{ borderColor: 'transparent' }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.transform = 'translateY(-12px) scale(1.02)';
                     e.currentTarget.style.borderColor = color.bg;
@@ -812,7 +785,7 @@ export function Home() {
                   }}
                 >
                   {/* Gradient Header */}
-                  <div style={{
+                  <div className="home-category-card-head" style={{
                     width: '100%',
                     background: `linear-gradient(135deg, ${color.bg} 0%, ${color.bg}dd 100%)`,
                     padding: '32px 24px',
@@ -845,11 +818,7 @@ export function Home() {
                     }} />
                     
                     <div style={{ position: 'relative', zIndex: 2 }}>
-                      <div style={{
-                        fontSize: '56px',
-                        marginBottom: '12px',
-                        display: 'block'
-                      }}>
+                      <div className="home-category-card-icon">
                         {category.icon}
                       </div>
                     </div>
@@ -870,7 +839,7 @@ export function Home() {
                   </div>
                   
                   {/* Content */}
-                  <div style={{
+                  <div className="home-category-card-content" style={{
                     padding: '24px',
                     flex: 1,
                     width: '100%',
@@ -879,12 +848,7 @@ export function Home() {
                     justifyContent: 'space-between'
                   }}>
                     <div>
-                      <h3 style={{
-                        margin: '0 0 8px 0',
-                        fontSize: '18px',
-                        fontWeight: 700,
-                        color: '#1f2937'
-                      }}>
+                      <h3 className="home-category-card-title">
                         {category.name}
                       </h3>
                       <p style={{
@@ -1562,6 +1526,16 @@ export function Home() {
         .hero-title { font-size: 52px; }
         .stats-grid { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 24px; }
         .categories-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        .home-categories-section { padding: 80px 0; background: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%); }
+        .home-categories-header { text-align: center; margin-bottom: 50px; }
+        .home-categories-badge { display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg, #dcfce7, #bbf7d0); padding: 10px 24px; border-radius: 50px; margin-bottom: 16px; }
+        .home-categories-badge-text { font-size: 13px; font-weight: 700; color: #059669; text-transform: uppercase; letter-spacing: 0.5px; }
+        .home-categories-title { font-size: 42px; font-weight: 800; color: #1f2937; margin: 0 0 16px 0; line-height: 1.2; }
+        .home-categories-subtitle { font-size: 18px; color: #6b7280; margin: 0 auto; max-width: 600px; line-height: 1.6; }
+        .home-categories-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 28px; margin-bottom: 48px; }
+        .home-category-card { display: flex; flex-direction: column; align-items: flex-start; padding: 0; background: white; border-radius: 24px; text-decoration: none; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 2px solid transparent; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); position: relative; overflow: hidden; cursor: pointer; height: 100%; }
+        .home-category-card-icon { font-size: 56px; margin-bottom: 12px; display: block; }
+        .home-category-card-title { margin: 0 0 8px 0; font-size: 18px; font-weight: 700; color: #1f2937; }
         .products-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; }
         .shops-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
         .trust-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; }
@@ -1577,6 +1551,11 @@ export function Home() {
           .hero-image-container { display: block !important; }
           .hero-nav-btn { display: none !important; }
           .categories-grid, .shops-grid { grid-template-columns: repeat(2, 1fr); }
+          .home-categories-section { padding: 56px 0; }
+          .home-categories-header { margin-bottom: 32px; }
+          .home-categories-title { font-size: 34px; }
+          .home-categories-subtitle { font-size: 16px; }
+          .home-categories-grid { gap: 20px; margin-bottom: 36px; }
           .products-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
           .trust-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
           .cta-grid { grid-template-columns: 1fr; text-align: center; }
@@ -1588,12 +1567,32 @@ export function Home() {
           .hero-title { font-size: 28px; }
           .hero-grid { padding: 32px 0 !important; }
           .stats-grid { justify-content: flex-start; }
-          .categories-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+          .home-categories-section { padding: 40px 0; }
+          .home-categories-header { margin-bottom: 20px; }
+          .home-categories-badge { padding: 8px 14px; gap: 8px; margin-bottom: 12px; }
+          .home-categories-badge-text { font-size: 11px; }
+          .home-categories-title { font-size: 26px; margin-bottom: 10px; }
+          .home-categories-subtitle { font-size: 14px; line-height: 1.5; }
+          .categories-grid { grid-template-columns: 1fr; gap: 12px; }
+          .home-categories-grid { gap: 12px; margin-bottom: 24px; }
+          .home-category-card-head { padding: 18px 14px !important; }
+          .home-category-card-content { padding: 14px !important; }
+          .home-category-card-icon { font-size: 36px; margin-bottom: 6px; }
+          .home-category-card-title { font-size: 16px; }
           .products-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
           .shops-grid { grid-template-columns: 1fr; }
           .trust-grid { grid-template-columns: 1fr; }
           .floating-stat, .floating-stat-2 { display: none !important; }
           .container { padding-left: 0 !important; padding-right: 0 !important; max-width: 100vw !important; }
+        }
+
+        @media (max-width: 390px) {
+          .home-categories-title { font-size: 22px; }
+          .home-categories-subtitle { font-size: 13px; }
+          .home-category-card-head { padding: 14px 12px !important; }
+          .home-category-card-content { padding: 12px !important; }
+          .home-category-card-icon { font-size: 30px; }
+          .home-category-card-title { font-size: 15px; }
         }
       `}</style>
     </div>

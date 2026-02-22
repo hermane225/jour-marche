@@ -120,7 +120,7 @@
 .panel-table-wrap table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 600px;
+  min-width: 560px;
 }
 
 .panel-table-wrap th,
@@ -223,6 +223,12 @@
 .admin-toast.success { background: #059669; }
 .admin-toast.error { background: #dc2626; }
 
+.admin-empty-cell {
+  text-align: center;
+  color: #64748b;
+  font-weight: 600;
+}
+
 @media (max-width: 1280px) {
   .admin-kpi-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -238,12 +244,123 @@
     grid-template-columns: 1fr;
   }
 
+  .admin-dashboard-pro {
+    gap: 12px;
+  }
+
+  .kpi-card {
+    padding: 12px;
+  }
+
+  .kpi-card strong {
+    font-size: 1.2rem;
+  }
+
   .admin-toolbar-row {
     flex-direction: column;
     align-items: flex-start;
+    padding: 10px;
+  }
+
+  .refresh-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .admin-panel {
+    border-radius: 12px;
+  }
+
+  .panel-head {
+    padding: 10px 12px;
   }
 
   .panel-form-grid {
     grid-template-columns: 1fr;
+  }
+
+  .panel-actions {
+    padding: 0 10px 10px;
+  }
+
+  .primary-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .panel-table-wrap {
+    overflow: visible;
+  }
+
+  .panel-table-wrap table {
+    min-width: 0;
+  }
+
+  .panel-table-wrap thead {
+    display: none;
+  }
+
+  .panel-table-wrap tbody {
+    display: grid;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .panel-table-wrap tr {
+    display: grid;
+    gap: 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 10px;
+    background: #fff;
+  }
+
+  .panel-table-wrap td {
+    border-top: none;
+    padding: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.82rem;
+  }
+
+  .panel-table-wrap td::before {
+    content: attr(data-label);
+    color: #64748b;
+    font-weight: 700;
+    flex: 0 0 42%;
+  }
+
+  .panel-table-wrap td select {
+    width: auto;
+    max-width: 58%;
+  }
+
+  .panel-table-wrap td strong {
+    max-width: 58%;
+    text-align: right;
+  }
+
+  .panel-table-wrap td .row-icon {
+    margin-left: auto;
+  }
+
+  .panel-table-wrap td.admin-empty-cell {
+    display: block;
+    text-align: center;
+  }
+
+  .panel-table-wrap td.admin-empty-cell::before {
+    content: '';
+    display: none;
+  }
+
+  .admin-toast {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    border-radius: 12px;
+    text-align: center;
   }
 }

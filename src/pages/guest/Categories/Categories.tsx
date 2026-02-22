@@ -55,84 +55,33 @@ export function Categories() {
       {/* Hero */}
       <section className="categories-hero">
         {currentCategory ? (
-          <div style={{
-              position: 'relative',
-              overflow: 'hidden',
-              borderRadius: 28,
-              padding: '60px 24px 48px 24px',
-              marginBottom: 28,
-              background: 'linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%)',
-              boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
-          }}>
-            {/* Pattern décoratif */}
-            <div style={{
-              position: 'absolute',
-              top: '-50px',
-              right: '-50px',
-              width: '200px',
-              height: '200px',
-              borderRadius: '50%',
-              background: 'rgba(255,255,255,0.1)'
-            }} />
-            <div style={{
-              position: 'absolute',
-              bottom: '-75px',
-              left: '-75px',
-              width: '250px',
-              height: '250px',
-              borderRadius: '50%',
-              background: 'rgba(255,255,255,0.05)'
-            }} />
+          <div className="categories-hero-card">
+            <div className="categories-hero-orb categories-hero-orb-right" />
+            <div className="categories-hero-orb categories-hero-orb-left" />
 
-            <div style={{ maxWidth: '900px', margin: '0 auto', position: 'relative', textAlign: 'center' }}>
-              <h1 style={{ fontSize: '3rem', fontWeight: 900, marginBottom: 16, letterSpacing: '-1px', color: '#fff' }}>
+            <div className="categories-hero-content">
+              <h1 className="categories-hero-title">
                 {currentCategory.icon} {currentCategory.name}
               </h1>
               {currentSubCategory && (
-                <p style={{ fontSize: '1.4rem', opacity: 1, marginBottom: 12, color: '#fff', fontWeight: 700 }}>
+                <p className="categories-hero-subtitle">
                   {currentSubCategory.icon} {currentSubCategory.name}
                 </p>
               )}
-              <p style={{ fontSize: '1.2rem', opacity: 0.95, maxWidth: 700, margin: '0 auto 24px', color: '#fff', fontWeight: 500, lineHeight: 1.6 }}>
+              <p className="categories-hero-description">
                 {currentCategory.description}
               </p>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '24px', flexWrap: 'wrap' }}>
-                <span style={{
-                  background: 'rgba(255,255,255,0.2)',
-                  backdropFilter: 'blur(8px)',
-                  padding: '12px 20px',
-                  borderRadius: '50px',
-                  color: 'white',
-                  fontSize: '14px',
-                  fontWeight: 700
-                }}>
+              <div className="categories-hero-actions">
+                <span className="categories-hero-badge">
                   {filteredProducts.length} produits disponibles
                 </span>
                 {currentSubCategory ? (
-                  <Link to={`/categories/${selectedCategory}`} style={{
-                    color: 'white',
-                    textDecoration: 'none',
-                    fontSize: '14px',
-                    fontWeight: 600,
-                    opacity: 0.8,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px'
-                  }}>
-                    ← Retour à {currentCategory.name}
+                  <Link to={`/categories/${selectedCategory}`} className="categories-hero-link">
+                    Retour a {currentCategory.name}
                   </Link>
                 ) : (
-                  <Link to="/categories" style={{
-                    color: 'white',
-                    textDecoration: 'none',
-                    fontSize: '14px',
-                    fontWeight: 600,
-                    opacity: 0.8,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px'
-                  }}>
-                    ← Retour aux catégories
+                  <Link to="/categories" className="categories-hero-link">
+                    Retour aux categories
                   </Link>
                 )}
               </div>
