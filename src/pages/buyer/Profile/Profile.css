@@ -1,15 +1,21 @@
 .profile-container {
-  max-width: 1000px;
+  max-width: 960px;
   margin: 0 auto;
-  padding: clamp(1.5rem, 3vw, 2rem);
-  background: #fafbfc;
+  padding: clamp(1rem, 2.4vw, 1.6rem);
+  background:
+    radial-gradient(circle at 8% 4%, #ecfdf5 0%, transparent 28%),
+    radial-gradient(circle at 90% 86%, #eef2ff 0%, transparent 24%),
+    #f8fafc;
   min-height: 100vh;
 }
 
 .profile-header {
-  margin-bottom: 2.5rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 2px solid #e5e7eb;
+  margin-bottom: 1.25rem;
+  padding: 1rem 1.1rem;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  background: linear-gradient(180deg, #ffffff, #f9fafb);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
 }
 
 .profile-header h1 {
@@ -25,20 +31,27 @@
   font-size: 1rem;
 }
 
+.profile-header-actions {
+  margin-top: 0.85rem;
+  display: flex;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
 .profile-section {
   background: white;
-  border-radius: 16px;
-  padding: clamp(1.5rem, 3vw, 2rem);
-  margin-bottom: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  border: 1px solid #f3f4f6;
+  border-radius: 14px;
+  padding: clamp(1.1rem, 2.4vw, 1.45rem);
+  margin-bottom: 0.95rem;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+  border: 1px solid #e5e7eb;
 }
 
 .section-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   flex-wrap: wrap;
   gap: 1rem;
 }
@@ -54,14 +67,14 @@
 .profile-info {
   display: flex;
   align-items: flex-start;
-  gap: 2rem;
-  padding: 2rem 0;
+  gap: 1.2rem;
+  padding: 0.35rem 0;
 }
 
 .profile-avatar {
   width: clamp(90px, 15vw, 120px);
   height: clamp(90px, 15vw, 120px);
-  border-radius: 12px;
+  border-radius: 14px;
   object-fit: cover;
   border: 3px solid #e5e7eb;
   flex-shrink: 0;
@@ -74,9 +87,9 @@
 
 .info-item {
   display: grid;
-  grid-template-columns: 140px 1fr;
+  grid-template-columns: 125px 1fr;
   gap: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
   align-items: center;
   font-size: 0.95rem;
 }
@@ -105,8 +118,8 @@
 .profile-edit-form,
 .form-card {
   background: #f9fafb;
-  padding: 1.5rem;
-  border-radius: 12px;
+  padding: 1rem;
+  border-radius: 10px;
   border: 1px solid #e5e7eb;
   margin-bottom: 1.5rem;
 }
@@ -158,12 +171,12 @@
 
 /* Boutons */
 .btn {
-  padding: 0.75rem 1.5rem;
+  padding: 0.66rem 1.1rem;
   border: none;
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   transition: all 0.3s ease;
   display: inline-block;
   text-align: center;
@@ -192,7 +205,7 @@
 }
 
 .btn-sm {
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 0.9rem;
   font-size: 0.85rem;
 }
 
@@ -238,8 +251,8 @@
 .address-card,
 .payment-card {
   background: #f9fafb;
-  padding: 1.5rem;
-  border-radius: 12px;
+  padding: 1rem;
+  border-radius: 10px;
   border: 1.5px solid #e5e7eb;
   display: flex;
   justify-content: space-between;
@@ -302,15 +315,15 @@
 /* Statistiques */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
-  margin-top: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.8rem;
+  margin-top: 0.5rem;
 }
 
 .stat-card {
   background: linear-gradient(135deg, #10b98122, #05966922);
-  padding: 2rem;
-  border-radius: 12px;
+  padding: 1.2rem;
+  border-radius: 10px;
   text-align: center;
   border: 1.5px solid #e5e7eb;
   transition: transform 0.3s ease;
@@ -321,7 +334,7 @@
 }
 
 .stat-value {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: #059669;
   margin-bottom: 0.5rem;
@@ -337,7 +350,7 @@
 .orders-list {
   display: grid;
   gap: 1rem;
-  margin-top: 1.5rem;
+  margin-top: 0.6rem;
 }
 
 .order-card {
@@ -345,9 +358,9 @@
   grid-template-columns: 1fr auto auto;
   gap: 1rem;
   align-items: center;
-  padding: 1.5rem;
+  padding: 1rem;
   background: #f9fafb;
-  border-radius: 12px;
+  border-radius: 10px;
   border: 1.5px solid #e5e7eb;
   transition: all 0.3s ease;
 }
@@ -458,6 +471,10 @@
     align-items: flex-start;
   }
 
+  .profile-header-actions {
+    width: 100%;
+  }
+
   .address-card,
   .payment-card {
     flex-direction: column;
@@ -480,7 +497,7 @@
   }
 
   .profile-section {
-    padding: 1.2rem;
+    padding: 1rem;
     border-radius: 12px;
   }
 
@@ -497,6 +514,10 @@
 
   .btn {
     width: 100%;
+  }
+
+  .profile-header .btn {
+    width: auto;
   }
 
   .form-actions {

@@ -16,12 +16,14 @@ import {
   ChevronDown
 } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
+import { useShops as useShopContext } from '../../../context/ShopContext';
 import { useCart } from '../../../context/CartContext';
 import { useCategories } from '../../../hooks/useCategories';
 import logoImage from '../../../assets/jour_marché.png';
 
 export function Header() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
+  const { myShops, reloadMyShops } = useShopContext();
   const { cart, itemCount, removeFromCart, updateQuantity } = useCart();
   const { data: categories } = useCategories();
   const [showCartDrawer, setShowCartDrawer] = useState(false);
@@ -30,8 +32,29 @@ export function Header() {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState('');
+  const ownedShops = (myShops || []).filter((shop, index, arr) =>
+    shop.sellerId === user?.id && arr.findIndex((candidate) => candidate.id === shop.id) === index
+  );
+  const primaryOwnedShop = ownedShops[0];
+  const hasOwnedShop = ownedShops.length > 0;
+  const profileTarget = user?.role === 'admin'
+    ? '/admin/profile'
+    : user?.role === 'seller'
+      ? (hasOwnedShop && primaryOwnedShop ? `/shop/${primaryOwnedShop.id}/manage` : '/seller/dashboard')
+      : '/buyer/profile';
+  const ordersTarget = user?.role === 'admin'
+    ? '/admin/orders'
+    : user?.role === 'seller'
+      ? '/seller/orders'
+      : '/buyer/orders';
+
+  useEffect(() => {
+    if (!isAuthenticated || !user?.id) return;
+    reloadMyShops(user.id);
+  }, [isAuthenticated, reloadMyShops, user?.id]);
 
   // ✅ Cleanup all drawer/menu states on navigation
   useEffect(() => {
@@ -40,6 +63,7 @@ export function Header() {
     setShowPaymentOptions(false);
     setMobileMenuOpen(false);
     setShowCategories(false);
+    setShowProfileMenu(false);
   }, [location.pathname]);
 
   // ✅ Cleanup body overflow on mobile menu close and unmount
@@ -61,6 +85,12 @@ export function Header() {
     if (searchQuery.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
     }
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    setShowProfileMenu(false);
+    navigate('/', { replace: true });
   };
 
   return (
@@ -611,6 +641,53 @@ export function Header() {
         </>
       )}
 
+      {/* Profile Menu */}
+      {showProfileMenu && isAuthenticated && (
+        <>
+          <button
+            type="button"
+            onClick={() => setShowProfileMenu(false)}
+            aria-label="Fermer le menu profil"
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'transparent',
+              border: 'none',
+              zIndex: 1200,
+            }}
+          />
+          <div className="header-profile-menu" style={{
+            position: 'fixed',
+            top: '76px',
+            right: '14px',
+            width: 'min(320px, calc(100vw - 28px))',
+            background: 'white',
+            borderRadius: '14px',
+            boxShadow: '0 14px 40px rgba(0,0,0,0.18)',
+            border: '1px solid #e5e7eb',
+            padding: '10px',
+            zIndex: 1201
+          }}>
+            <div style={{ padding: '8px 10px 10px', borderBottom: '1px solid #f3f4f6', marginBottom: '6px' }}>
+              <p style={{ margin: 0, fontWeight: 700, color: '#111827' }}>{user?.name || 'Mon compte'}</p>
+              <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#6b7280' }}>{user?.email}</p>
+            </div>
+            <Link to={profileTarget} onClick={() => setShowProfileMenu(false)} className="header-profile-menu-item">
+              <User size={18} />
+              Mon profil
+            </Link>
+            <Link to={ordersTarget} onClick={() => setShowProfileMenu(false)} className="header-profile-menu-item">
+              <ShoppingCart size={18} />
+              Historique commandes
+            </Link>
+            <button type="button" className="header-profile-menu-item danger" onClick={handleLogout}>
+              <X size={18} />
+              Déconnexion
+            </button>
+          </div>
+        </>
+      )}
+
       {/* Main Header */}
       <div style={{ background: 'white', borderBottom: '1px solid #f3f4f6', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem', width: '100%', boxSizing: 'border-box' }}>
@@ -642,7 +719,7 @@ export function Header() {
               />
             </Link>
 
-            {/* Actions mobiles : panier et icône utilisateur pour tous, nom utilisateur si connecté */}
+            {/* Actions mobiles : compactes pour garder un header propre */}
             <div className="header-mobile-actions">
               <button type="button" onClick={() => setShowCartDrawer(true)} style={{ position: 'relative', padding: '12px', background: '#f0fdf4', borderRadius: '50%', color: '#059669', display: 'flex', alignItems: 'center', marginRight: '8px' }}>
                 <ShoppingCart size={20} />
@@ -652,9 +729,81 @@ export function Header() {
                   </span>
                 )}
               </button>
-              <button type="button" className="desktop-signup-btn" onClick={() => navigate('/signup')} style={{ background: 'linear-gradient(135deg, #059669, #10b981)', border: 'none', borderRadius: '50px', fontWeight: 600, fontSize: '14px', color: 'white', cursor: 'pointer', padding: '8px 16px' }}>
-                S'inscrire
-              </button>
+              {isAuthenticated ? (
+                <>
+                  <button
+                    type="button"
+                    style={{
+                      position: 'relative',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '42px',
+                      height: '42px',
+                      borderRadius: '50%',
+                      background: '#f3f4f6',
+                      color: '#374151',
+                      border: 'none',
+                      cursor: 'pointer',
+                      marginRight: '6px',
+                    }}
+                    aria-label="Notifications"
+                  >
+                    <Bell size={19} />
+                    <span style={{
+                      position: 'absolute',
+                      top: '7px',
+                      right: '7px',
+                      width: '8px',
+                      height: '8px',
+                      background: '#ef4444',
+                      borderRadius: '50%',
+                      border: '2px solid white'
+                    }} />
+                  </button>
+                  <Link
+                    to={hasOwnedShop && primaryOwnedShop ? `/shop/${primaryOwnedShop.id}` : '/seller/create-shop'}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '42px',
+                      height: '42px',
+                      borderRadius: '50%',
+                      background: hasOwnedShop ? '#fff7ed' : '#f5f3ff',
+                      color: hasOwnedShop ? '#c2410c' : '#7c3aed',
+                      textDecoration: 'none',
+                      marginRight: '6px',
+                    }}
+                    aria-label={hasOwnedShop ? 'Consulter ma boutique' : 'Créer ma boutique'}
+                  >
+                    <Store size={19} />
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => setShowProfileMenu((prev) => !prev)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '42px',
+                      height: '42px',
+                      borderRadius: '50%',
+                      background: '#f3f4f6',
+                      color: '#374151',
+                      border: 'none',
+                      cursor: 'pointer',
+                    }}
+                    aria-label="Mon profil"
+                  >
+                    <User size={20} />
+                  </button>
+                </>
+              ) : (
+                <button type="button" onClick={() => navigate('/signup')} style={{ background: 'linear-gradient(135deg, #059669, #10b981)', border: 'none', borderRadius: '50px', fontWeight: 600, fontSize: '14px', color: 'white', cursor: 'pointer', padding: '8px 16px' }}>
+                  S'inscrire
+                </button>
+              )}
             </div>
 
 
@@ -786,46 +935,47 @@ export function Header() {
             </form>
 
             {/* Right Actions */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
+            <div className="header-right-actions" style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
               {isAuthenticated ? (
                 <>
                   {/* Icône utilisateur connecté avant 'Créer ma boutique' */}
-                  <Link to="/buyer/dashboard" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: '#059669', background: '#f0fdf4', borderRadius: '50%', padding: '10px', marginRight: '8px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setShowProfileMenu((prev) => !prev)}
+                    style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: '#059669', background: '#f0fdf4', borderRadius: '50%', padding: '10px', marginRight: '8px', border: 'none', cursor: 'pointer' }}
+                  >
                     <User size={20} />
-                  </Link>
-                  {/* Seller/Create Shop Button */}
-                  {user?.role === 'seller' ? (
+                  </button>
+                  {/* Owner/Create Shop Button */}
+                  {hasOwnedShop && primaryOwnedShop ? (
                     <Link 
-                      to="/seller/dashboard"
+                      to={`/shop/${primaryOwnedShop.id}`}
                       style={{ 
                         display: 'flex', 
                         alignItems: 'center', 
-                        gap: '10px', 
-                        padding: '8px 16px 8px 8px', 
+                        gap: '8px',
+                        padding: '7px 12px 7px 7px',
                         background: 'linear-gradient(135deg, #f97316, #fb923c)', 
                         color: 'white', 
                         borderRadius: '50px', 
                         textDecoration: 'none',
                         fontWeight: 600,
-                        fontSize: '13px',
+                        fontSize: '12px',
                         boxShadow: '0 4px 12px rgba(249, 115, 22, 0.3)'
                       }}
                     >
                       <div style={{
-                        width: '32px',
-                        height: '32px',
+                        width: '28px',
+                        height: '28px',
                         borderRadius: '50%',
                         background: 'rgba(255,255,255,0.2)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center'
                       }}>
-                        <Store size={16} />
+                        <Store size={14} />
                       </div>
-                      <div style={{ textAlign: 'left' }}>
-                        <p style={{ margin: 0, fontSize: '10px', opacity: 0.9 }}>Ma Boutique</p>
-                        <p style={{ margin: 0, fontWeight: 700 }}>Tableau de bord</p>
-                      </div>
+                      <span style={{ fontWeight: 700, whiteSpace: 'nowrap' }}>Consulter ma boutique</span>
                     </Link>
                   ) : (
                     <Link 
@@ -1045,6 +1195,45 @@ export function Header() {
             </div>
 
             {/* Barre d'accès rapide mobile - après le logo (supprimée, plus d'icônes panier/utilisateur ici) */}
+            {isAuthenticated && (
+              <div style={{ marginBottom: '18px' }}>
+                {hasOwnedShop && primaryOwnedShop ? (
+                  <Link
+                    to={`/shop/${primaryOwnedShop.id}`}
+                    onClick={() => setMobileMenuOpen(false)}
+                    style={{
+                      display: 'block',
+                      textAlign: 'center',
+                      padding: '14px 16px',
+                      borderRadius: '12px',
+                      background: 'linear-gradient(135deg, #f97316, #fb923c)',
+                      color: 'white',
+                      fontWeight: 700,
+                      textDecoration: 'none',
+                    }}
+                  >
+                    Consulter ma boutique
+                  </Link>
+                ) : (
+                  <Link
+                    to="/seller/create-shop"
+                    onClick={() => setMobileMenuOpen(false)}
+                    style={{
+                      display: 'block',
+                      textAlign: 'center',
+                      padding: '14px 16px',
+                      borderRadius: '12px',
+                      background: 'linear-gradient(135deg, #8b5cf6, #a78bfa)',
+                      color: 'white',
+                      fontWeight: 700,
+                      textDecoration: 'none',
+                    }}
+                  >
+                    Créer ma boutique
+                  </Link>
+                )}
+              </div>
+            )}
 
             {/* Menu principal mobile - scrollable horizontalement (masqué sur /categories) */}
             {location.pathname !== '/categories' && (

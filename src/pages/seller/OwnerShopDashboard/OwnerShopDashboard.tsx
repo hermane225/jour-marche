@@ -29,6 +29,13 @@ interface ProductFormState {
   images: string[];
 }
 
+interface OwnerDashboardNavigationState {
+  newShopCreated?: boolean;
+  shopId?: string;
+  shopName?: string;
+  postCreateMessage?: string;
+}
+
 const DASHBOARD_PATHS = {
   info: '/dashboard/shop',
   edit: '/dashboard/shop/edit',
@@ -82,9 +89,17 @@ export function OwnerShopDashboard() {
     return allShops.filter((item) => isOwnedByUser(item.sellerId));
   }, [isOwnedByUser, user?.id]);
   const { data: categories } = useCategories();
+  const uniqueShops = useMemo(() => {
+    const seen = new Set<string>();
+    return (shops || []).filter((item) => {
+      if (!item.id || seen.has(item.id)) return false;
+      seen.add(item.id);
+      return true;
+    });
+  }, [shops]);
   const shop = useMemo(
-    () => (routeShopId ? shops?.find((item) => item.id === routeShopId) || null : shops?.[0] || null),
-    [routeShopId, shops]
+    () => (routeShopId ? uniqueShops.find((item) => item.id === routeShopId) || null : uniqueShops[0] || null),
+    [routeShopId, uniqueShops]
   );
 
   const {
@@ -161,6 +176,8 @@ export function OwnerShopDashboard() {
   }, []);
 
   const activeSection = useMemo(() => {
+    if (location.pathname.endsWith('/manage/add-product')) return 'add-product';
+    if (location.pathname.endsWith('/manage')) return 'info';
     if (location.pathname === DASHBOARD_PATHS.edit) return 'edit';
     if (location.pathname === DASHBOARD_PATHS.products) return 'products';
     if (location.pathname === DASHBOARD_PATHS.addProduct) return 'add-product';
@@ -168,6 +185,19 @@ export function OwnerShopDashboard() {
     if (location.pathname === DASHBOARD_PATHS.settings) return 'settings';
     return 'info';
   }, [location.pathname]);
+  const locationState = location.state as OwnerDashboardNavigationState | null;
+
+  useEffect(() => {
+    if (!locationState?.newShopCreated) return;
+
+    setToast({
+      type: 'success',
+      message: locationState.postCreateMessage || 'Boutique créée. Postez votre premier produit pour commencer à vendre.',
+    });
+
+    // Nettoyer le state de navigation pour eviter de rejouer la notification.
+    navigate(location.pathname, { replace: true, state: {} });
+  }, [location.pathname, locationState, navigate]);
 
   const stats = useMemo(() => {
     const totalProducts = products.length;

@@ -470,35 +470,99 @@
 @media (max-width: 1024px) {
   .owner-shop-layout {
     grid-template-columns: 1fr;
+    min-height: auto;
   }
 
   .owner-shop-sidebar {
     height: auto;
-    position: static;
-    padding: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 25;
+    padding: 12px 14px;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   }
 
   .owner-shop-nav {
-    margin-top: 14px;
+    margin-top: 12px;
     flex-direction: row;
     overflow-x: auto;
     white-space: nowrap;
-    padding-bottom: 4px;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .owner-shop-nav::-webkit-scrollbar {
+    display: none;
   }
 
   .owner-shop-nav a {
     flex: 0 0 auto;
+    min-height: 42px;
+    padding: 10px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(15, 23, 42, 0.08);
+  }
+
+  .owner-shop-nav a.active,
+  .owner-shop-nav a:hover {
+    transform: none;
+    border-color: rgba(255, 255, 255, 0.45);
+    background: rgba(255, 255, 255, 0.2);
   }
 }
 
 @media (max-width: 720px) {
+  .owner-shop-brand h2 {
+    font-size: 1.05rem;
+  }
+
+  .owner-shop-brand p {
+    margin-top: 4px;
+    font-size: 0.82rem;
+  }
+
   .owner-shop-main {
-    padding: 14px;
+    padding: 12px;
+  }
+
+  .owner-shop-section {
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 12px;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
   }
 
   .owner-shop-grid,
   .owner-shop-stats {
     grid-template-columns: 1fr;
+  }
+
+  .owner-shop-section h1 {
+    font-size: 1.2rem;
+    line-height: 1.25;
+  }
+
+  .owner-muted {
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  .owner-shop-form {
+    max-width: 100%;
+    gap: 12px;
+  }
+
+  .owner-shop-form input,
+  .owner-shop-form textarea,
+  .owner-shop-form select {
+    font-size: 16px;
+  }
+
+  .polished-form {
+    padding: 12px;
+    border-radius: 12px;
   }
 
   .owner-shop-checks {
@@ -508,17 +572,24 @@
 
   .owner-shop-actions {
     position: sticky;
-    bottom: 8px;
+    bottom: 6px;
     background: rgba(248, 250, 252, 0.95);
-    padding: 10px;
+    padding: 8px;
     border-radius: 12px;
     border: 1px solid #e2e8f0;
     backdrop-filter: blur(6px);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
   }
 
   .owner-shop-main .btn {
     min-height: 46px;
     font-size: 0.96rem;
+    border-radius: 10px;
+  }
+
+  .owner-shop-product-item {
+    border-radius: 12px;
+    padding: 2px;
   }
 
   .owner-shop-nav a {
@@ -530,11 +601,36 @@
     width: 100%;
   }
 
+  .owner-shop-product-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .status-pill {
+    font-size: 10px;
+    padding: 6px 9px;
+  }
+
+  .owner-shop-quick-actions {
+    flex-direction: column;
+  }
+
+  .owner-shop-quick-actions a,
+  .owner-shop-quick-actions .btn {
+    width: 100%;
+  }
+
   .mobile-stepper {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 8px;
     margin-bottom: 4px;
+    position: sticky;
+    top: 0;
+    z-index: 6;
+    background: #ffffff;
+    padding: 6px 0 8px;
   }
 
   .mobile-step-indicator {
@@ -574,5 +670,73 @@
   .drop-zone p {
     margin: 0;
     font-size: 0.9rem;
+  }
+
+  .owner-shop-toast {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    border-radius: 12px;
+    justify-content: center;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .owner-shop-sidebar {
+    padding: 10px 10px 12px;
+  }
+
+  .owner-shop-main {
+    padding: 10px;
+  }
+
+  .owner-shop-nav {
+    gap: 8px;
+  }
+
+  .owner-shop-nav a {
+    font-size: 0.83rem;
+    gap: 8px;
+    min-height: 40px;
+    padding: 9px 11px;
+    border-radius: 10px;
+  }
+
+  .owner-shop-nav a svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .stat-card strong {
+    font-size: 1.4rem;
+  }
+
+  .stat-card p {
+    font-size: 0.8rem;
+  }
+
+  .owner-shop-summary p {
+    font-size: 0.92rem;
+  }
+
+  .mobile-stepper-btn {
+    font-size: 0.72rem;
+    padding: 8px 6px;
+    min-height: 40px;
+  }
+
+  .owner-shop-actions .btn {
+    min-height: 44px;
+    font-size: 0.9rem;
+  }
+
+  .product-image-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .product-image-item img {
+    height: 78px;
   }
 }

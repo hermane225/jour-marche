@@ -148,11 +148,43 @@
 .mobile-main-menu-scroll::-webkit-scrollbar {
   display: none;
 }
+
+.header-profile-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 10px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #1f2937;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.header-profile-menu-item:hover {
+  background: #f3f4f6;
+}
+
+.header-profile-menu-item.danger {
+  color: #b91c1c;
+}
+
+.header-profile-menu-item.danger:hover {
+  background: #fef2f2;
+}
 /* Header responsive styles */
 
 @media (max-width: 1024px) {
   .header-desktop-nav,
   .header-desktop-search {
+    display: none !important;
+  }
+  .header-right-actions {
     display: none !important;
   }
   .mobile-menu-btn {

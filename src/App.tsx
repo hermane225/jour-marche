@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { OrderProvider } from './context/OrderContext';
@@ -23,6 +23,10 @@ import { AdminLayout, AdminDashboard, AdminSellers, AdminOrders, AdminUsers, Adm
 
 import './index.css';
 
+function getRedirectPath(pathname: string, search: string, hash: string) {
+  return `${pathname}${search}${hash}`;
+}
+
 // Layout avec Header et Footer
 function MainLayout() {
   return (
@@ -44,6 +48,7 @@ function AuthLayout() {
 // Route protégée pour les buyers
 function BuyerRoute() {
   const { user, isAuthenticated, isLoading } = useAuth();
+  const location = useLocation();
 
   if (isLoading) {
     return (
@@ -73,7 +78,7 @@ function BuyerRoute() {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" replace state={{ from: getRedirectPath(location.pathname, location.search, location.hash) }} />;
   }
 
   if (user?.role === 'seller') {
@@ -86,6 +91,7 @@ function BuyerRoute() {
 // Route protégée pour les sellers
 function SellerRoute() {
   const { user, isAuthenticated, isLoading } = useAuth();
+  const location = useLocation();
 
   if (isLoading) {
     return (
@@ -104,7 +110,7 @@ function SellerRoute() {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" replace state={{ from: getRedirectPath(location.pathname, location.search, location.hash) }} />;
   }
 
   // Les sellers ont accès direct, les buyers non
@@ -118,6 +124,7 @@ function SellerRoute() {
 // Route protégée pour les admins
 function AdminRoute() {
   const { user, isAuthenticated, isLoading } = useAuth();
+  const location = useLocation();
 
   if (isLoading) {
     return (
@@ -134,7 +141,7 @@ function AdminRoute() {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" replace state={{ from: getRedirectPath(location.pathname, location.search, location.hash) }} />;
   }
 
   // Vérifier si l'utilisateur est admin (vous devez adapter selon votre système)
@@ -148,13 +155,14 @@ function AdminRoute() {
 // Route qui nécessite juste d'être connecté (pas de rôle spécifique)
 function AuthRoute() {
   const { isAuthenticated, isLoading } = useAuth();
+  const location = useLocation();
 
   if (isLoading) {
     return <div>Chargement...</div>;
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" replace state={{ from: getRedirectPath(location.pathname, location.search, location.hash) }} />;
   }
 
   return <Outlet />;

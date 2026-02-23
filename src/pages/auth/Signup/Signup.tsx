@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef, type FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useRef, useCallback, type FormEvent } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, ArrowRight, Sparkles, User, Check } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import logoImage from '../../../assets/jour_marché.png';
@@ -15,6 +15,24 @@ export function Signup() {
 
   const { signup, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const resolveTargetUrl = useCallback((role: string) => {
+    const fromState = typeof (location.state as { from?: unknown } | null)?.from === 'string'
+      ? String((location.state as { from?: string }).from)
+      : '';
+    const fromSession = sessionStorage.getItem('redirectAfterLogin') || '';
+    const redirectUrl = fromState || fromSession;
+
+    if (redirectUrl && redirectUrl !== '/login' && redirectUrl !== '/signup') {
+      sessionStorage.removeItem('redirectAfterLogin');
+      return redirectUrl;
+    }
+
+    if (role === 'admin') return '/admin/dashboard';
+    if (role === 'seller') return '/seller/dashboard';
+    return '/';
+  }, [location.state]);
 
   // Bouton Google natif via ref pour éviter les conflits DOM React
   useEffect(() => {
@@ -39,16 +57,7 @@ export function Signup() {
               setError('');
               setIsLoading(true);
               const loggedInUser = await loginWithGoogle(response.credential);
-              const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
-              if (redirectUrl) {
-                sessionStorage.removeItem('redirectAfterLogin');
-                navigate(redirectUrl, { replace: true });
-              } else {
-                let targetUrl = '/buyer/dashboard';
-                if (loggedInUser.role === 'admin') targetUrl = '/admin/dashboard';
-                else if (loggedInUser.role === 'seller') targetUrl = '/seller/dashboard';
-                navigate(targetUrl, { replace: true });
-              }
+              navigate(resolveTargetUrl(loggedInUser.role), { replace: true });
             } catch (err) {
               setIsLoading(false);
               setError(err instanceof Error ? err.message : 'Connexion Google échouée');
@@ -75,7 +84,7 @@ export function Signup() {
 
       return () => clearInterval(checkGoogleLoaded);
     }
-  }, [loginWithGoogle, navigate]);
+  }, [loginWithGoogle, navigate, resolveTargetUrl]);
 
   const handleSubmit = async (e?: FormEvent | React.MouseEvent) => {
     if (e) {
@@ -99,16 +108,7 @@ export function Signup() {
     try {
       const registeredUser = await signup(email, password, name || email.split('@')[0], 'buyer');
 
-      const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
-      if (redirectUrl) {
-        sessionStorage.removeItem('redirectAfterLogin');
-        navigate(redirectUrl, { replace: true });
-      } else {
-        let targetUrl = '/buyer/dashboard';
-        if (registeredUser.role === 'seller') targetUrl = '/seller/dashboard';
-        else if (registeredUser.role === 'admin') targetUrl = '/admin/dashboard';
-        navigate(targetUrl, { replace: true });
-      }
+      navigate(resolveTargetUrl(registeredUser.role), { replace: true });
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message || "Erreur lors de l'inscription");

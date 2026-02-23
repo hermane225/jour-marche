@@ -1,5 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { MapPin, Star, Phone, Clock, Truck, Package, ArrowLeft, ShoppingCart, Heart, Store, MessageCircle, Share2 } from 'lucide-react';
 import { useShop } from '../../../hooks/useShops';
 import { useShopProducts } from '../../../hooks/useProducts';
@@ -10,6 +10,7 @@ export function ShopDetail() {
   const { id } = useParams<{ id: string }>();
   const { addToCart } = useCart();
   const { user } = useAuth();
+  const [isMobile, setIsMobile] = useState(false);
   const normalizeId = (value: unknown): string => {
     if (typeof value === 'string') return value.trim();
     if (value && typeof value === 'object') {
@@ -31,6 +32,14 @@ export function ShopDetail() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [id]);
+
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 768px)');
+    const syncViewport = () => setIsMobile(media.matches);
+    syncViewport();
+    media.addEventListener('change', syncViewport);
+    return () => media.removeEventListener('change', syncViewport);
+  }, []);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('fr-FR').format(price) + ' FCFA';
@@ -424,13 +433,13 @@ export function ShopDetail() {
       </section>
 
       {/* Produits de la boutique */}
-      <section style={{ maxWidth: '1400px', margin: '0 auto', padding: '60px 24px' }}>
+      <section style={{ maxWidth: '1400px', margin: '0 auto', padding: isMobile ? '20px 12px 28px' : '60px 24px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', flexWrap: 'wrap', gap: '16px' }}>
           <div>
-            <h2 style={{ margin: '0 0 8px 0', fontSize: '28px', fontWeight: 800, color: '#1f2937' }}>
+            <h2 style={{ margin: '0 0 8px 0', fontSize: isMobile ? '21px' : '28px', fontWeight: 800, color: '#1f2937' }}>
               Produits de {shop.name}
             </h2>
-            <p style={{ margin: 0, color: '#6b7280' }}>
+            <p style={{ margin: 0, color: '#6b7280', fontSize: isMobile ? '13px' : '14px' }}>
               {purchasableProducts.length} produit{purchasableProducts.length !== 1 ? 's' : ''} disponible{purchasableProducts.length !== 1 ? 's' : ''}
             </p>
           </div>
@@ -462,19 +471,19 @@ export function ShopDetail() {
         ) : (
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-            gap: '24px'
+            gridTemplateColumns: isMobile ? 'repeat(2, minmax(0, 1fr))' : 'repeat(auto-fill, minmax(280px, 1fr))',
+            gap: isMobile ? '10px' : '24px'
           }}>
             {purchasableProducts.map(product => (
               <div key={product.id} style={{
                 background: 'white',
-                borderRadius: '24px',
+                borderRadius: isMobile ? '14px' : '24px',
                 overflow: 'hidden',
                 boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
                 transition: 'all 0.3s ease'
               }}>
                 <Link to={`/product/${product.id}`} style={{ textDecoration: 'none' }}>
-                  <div style={{ aspectRatio: '1', overflow: 'hidden', position: 'relative' }}>
+                  <div style={{ aspectRatio: isMobile ? '0.95' : '1', overflow: 'hidden', position: 'relative' }}>
                     <img 
                       src={product.images[0]} 
                       alt={product.title}
@@ -498,14 +507,14 @@ export function ShopDetail() {
                   </div>
                 </Link>
                 
-                <div style={{ padding: '20px' }}>
+                <div style={{ padding: isMobile ? '10px' : '20px' }}>
                   <Link to={`/product/${product.id}`} style={{ textDecoration: 'none' }}>
                     <h3 style={{
                       margin: '0 0 12px 0',
-                      fontSize: '16px',
+                      fontSize: isMobile ? '13px' : '16px',
                       fontWeight: 700,
                       color: '#1f2937',
-                      lineHeight: 1.4,
+                      lineHeight: isMobile ? 1.3 : 1.4,
                       display: '-webkit-box',
                       WebkitLineClamp: 2,
                       WebkitBoxOrient: 'vertical',
@@ -517,10 +526,10 @@ export function ShopDetail() {
                   <p style={{
                     margin: '0',
                     color: '#6b7280',
-                    fontSize: '14px',
+                    fontSize: isMobile ? '12px' : '14px',
                     lineHeight: 1.5,
                     display: '-webkit-box',
-                    WebkitLineClamp: 2,
+                    WebkitLineClamp: isMobile ? 1 : 2,
                     WebkitBoxOrient: 'vertical',
                     overflow: 'hidden'
                   }}>
@@ -531,10 +540,10 @@ export function ShopDetail() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    marginTop: '16px'
+                    marginTop: isMobile ? '10px' : '16px'
                   }}>
                     <span style={{
-                      fontSize: '20px',
+                      fontSize: isMobile ? '15px' : '20px',
                       fontWeight: 800,
                       color: '#059669'
                     }}>
@@ -548,11 +557,11 @@ export function ShopDetail() {
                         addToCart(product);
                       }}
                       style={{
-                        padding: '12px',
+                        padding: isMobile ? '9px' : '12px',
                         background: 'linear-gradient(135deg, #059669, #10b981)',
                         color: 'white',
                         border: 'none',
-                        borderRadius: '12px',
+                        borderRadius: isMobile ? '10px' : '12px',
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
@@ -561,7 +570,7 @@ export function ShopDetail() {
                         transition: 'transform 0.2s'
                       }}
                     >
-                      <ShoppingCart size={20} />
+                      <ShoppingCart size={isMobile ? 17 : 20} />
                     </button>
                   </div>
                 </div>

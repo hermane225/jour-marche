@@ -100,6 +100,15 @@ const resolveShopImage = (dto: any, kind: 'logo' | 'banner'): string => {
   return resolveUploadUrl(typeof rawBanner === 'string' ? rawBanner : '');
 };
 
+const dedupeShopsById = (shops: Shop[]): Shop[] => {
+  const seen = new Set<string>();
+  return shops.filter((shop) => {
+    if (!shop.id || seen.has(shop.id)) return false;
+    seen.add(shop.id);
+    return true;
+  });
+};
+
 // Paramètres de recherche pour les boutiques
 interface ShopSearchParams {
   page?: number;
@@ -213,12 +222,12 @@ export const shopService = {
     const response = await apiClient.get<any>(`/api/shops${query}`);
     
     // L'API retourne directement { success, data, pagination }
-    const shops = response.success && response.data 
+    const shops = response.success && response.data
       ? response.data.map(mapShopFromApi)
       : [];
     
     return {
-      shops: shops,
+      shops: dedupeShopsById(shops),
       pagination: response.pagination,
     };
   },
@@ -241,7 +250,7 @@ export const shopService = {
    */
   getShopsBySeller: async (sellerId: string): Promise<Shop[]> => {
     const { shops } = await shopService.getShops({ sellerId });
-    return shops;
+    return dedupeShopsById(shops);
   },
 
   /**

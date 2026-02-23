@@ -1,13 +1,21 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import { OrderContext } from "../../../context/OrderContext";
+import { useNavigate } from "react-router-dom";
+import { orderService } from "../../../services/api";
 import { MapPin, CreditCard, TrendingUp, Package } from "lucide-react";
 import "./Profile.css";
 
 const Profile: React.FC = () => {
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, logout } = useAuth();
+  const navigate = useNavigate();
   const orderCtx = useContext(OrderContext);
-  const orders = (orderCtx?.orders ?? []) as import("../../../types").Order[];
+  const localOrders = useMemo(
+    () => ((orderCtx?.orders ?? []) as import("../../../types").Order[]),
+    [orderCtx?.orders]
+  );
+  const [orders, setOrders] = useState<import("../../../types").Order[]>(localOrders);
+  const [ordersLoading, setOrdersLoading] = useState(false);
 
   // Profil d'édition
   const [editMode, setEditMode] = useState(false);
@@ -32,6 +40,23 @@ const Profile: React.FC = () => {
   ]);
   const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [newPayment, setNewPayment] = useState({ type: 'mobile', name: '', lastDigits: '' });
+
+  useEffect(() => {
+    const loadOrders = async () => {
+      if (!user?.id) return;
+      setOrdersLoading(true);
+      try {
+        const result = await orderService.getMyOrders({ limit: 100, sortBy: 'createdAt', sortOrder: 'desc' });
+        setOrders(result.orders);
+      } catch {
+        setOrders(localOrders);
+      } finally {
+        setOrdersLoading(false);
+      }
+    };
+
+    loadOrders();
+  }, [localOrders, user?.id]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -82,6 +107,14 @@ const Profile: React.FC = () => {
       <div className="profile-header">
         <h1>Mon Profil</h1>
         <p>Gérez votre compte et vos informations personnelles</p>
+        <div className="profile-header-actions">
+          <button className="btn btn-secondary btn-sm" onClick={() => navigate('/buyer/orders')}>
+            Mes commandes
+          </button>
+          <button className="btn btn-secondary btn-sm" onClick={logout}>
+            Déconnexion
+          </button>
+        </div>
       </div>
 
       {user ? (
@@ -176,10 +209,6 @@ const Profile: React.FC = () => {
                     <div className="info-item">
                       <span className="label">Téléphone :</span>
                       <span className="value">{user.phone || '-'}</span>
-                    </div>
-                    <div className="info-item">
-                      <span className="label">Rôle :</span>
-                      <span className="badge">{user.role}</span>
                     </div>
                     <div className="info-item">
                       <span className="label">Inscrit depuis :</span>
@@ -393,7 +422,9 @@ const Profile: React.FC = () => {
               </div>
             </div>
             <div className="orders-list">
-              {orders.length > 0 ? (
+              {ordersLoading ? (
+                <p className="empty-state">Chargement des commandes...</p>
+              ) : orders.length > 0 ? (
                 orders.map((order: import("../../../types").Order) => (
                   <div key={order.id} className="order-card">
                     <div className="order-info">

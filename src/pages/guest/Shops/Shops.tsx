@@ -14,10 +14,6 @@ export function Shops() {
     window.scrollTo(0, 0);
   }, []);
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('fr-FR').format(price);
-  };
-
   // Statistiques fictives pour la bannière
   const stats = [
     { label: 'Boutiques', value: '2 500+' },
@@ -116,16 +112,6 @@ export function Shops() {
                     <div className="shop-meta-item" style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#6b7280' }}>
                       <MapPin size={15} />
                       <span>{shop.address}</span>
-                    </div>
-                  </div>
-                  <div className="shop-stats" style={{ display: 'flex', gap: 18, marginBottom: 10 }}>
-                    <div className="shop-stat" style={{ textAlign: 'center' }}>
-                      <span className="stat-value" style={{ fontWeight: 700, fontSize: '1.1rem', color: '#059669' }}>{shop.totalProducts}</span>
-                      <span className="stat-label" style={{ display: 'block', fontSize: '0.85rem', color: '#6b7280' }}>Produits</span>
-                    </div>
-                    <div className="shop-stat" style={{ textAlign: 'center' }}>
-                      <span className="stat-value" style={{ fontWeight: 700, fontSize: '1.1rem', color: '#059669' }}>{formatPrice(shop.monthlySales)}</span>
-                      <span className="stat-label" style={{ display: 'block', fontSize: '0.85rem', color: '#6b7280' }}>Ventes/mois</span>
                     </div>
                   </div>
                   {shop.deliveryOptions && (

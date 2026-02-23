@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useShops } from '../../../context/ShopContext';
 import { useCategories } from '../../../hooks/useCategories';
@@ -121,19 +121,6 @@ export function CreateShop() {
       isMountedRef.current = false;
     };
   }, []);
-
-  // ✅ Fonction sécurisée pour naviguer avec vérification de montage
-  const safeNavigate = useCallback((to: string, options?: { replace?: boolean }) => {
-    if (!isMountedRef.current || isNavigatingRef.current) {
-      console.log('⚠️ Navigation ignorée: composant démonté ou navigation en cours');
-      return;
-    }
-    
-    isNavigatingRef.current = true;
-    
-    // ✅ Utiliser replace pour éviter l'historique problématique
-    navigate(to, { replace: options?.replace ?? true });
-  }, [navigate]);
 
   const TOTAL_STEPS = 3;
   const steps = [
@@ -285,8 +272,13 @@ export function CreateShop() {
       setTimeout(() => {
         if (isMountedRef.current && !isNavigatingRef.current) {
           isNavigatingRef.current = true;
-          navigate('/seller/products/create', {
-            state: { shopId: newShop.id, shopName: newShop.name },
+          navigate(`/shop/${newShop.id}/manage/add-product`, {
+            state: {
+              shopId: newShop.id,
+              shopName: newShop.name,
+              newShopCreated: true,
+              postCreateMessage: `Boutique "${newShop.name}" créée. Postez votre premier produit et commencez à vendre sur Jour Marcher.`,
+            },
             replace: true,
           });
         }

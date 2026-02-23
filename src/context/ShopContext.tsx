@@ -2,7 +2,6 @@ import { createContext, useContext, useState, useEffect, useCallback, type React
 import type { Shop } from '../types';
 import { shopService } from '../services/api';
 import type { CreateShopPayload, UpdateShopPayload } from '../services/api/shops.service';
-import { tokenManager } from '../services/api';
 
 interface ShopContextType {
   shops: Shop[];           // Toutes les boutiques (publiques)
@@ -18,6 +17,15 @@ interface ShopContextType {
 
 const ShopContext = createContext<ShopContextType | undefined>(undefined);
 
+const dedupeShopsById = (items: Shop[]): Shop[] => {
+  const seen = new Set<string>();
+  return items.filter((shop) => {
+    if (!shop.id || seen.has(shop.id)) return false;
+    seen.add(shop.id);
+    return true;
+  });
+};
+
 export function ShopProvider({ children }: { children: ReactNode }) {
   const [shops, setShops] = useState<Shop[]>([]);
   const [myShops, setMyShops] = useState<Shop[]>([]);
@@ -27,7 +35,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
   const loadShops = useCallback(async () => {
     try {
       const { shops: fetched } = await shopService.getShops({ limit: 100 });
-      setShops(fetched);
+      setShops(dedupeShopsById(fetched));
     } catch {
       // Ignorer les erreurs de chargement silencieusement
     }
@@ -38,7 +46,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     if (!sellerId) return;
     try {
       const sellerShops = await shopService.getShopsBySeller(sellerId);
-      setMyShops(sellerShops);
+      setMyShops(dedupeShopsById(sellerShops));
     } catch {
       setMyShops([]);
     }
@@ -81,8 +89,8 @@ export function ShopProvider({ children }: { children: ReactNode }) {
       console.log('✅ [SHOP CONTEXT] Boutique créée avec succès:', newShop);
       
       // Mettre à jour l'état local immédiatement
-      setShops(prev => [...prev, newShop]);
-      setMyShops(prev => [...prev, newShop]);
+      setShops((prev) => dedupeShopsById([...prev, newShop]));
+      setMyShops((prev) => dedupeShopsById([...prev, newShop]));
       return newShop;
     } catch (error) {
       console.error('❌ [SHOP CONTEXT] Erreur création boutique:', error);
