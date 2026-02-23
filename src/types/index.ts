@@ -102,7 +102,7 @@ export interface Cart {
   deliveryFee?: number;
 }
 
-export type OrderStatus = 'pending' | 'confirmed' | 'preparing' | 'ready_for_pickup' | 'in_delivery' | 'delivered' | 'cancelled';
+export type OrderStatus = 'pending' | 'confirmed' | 'preparing' | 'ready_for_pickup' | 'in_delivery' | 'delivered' | 'cancelled' | 'refunded';
 
 export type DeliveryType = 'pickup' | 'delivery';
 

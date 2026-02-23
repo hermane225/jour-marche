@@ -11,6 +11,7 @@ export { paymentService } from './payments.service';
 export { driverService } from './drivers.service';
 export { adminService } from './admin.service';
 export { uploadService } from './uploads.service';
+export { notificationService } from './notifications.service';
 
 // Export des types
 export type {
@@ -32,3 +33,4 @@ export type { Transaction, PaymentRequest } from './payments.service';
 export type { Delivery, DeliveryStatusUpdate } from './drivers.service';
 export type { PlatformSettings, DashboardStats, AdminUser, AdminShop, AdminOrder, AdminProduct, NotifyPayload } from './admin.service';
 export type { UploadedFile } from './uploads.service';
+export type { Notification } from './notifications.service';

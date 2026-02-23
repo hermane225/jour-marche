@@ -9,7 +9,7 @@ interface OrderSearchParams {
   limit?: number;
   status?: OrderStatus;
   shopId?: string;
-  customerId?: string;
+  buyerId?: string;
   sortBy?: 'createdAt' | 'total' | 'status';
   sortOrder?: 'asc' | 'desc';
 }
@@ -101,12 +101,27 @@ export const orderService = {
   /**
    * Récupérer les commandes d'un client (mes commandes)
    */
-  getMyOrders: async (params: Omit<OrderSearchParams, 'customerId'> = {}): Promise<{
+  getMyOrders: async (params: Omit<OrderSearchParams, 'buyerId'> = {}): Promise<{
+    orders: Order[];
+    pagination?: PaginatedResponse<OrderDTO>['pagination'];
+  }> => {
+    const response = await apiClient.get<PaginatedResponse<OrderDTO>>(`/api/orders${buildQueryString(params)}`);
+    
+    return {
+      orders: response.data.map(mapOrderFromApi),
+      pagination: response.pagination,
+    };
+  },
+
+  /**
+   * Recuperer les commandes d'un acheteur
+   */
+  getBuyerOrders: async (buyerId: string, params: Omit<OrderSearchParams, 'buyerId'> = {}): Promise<{
     orders: Order[];
     pagination?: PaginatedResponse<OrderDTO>['pagination'];
   }> => {
     const query = buildQueryString(params);
-    const response = await apiClient.get<PaginatedResponse<OrderDTO>>(`/api/orders${query}`);
+    const response = await apiClient.get<PaginatedResponse<OrderDTO>>(`/api/orders/buyer/${buyerId}${query}`);
     
     return {
       orders: response.data.map(mapOrderFromApi),
@@ -121,7 +136,13 @@ export const orderService = {
     orders: Order[];
     pagination?: PaginatedResponse<OrderDTO>['pagination'];
   }> => {
-    return orderService.getOrders({ ...params, shopId });
+    const query = buildQueryString(params);
+    const response = await apiClient.get<PaginatedResponse<OrderDTO>>(`/api/orders/shop/${shopId}${query}`);
+    
+    return {
+      orders: response.data.map(mapOrderFromApi),
+      pagination: response.pagination,
+    };
   },
 
   /**
@@ -161,7 +182,7 @@ export const orderService = {
    * Mettre à jour le statut d'une commande (vendeur)
    */
   updateOrderStatus: async (id: string, status: OrderStatus): Promise<Order> => {
-    const response = await apiClient.put<ApiResponse<OrderDTO>>(`/api/orders/${id}/status`, { status });
+    const response = await apiClient.patch<ApiResponse<OrderDTO>>(`/api/orders/${id}/status`, { status });
     
     if (!response.success || !response.data) {
       throw new Error(response.message || 'Échec de la mise à jour du statut');

@@ -13,12 +13,15 @@ import {
   Store,
   Phone,
   Sparkles,
-  ChevronDown
+  ChevronDown,
+  CheckCheck,
+  Trash2
 } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { useShops as useShopContext } from '../../../context/ShopContext';
 import { useCart } from '../../../context/CartContext';
 import { useCategories } from '../../../hooks/useCategories';
+import { useNotifications } from '../../../hooks/useNotifications';
 import logoImage from '../../../assets/jour_marché.png';
 
 export function Header() {
@@ -33,6 +36,7 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showNotificationsMenu, setShowNotificationsMenu] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState('');
   const ownedShops = (myShops || []).filter((shop, index, arr) =>
@@ -50,6 +54,16 @@ export function Header() {
     : user?.role === 'seller'
       ? '/seller/orders'
       : '/buyer/orders';
+  const {
+    notifications,
+    unreadCount,
+    isLoading: notificationsLoading,
+    refetch: refetchNotifications,
+    markAsRead,
+    markAllAsRead,
+    deleteNotification,
+    isMutating: notificationsMutating,
+  } = useNotifications(user?.id);
 
   useEffect(() => {
     if (!isAuthenticated || !user?.id) return;
@@ -64,6 +78,7 @@ export function Header() {
     setMobileMenuOpen(false);
     setShowCategories(false);
     setShowProfileMenu(false);
+    setShowNotificationsMenu(false);
   }, [location.pathname]);
 
   // ✅ Cleanup body overflow on mobile menu close and unmount
@@ -80,6 +95,30 @@ export function Header() {
     };
   }, [mobileMenuOpen]);
 
+  useEffect(() => {
+    if (!showNotificationsMenu || !isAuthenticated || !user?.id) return;
+    refetchNotifications();
+  }, [isAuthenticated, refetchNotifications, showNotificationsMenu, user?.id]);
+
+  const handleToggleNotifications = () => {
+    setShowProfileMenu(false);
+    setShowNotificationsMenu((prev) => !prev);
+  };
+
+  const handleToggleProfile = () => {
+    setShowNotificationsMenu(false);
+    setShowProfileMenu((prev) => !prev);
+  };
+
+  const formatNotificationTime = (date: Date) => {
+    return new Intl.DateTimeFormat('fr-FR', {
+      day: '2-digit',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(date);
+  };
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -90,6 +129,7 @@ export function Header() {
   const handleLogout = async () => {
     await logout();
     setShowProfileMenu(false);
+    setShowNotificationsMenu(false);
     navigate('/', { replace: true });
   };
 
@@ -641,6 +681,149 @@ export function Header() {
         </>
       )}
 
+      {/* Notifications Menu */}
+      {showNotificationsMenu && isAuthenticated && (
+        <>
+          <button
+            type="button"
+            onClick={() => setShowNotificationsMenu(false)}
+            aria-label="Fermer les notifications"
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'transparent',
+              border: 'none',
+              zIndex: 1200,
+            }}
+          />
+          <div
+            className="header-notifications-menu"
+            style={{
+              position: 'fixed',
+              top: '76px',
+              right: '14px',
+              width: 'min(360px, calc(100vw - 28px))',
+              maxHeight: 'min(70vh, 540px)',
+              background: 'white',
+              borderRadius: '14px',
+              boxShadow: '0 14px 40px rgba(0,0,0,0.18)',
+              border: '1px solid #e5e7eb',
+              zIndex: 1201,
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '12px 12px 10px',
+                borderBottom: '1px solid #f3f4f6',
+              }}
+            >
+              <div>
+                <p style={{ margin: 0, fontWeight: 700, color: '#111827' }}>Notifications</p>
+                <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#6b7280' }}>
+                  {unreadCount} non lue{unreadCount > 1 ? 's' : ''}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => markAllAsRead()}
+                disabled={unreadCount === 0 || notificationsMutating}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  border: '1px solid #d1fae5',
+                  background: unreadCount === 0 ? '#f9fafb' : '#ecfdf5',
+                  color: unreadCount === 0 ? '#9ca3af' : '#059669',
+                  borderRadius: '10px',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  padding: '7px 10px',
+                  cursor: unreadCount === 0 ? 'default' : 'pointer',
+                }}
+              >
+                <CheckCheck size={14} />
+                Tout lire
+              </button>
+            </div>
+
+            <div style={{ overflowY: 'auto', padding: '8px' }}>
+              {notificationsLoading ? (
+                <p style={{ margin: 0, padding: '16px', textAlign: 'center', color: '#6b7280' }}>
+                  Chargement...
+                </p>
+              ) : notifications.length === 0 ? (
+                <p style={{ margin: 0, padding: '16px', textAlign: 'center', color: '#6b7280' }}>
+                  Aucune notification
+                </p>
+              ) : (
+                notifications.map((notification) => (
+                  <div
+                    key={`${notification.id || notification.createdAt.getTime()}-${notification.title}`}
+                    className={`header-notification-item ${notification.read ? 'read' : 'unread'}`}
+                    onClick={() => {
+                      if (!notification.read && notification.id) {
+                        void markAsRead(notification.id);
+                      }
+                    }}
+                    style={{
+                      borderRadius: '12px',
+                      border: notification.read ? '1px solid #f3f4f6' : '1px solid #d1fae5',
+                      background: notification.read ? 'white' : '#f0fdf4',
+                      padding: '10px',
+                      marginBottom: '8px',
+                      cursor: notification.read ? 'default' : 'pointer',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '10px' }}>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <p style={{ margin: 0, fontSize: '13px', fontWeight: 700, color: '#111827' }}>
+                          {notification.title}
+                        </p>
+                        <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#4b5563', lineHeight: 1.45 }}>
+                          {notification.message}
+                        </p>
+                        <p style={{ margin: '7px 0 0', fontSize: '11px', color: '#6b7280' }}>
+                          {formatNotificationTime(notification.createdAt)}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={(event) => {
+                          event.preventDefault();
+                          event.stopPropagation();
+                          if (notification.id) {
+                            void deleteNotification(notification.id);
+                          }
+                        }}
+                        aria-label="Supprimer la notification"
+                        style={{
+                          border: 'none',
+                          background: 'transparent',
+                          color: '#9ca3af',
+                          cursor: 'pointer',
+                          padding: '2px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </>
+      )}
+
       {/* Profile Menu */}
       {showProfileMenu && isAuthenticated && (
         <>
@@ -733,6 +916,7 @@ export function Header() {
                 <>
                   <button
                     type="button"
+                    onClick={handleToggleNotifications}
                     style={{
                       position: 'relative',
                       display: 'flex',
@@ -750,16 +934,18 @@ export function Header() {
                     aria-label="Notifications"
                   >
                     <Bell size={19} />
-                    <span style={{
-                      position: 'absolute',
-                      top: '7px',
-                      right: '7px',
-                      width: '8px',
-                      height: '8px',
-                      background: '#ef4444',
-                      borderRadius: '50%',
-                      border: '2px solid white'
-                    }} />
+                    {unreadCount > 0 && (
+                      <span style={{
+                        position: 'absolute',
+                        top: '7px',
+                        right: '7px',
+                        width: '8px',
+                        height: '8px',
+                        background: '#ef4444',
+                        borderRadius: '50%',
+                        border: '2px solid white'
+                      }} />
+                    )}
                   </button>
                   <Link
                     to={hasOwnedShop && primaryOwnedShop ? `/shop/${primaryOwnedShop.id}` : '/seller/create-shop'}
@@ -781,7 +967,7 @@ export function Header() {
                   </Link>
                   <button
                     type="button"
-                    onClick={() => setShowProfileMenu((prev) => !prev)}
+                    onClick={handleToggleProfile}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -941,7 +1127,7 @@ export function Header() {
                   {/* Icône utilisateur connecté avant 'Créer ma boutique' */}
                   <button
                     type="button"
-                    onClick={() => setShowProfileMenu((prev) => !prev)}
+                    onClick={handleToggleProfile}
                     style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: '#059669', background: '#f0fdf4', borderRadius: '50%', padding: '10px', marginRight: '8px', border: 'none', cursor: 'pointer' }}
                   >
                     <User size={20} />
@@ -1002,7 +1188,7 @@ export function Header() {
                   )}
 
                   {/* Notifications */}
-                  <button type="button" className="header-notifications-desktop" style={{
+                  <button type="button" onClick={handleToggleNotifications} className="header-notifications-desktop" style={{
                     position: 'relative',
                     padding: '12px',
                     background: '#f3f4f6',
@@ -1012,16 +1198,18 @@ export function Header() {
                     color: '#4b5563'
                   }}>
                     <Bell size={20} />
-                    <span style={{
-                      position: 'absolute',
-                      top: '8px',
-                      right: '8px',
-                      width: '8px',
-                      height: '8px',
-                      background: '#ef4444',
-                      borderRadius: '50%',
-                      border: '2px solid white'
-                    }}></span>
+                    {unreadCount > 0 && (
+                      <span style={{
+                        position: 'absolute',
+                        top: '8px',
+                        right: '8px',
+                        width: '8px',
+                        height: '8px',
+                        background: '#ef4444',
+                        borderRadius: '50%',
+                        border: '2px solid white'
+                      }}></span>
+                    )}
                   </button>
 
                   {/* Favorites */}

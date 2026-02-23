@@ -33,7 +33,12 @@ export function BuyerDashboard() {
 
     try {
       setError(null);
-      const result = await orderService.getMyOrders({ limit: 100, sortBy: 'createdAt', sortOrder: 'desc' });
+      if (!user?.id) {
+        setOrders([]);
+        setSource('api');
+        return;
+      }
+      const result = await orderService.getBuyerOrders(user.id, { limit: 100, sortBy: 'createdAt', sortOrder: 'desc' });
       setOrders(result.orders);
       setSource('api');
     } catch {

@@ -142,7 +142,7 @@ export interface OrderDTO {
     };
   }[];
   total: number;
-  status: 'pending' | 'confirmed' | 'preparing' | 'ready_for_pickup' | 'in_delivery' | 'delivered' | 'cancelled';
+  status: 'pending' | 'confirmed' | 'preparing' | 'ready_for_pickup' | 'in_delivery' | 'delivered' | 'cancelled' | 'refunded';
   customerName: string;
   customerPhone: string;
   customerAddress: string;

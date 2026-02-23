@@ -37,3 +37,4 @@ export {
   useCategory,
   useMainCategories,
 } from './useCategories';
+export { useNotifications } from './useNotifications';

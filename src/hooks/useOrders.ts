@@ -39,14 +39,15 @@ export function useOrders(params: {
 
 // Hook pour récupérer mes commandes (client)
 export function useMyOrders(params: {
+  buyerId: string;
   status?: OrderStatus;
   limit?: number;
-} = {}) {
-  const { status, limit = 10 } = params;
+}) {
+  const { buyerId, status, limit = 10 } = params;
 
   return usePaginatedApi(
     async (page, pageLimit) => {
-      const result = await orderService.getMyOrders({
+      const result = await orderService.getBuyerOrders(buyerId, {
         page,
         limit: pageLimit,
         status,
@@ -57,7 +58,7 @@ export function useMyOrders(params: {
       };
     },
     limit,
-    [status]
+    [buyerId, status]
   );
 }
 

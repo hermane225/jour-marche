@@ -102,6 +102,19 @@ export function Home() {
     return allCategories.slice(0, 8);
   }, [allCategories]);
 
+  const homeCategoryProductSections = useMemo(() => {
+    if (!mainCategories.length || !allProducts.length) return [];
+
+    return mainCategories
+      .map((category) => ({
+        category,
+        products: allProducts
+          .filter((product) => product.category === category.slug)
+          .slice(0, 4) as ProductWithPromo[],
+      }))
+      .filter((section) => section.products.length > 0);
+  }, [allProducts, mainCategories]);
+
   // Produits des boutiques populaires
   const featuredShopProducts = useMemo(() => {
     if (!allProducts || !featuredShops || allProducts.length === 0 || featuredShops.length === 0) return [];
@@ -746,149 +759,44 @@ export function Home() {
           <div className="categories-grid home-categories-grid">
             {categoriesLoading ? (
               <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px' }}>
-                <div style={{ fontSize: '16px', color: '#6b7280' }}>Chargement des catégories...</div>
+                <div style={{ fontSize: '16px', color: '#6b7280' }}>Chargement des cat�gories...</div>
               </div>
             ) : categoriesResult.error ? (
               <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px' }}>
                 <div style={{ fontSize: '16px', color: '#ef4444' }}>Erreur: {categoriesResult.error.message}</div>
               </div>
-            ) : mainCategories.length > 0 ? (
-              mainCategories.map((category, idx) => {
-              const categoryColors = [
-                { bg: '#10b981', light: '#dcfce7', icon: '🥬' },
-                { bg: '#8b5cf6', light: '#f3e8ff', icon: '🥣' },
-                { bg: '#f97316', light: '#fed7aa', icon: '🌾' },
-                { bg: '#06b6d4', light: '#cffafe', icon: '🍽️' },
-                { bg: '#ec4899', light: '#fce7f3', icon: '🥩' },
-                { bg: '#f59e0b', light: '#fef3c7', icon: '🌶️' },
-                { bg: '#14b8a6', light: '#ccfbf1', icon: '🧃' },
-                { bg: '#3b82f6', light: '#dbeafe', icon: '🥐' },
-              ];
-              const color = categoryColors[idx % categoryColors.length];
-              const productCount = allProducts.filter(p => p.category === category.slug).length;
-              
-              return (
-                <Link 
-                  key={category.id}
-                  to={`/category/${category.slug}`}
-                  className="home-category-card"
-                  style={{ borderColor: 'transparent' }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-12px) scale(1.02)';
-                    e.currentTarget.style.borderColor = color.bg;
-                    e.currentTarget.style.boxShadow = `0 25px 50px ${color.bg}25, 0 0 0 1px ${color.bg}10`;
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0) scale(1)';
-                    e.currentTarget.style.borderColor = 'transparent';
-                    e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.05)';
-                  }}
-                >
-                  {/* Gradient Header */}
-                  <div className="home-category-card-head" style={{
-                    width: '100%',
-                    background: `linear-gradient(135deg, ${color.bg} 0%, ${color.bg}dd 100%)`,
-                    padding: '32px 24px',
+            ) : homeCategoryProductSections.length > 0 ? (
+              homeCategoryProductSections.map(({ category, products }) => (
+                <div key={category.id} style={{ gridColumn: '1 / -1' }}>
+                  <div style={{
                     display: 'flex',
-                    alignItems: 'flex-start',
                     justifyContent: 'space-between',
-                    position: 'relative',
-                    overflow: 'hidden'
+                    alignItems: 'center',
+                    marginBottom: '16px',
+                    marginTop: '8px',
+                    flexWrap: 'wrap',
+                    gap: '12px'
                   }}>
-                    {/* Background Pattern */}
-                    <div style={{
-                      position: 'absolute',
-                      top: '-40px',
-                      right: '-40px',
-                      width: '120px',
-                      height: '120px',
-                      borderRadius: '50%',
-                      background: 'rgba(255,255,255,0.1)',
-                      opacity: 0.5
-                    }} />
-                    <div style={{
-                      position: 'absolute',
-                      bottom: '-30px',
-                      left: '-30px',
-                      width: '100px',
-                      height: '100px',
-                      borderRadius: '50%',
-                      background: 'rgba(255,255,255,0.08)',
-                      opacity: 0.3
-                    }} />
-                    
-                    <div style={{ position: 'relative', zIndex: 2 }}>
-                      <div className="home-category-card-icon">
-                        {category.icon}
-                      </div>
-                    </div>
-                    
-                    <div style={{
-                      background: 'rgba(255,255,255,0.2)',
-                      backdropFilter: 'blur(8px)',
-                      padding: '6px 12px',
-                      borderRadius: '50px',
-                      color: 'white',
-                      fontSize: '12px',
-                      fontWeight: 700,
-                      position: 'relative',
-                      zIndex: 2
-                    }}>
-                      {productCount}
-                    </div>
-                  </div>
-                  
-                  {/* Content */}
-                  <div className="home-category-card-content" style={{
-                    padding: '24px',
-                    flex: 1,
-                    width: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'space-between'
-                  }}>
-                    <div>
-                      <h3 className="home-category-card-title">
-                        {category.name}
-                      </h3>
-                      <p style={{
-                        margin: 0,
-                        fontSize: '14px',
-                        color: '#6b7280',
-                        lineHeight: 1.5
-                      }}>
-                        {category.description}
-                      </p>
-                    </div>
-                    
-                    {/* Footer Badge */}
-                    <div style={{
-                      marginTop: '16px',
-                      display: 'flex',
+                    <h3 style={{ margin: 0, fontSize: '24px', color: '#1f2937' }}>{category.name}</h3>
+                    <Link to={`/category/${category.slug}`} style={{
+                      display: 'inline-flex',
                       alignItems: 'center',
-                      justifyContent: 'space-between',
-                      paddingTop: '16px',
-                      borderTop: `1px solid ${color.light}`
+                      gap: '6px',
+                      color: '#059669',
+                      fontWeight: 700,
+                      textDecoration: 'none'
                     }}>
-                      <span style={{
-                        fontSize: '12px',
-                        fontWeight: 600,
-                        color: color.bg,
-                        background: color.light,
-                        padding: '4px 12px',
-                        borderRadius: '50px'
-                      }}>
-                        Voir les produits
-                      </span>
-                      <ArrowRight size={18} color={color.bg} style={{ transition: 'transform 0.3s ease' }} />
-                    </div>
+                      Voir la cat�gorie <ArrowRight size={16} />
+                    </Link>
                   </div>
-                </Link>
-              );
-            })
+                  <div className="products-grid-jumia" style={{ marginBottom: '20px' }}>
+                    {products.map(renderProductCard)}
+                  </div>
+                </div>
+              ))
             ) : (
               <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px' }}>
-                <div style={{ fontSize: '16px', color: '#6b7280' }}>Aucune catégorie disponible</div>
+                <div style={{ fontSize: '16px', color: '#6b7280' }}>Aucun produit disponible par cat�gorie</div>
               </div>
             )}
           </div>

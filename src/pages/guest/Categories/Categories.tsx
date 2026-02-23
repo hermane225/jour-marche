@@ -61,11 +61,11 @@ export function Categories() {
 
             <div className="categories-hero-content">
               <h1 className="categories-hero-title">
-                {currentCategory.icon} {currentCategory.name}
+                {currentCategory.name}
               </h1>
               {currentSubCategory && (
                 <p className="categories-hero-subtitle">
-                  {currentSubCategory.icon} {currentSubCategory.name}
+                  {currentSubCategory.name}
                 </p>
               )}
               <p className="categories-hero-description">
@@ -110,7 +110,6 @@ export function Categories() {
                   key={sub.id} 
                   className="subcategory-card"
                 >
-                  <span className="subcategory-icon">{sub.icon}</span>
                   <span className="subcategory-name">{sub.name}</span>
                 </Link>
               ))}
@@ -123,7 +122,6 @@ export function Categories() {
                   window.scrollTo({ top: document.querySelector('.categories-products')?.getBoundingClientRect().top! + window.scrollY - 100, behavior: 'smooth' });
                 }}
               >
-                <span className="subcategory-icon">📦</span>
                 <span className="subcategory-name">Voir tous les produits</span>
               </Link>
             </div>
@@ -137,7 +135,6 @@ export function Categories() {
           <div className="categories-grid">
             {(allCategories || []).map(category => (
               <Link to={`/categories/${category.slug}`} key={category.slug} className={`category-card ${selectedCategory === category.slug ? 'active' : ''}`}>
-                <span className="category-card-icon">{category.icon}</span>
                 <span className="category-card-name">{category.name}</span>
                 <span className="category-card-count">
                   {allProducts.filter(p => p.category === category.slug).length} produits
@@ -153,7 +150,7 @@ export function Categories() {
         <div className="categories-products-header">
           <h2>
             {selectedCategory 
-              ? `${currentCategory?.icon} ${currentCategory?.name}`
+              ? `${currentCategory?.name}`
               : 'Tous les produits'}
           </h2>
           <span className="products-count">{filteredProducts.length} produits</span>

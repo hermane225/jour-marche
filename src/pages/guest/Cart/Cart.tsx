@@ -39,8 +39,8 @@ export function Cart() {
     e.stopPropagation();
     setIsSubmitting(true);
 
-    // Rediriger vers la page de révision du panier
-    navigate('/cart/review');
+    // Entrée directe vers le workflow de commande
+    navigate('/delivery/info');
     setIsSubmitting(false);
   };
 
@@ -158,7 +158,7 @@ export function Cart() {
               onClick={handleSubmit}
               isLoading={isSubmitting}
             >
-              Passer ma commande
+              Continuer vers la livraison
             </Button>
 
             <p className="cart-summary-note">

@@ -39,16 +39,7 @@ export function CartReview() {
   }
 
   const handleContinue = () => {
-    // Vérifier si l'utilisateur est connecté
-    if (!isAuthenticated) {
-      // Sauvegarder l'URL de retour pour après la connexion
-      sessionStorage.setItem('redirectAfterLogin', '/delivery/info');
-      navigate('/login', { replace: true });
-      return;
-    }
-    
     setIsProcessing(true);
-    // Naviguer vers les infos de livraison
     setTimeout(() => {
       navigate('/delivery/info');
     }, 300);
@@ -129,6 +120,11 @@ export function CartReview() {
         <div className="cart-review-summary">
           <Card className="summary-card">
             <h2 className="summary-title">Résumé de la commande</h2>
+            {!isAuthenticated && (
+              <p className="summary-note" style={{ marginTop: 0 }}>
+                Vous pouvez commander sans compte. Connectez-vous uniquement si vous voulez suivre vos commandes plus tard.
+              </p>
+            )}
 
             <div className="summary-row">
               <span className="summary-label">Sous-total</span>

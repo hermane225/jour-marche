@@ -50,6 +50,23 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<Cart>(EMPTY_CART);
   const [isCartLoading, setIsCartLoading] = useState(false);
 
+  const migrateGuestCartToApi = useCallback(async () => {
+    if (!tokenManager.hasToken()) return;
+
+    const guestCart = getGuestCart();
+    if (!guestCart.items.length) return;
+
+    for (const item of guestCart.items) {
+      try {
+        await cartService.addItem(item.product.id, item.quantity, item.selectedVariants);
+      } catch {
+        // ignore migration errors for individual items
+      }
+    }
+
+    localStorage.removeItem(GUEST_CART_KEY);
+  }, []);
+
   const syncCartWithLiveProducts = useCallback(async (currentCart: Cart, authenticated: boolean): Promise<Cart> => {
     if (!currentCart.items.length) return currentCart;
 
@@ -124,6 +141,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     if (authenticated) {
       setIsCartLoading(true);
       try {
+        await migrateGuestCartToApi();
         const apiCart = await cartService.getCart();
         const synced = await syncCartWithLiveProducts(apiCart, true);
         setCart(synced);
@@ -138,7 +156,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const guestCart = getGuestCart();
     const syncedGuestCart = await syncCartWithLiveProducts(guestCart, false);
     setCart(syncedGuestCart);
-  }, [syncCartWithLiveProducts]);
+  }, [migrateGuestCartToApi, syncCartWithLiveProducts]);
 
   useEffect(() => {
     reloadCart();

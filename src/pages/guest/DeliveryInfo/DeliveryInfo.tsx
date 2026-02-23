@@ -1,5 +1,5 @@
 import { useState, type FormEvent, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ChevronLeft, MapPin, Phone, User, Package, Info } from 'lucide-react';
 import { useCart } from '../../../context/CartContext';
 import { useAuth } from '../../../context/AuthContext';
@@ -28,14 +28,6 @@ export default function DeliveryInfo() {
   const [deliveryType, setDeliveryType] = useState<'delivery' | 'relay'>('delivery');
   const [deliveryAddress, setDeliveryAddress] = useState('');
   const [selectedRelay, setSelectedRelay] = useState<string | null>(null);
-
-  // Rediriger si non connecté
-  useEffect(() => {
-    if (!isAuthenticated) {
-      sessionStorage.setItem('redirectAfterLogin', '/delivery/info');
-      navigate('/login', { replace: true });
-    }
-  }, [isAuthenticated, navigate]);
 
   // Pré-remplir avec les infos de l'utilisateur connecté
   useEffect(() => {
@@ -123,6 +115,14 @@ export default function DeliveryInfo() {
         </button>
         <h1>Informations de livraison</h1>
       </div>
+
+      {!isAuthenticated && (
+        <div style={{ maxWidth: '1100px', margin: '0 auto 16px auto', padding: '0 24px' }}>
+          <div style={{ background: '#ecfdf5', border: '1px solid #a7f3d0', color: '#065f46', borderRadius: '12px', padding: '12px 14px', fontSize: '14px' }}>
+            Vous êtes en mode invité. <Link to="/login" style={{ color: '#047857', fontWeight: 700 }}>Connectez-vous</Link> pour retrouver vos commandes dans votre espace.
+          </div>
+        </div>
+      )}
 
       <div className="delivery-container">
         {/* Progress indicator */}

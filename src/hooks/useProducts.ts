@@ -57,17 +57,36 @@ export function useShopProducts(shopId: string, limit: number = 12) {
 }
 
 // Hook pour rechercher des produits
-export function useProductSearch(searchTerm: string, limit: number = 12) {
+export function useProductSearch(
+  searchTerm: string,
+  params: {
+    limit?: number;
+    category?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    sortBy?: 'price' | 'createdAt' | 'title';
+    sortOrder?: 'asc' | 'desc';
+  } = {}
+) {
+  const { limit = 12, category, minPrice, maxPrice, sortBy, sortOrder } = params;
   return usePaginatedApi(
     async (page, pageLimit) => {
-      const result = await productService.searchProducts(searchTerm, { page, limit: pageLimit });
+      const result = await productService.searchProducts(searchTerm, {
+        page,
+        limit: pageLimit,
+        category,
+        minPrice,
+        maxPrice,
+        sortBy,
+        sortOrder,
+      });
       return {
         data: result.products,
         pagination: result.pagination,
       };
     },
     limit,
-    [searchTerm]
+    [searchTerm, category, minPrice, maxPrice, sortBy, sortOrder]
   );
 }
 

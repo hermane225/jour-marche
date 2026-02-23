@@ -33,8 +33,30 @@ export function Search() {
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
   const [addedProductId, setAddedProductId] = useState<string | null>(null);
 
-  // Fetch data from API
-  const { data: searchResults, isLoading: searchLoading } = useProductSearch(query || '', 100);
+  const sortMapping = useMemo(() => {
+    switch (sortBy) {
+      case 'price-asc':
+        return { sortBy: 'price' as const, sortOrder: 'asc' as const };
+      case 'price-desc':
+        return { sortBy: 'price' as const, sortOrder: 'desc' as const };
+      case 'newest':
+        return { sortBy: 'createdAt' as const, sortOrder: 'desc' as const };
+      case 'name':
+        return { sortBy: 'title' as const, sortOrder: 'asc' as const };
+      default:
+        return { sortBy: undefined, sortOrder: undefined };
+    }
+  }, [sortBy]);
+
+  // Fetch data from API (with filters sent to backend)
+  const { data: searchResults, isLoading: searchLoading } = useProductSearch(query || '', {
+    limit: 100,
+    category: selectedCategory || undefined,
+    minPrice: priceRange[0],
+    maxPrice: priceRange[1],
+    sortBy: sortMapping.sortBy,
+    sortOrder: sortMapping.sortOrder,
+  });
   const { data: allCategories, isLoading: categoriesLoading } = useCategories();
 
   const handleAddToCart = (product: any) => {

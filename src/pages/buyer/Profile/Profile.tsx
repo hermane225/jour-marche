@@ -46,7 +46,7 @@ const Profile: React.FC = () => {
       if (!user?.id) return;
       setOrdersLoading(true);
       try {
-        const result = await orderService.getMyOrders({ limit: 100, sortBy: 'createdAt', sortOrder: 'desc' });
+        const result = await orderService.getBuyerOrders(user.id, { limit: 100, sortBy: 'createdAt', sortOrder: 'desc' });
         setOrders(result.orders);
       } catch {
         setOrders(localOrders);
