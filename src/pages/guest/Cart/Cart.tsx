@@ -3,12 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Trash2, Minus, Plus } from 'lucide-react';
 import { useCart } from '../../../context/CartContext';
 import { useOrders } from '../../../context/OrderContext';
+import { useAuth } from '../../../context/AuthContext';
 import { Button, Input, Card } from '../../../components/ui';
 import './Cart.css';
 
 export function Cart() {
   const { cart, updateQuantity, removeFromCart, clearCart } = useCart();
   const { createOrder } = useOrders();
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   
   const [customerInfo, setCustomerInfo] = useState({
@@ -40,6 +42,12 @@ export function Cart() {
     setIsSubmitting(true);
 
     // Entrée directe vers le workflow de commande
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: '/delivery/info' } });
+      setIsSubmitting(false);
+      return;
+    }
+
     navigate('/delivery/info');
     setIsSubmitting(false);
   };

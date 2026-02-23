@@ -40,6 +40,11 @@ export function CartReview() {
 
   const handleContinue = () => {
     setIsProcessing(true);
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: '/delivery/info' } });
+      setIsProcessing(false);
+      return;
+    }
     setTimeout(() => {
       navigate('/delivery/info');
     }, 300);
@@ -122,7 +127,7 @@ export function CartReview() {
             <h2 className="summary-title">Résumé de la commande</h2>
             {!isAuthenticated && (
               <p className="summary-note" style={{ marginTop: 0 }}>
-                Vous pouvez commander sans compte. Connectez-vous uniquement si vous voulez suivre vos commandes plus tard.
+                Connectez-vous pour continuer votre commande et suivre votre historique.
               </p>
             )}
 

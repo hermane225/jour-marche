@@ -185,10 +185,6 @@ function AppRoutes() {
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/cart/review" element={<CartReview />} />
-        <Route path="/delivery/info" element={<DeliveryInfo />} />
-        <Route path="/order/review" element={<OrderReview />} />
-        <Route path="/payment/method" element={<PaymentMethod />} />
-        <Route path="/order/confirmation" element={<OrderConfirmation />} />
         <Route path="/categories" element={<Categories />} />
         <Route path="/categories/:slug" element={<Categories />} />
         <Route path="/categories/:slug/:subSlug" element={<Categories />} />
@@ -200,11 +196,13 @@ function AppRoutes() {
         <Route path="/alimentation" element={<Categories />} />
         <Route path="/nouveautes" element={<Home />} />
 
-        {/* Page de paiement Mobile Money */}
-        <Route path="/payment/mobile-money" element={<MobileMoneyPayment />} />
-
         {/* Création de boutique - accessible à tout utilisateur connecté */}
         <Route element={<AuthRoute />}>
+          <Route path="/delivery/info" element={<DeliveryInfo />} />
+          <Route path="/order/review" element={<OrderReview />} />
+          <Route path="/payment/method" element={<PaymentMethod />} />
+          <Route path="/payment/mobile-money" element={<MobileMoneyPayment />} />
+          <Route path="/order/confirmation" element={<OrderConfirmation />} />
           <Route path="/seller/create-shop" element={<CreateShop />} />
           <Route path="/seller/boutiques/create" element={<CreateShop />} />
         </Route>
