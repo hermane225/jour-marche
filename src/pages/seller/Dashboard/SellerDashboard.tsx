@@ -132,193 +132,66 @@ export function SellerDashboard() {
           ))}
         </div>
 
-        {/* Commandes récentes */}
+{/* Commandes récentes */}
         <Card className="seller-orders-card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: '#1f2937' }}>
-              Commandes récentes
-            </h3>
-            <span style={{ fontSize: '14px', color: '#6b7280' }}>
-              {sellerOrders.length} commande{sellerOrders.length !== 1 ? 's' : ''}
-            </span>
+          <div className="seller-orders-header">
+            <h3>Commandes récentes</h3>
+            <span>{sellerOrders.length} commande{sellerOrders.length !== 1 ? 's' : ''}</span>
           </div>
 
           {sellerOrders.length === 0 ? (
-            <div style={{ 
-              textAlign: 'center', 
-              padding: '60px 20px',
-              background: '#f9fafb',
-              borderRadius: '12px'
-            }}>
-              <Package size={48} color="#9ca3af" style={{ marginBottom: '16px' }} />
-              <p style={{ margin: '0 0 8px 0', fontSize: '16px', fontWeight: 600, color: '#6b7280' }}>
-                Aucune commande pour le moment
-              </p>
-              <p style={{ margin: 0, fontSize: '14px', color: '#9ca3af' }}>
-                Les commandes de vos clients apparaîtront ici
-              </p>
+            <div className="seller-orders-empty">
+              <Package size={40} color="#9ca3af" />
+              <p>Aucune commande pour le moment</p>
+              <span>Les commandes de vos clients apparaîtront ici</span>
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div className="seller-orders-list">
               {sellerOrders.slice(0, 10).map((order) => (
-                <div
-                  key={order.id}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '16px',
-                    background: order.status === 'pending' ? '#fffbeb' : '#f9fafb',
-                    borderRadius: '12px',
-                    border: order.status === 'pending' ? '2px solid #f59e0b' : '1px solid #e5e7eb',
-                    flexWrap: 'wrap',
-                    gap: '12px'
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: 1, minWidth: '200px' }}>
-                    <div style={{
-                      width: '48px',
-                      height: '48px',
-                      borderRadius: '12px',
-                      background: `${getStatusColor(order.status)}20`,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: getStatusColor(order.status)
-                    }}>
+                <div key={order.id} className="seller-order-card">
+                  <div className="seller-order-info">
+                    <div className="seller-order-icon" style={{ background: `${getStatusColor(order.status)}20`, color: getStatusColor(order.status) }}>
                       {getStatusIcon(order.status)}
                     </div>
-                    <div>
-                      <p style={{ margin: 0, fontWeight: 700, color: '#1f2937', fontSize: '15px' }}>
-                        #{order.orderNumber}
-                      </p>
-                      <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#6b7280' }}>
-                        {order.customerName} • {formatDate(order.createdAt)}
-                      </p>
+                    <div className="seller-order-details">
+                      <p className="seller-order-number">#{order.orderNumber}</p>
+                      <p className="seller-order-customer">{order.customerName}</p>
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <span style={{
-                      padding: '6px 12px',
-                      borderRadius: '20px',
-                      background: `${getStatusColor(order.status)}20`,
-                      color: getStatusColor(order.status),
-                      fontSize: '12px',
-                      fontWeight: 600
-                    }}>
+                  <div className="seller-order-status-price">
+                    <span className="seller-order-status" style={{ background: `${getStatusColor(order.status)}20`, color: getStatusColor(order.status) }}>
                       {getStatusLabel(order.status)}
                     </span>
-                    <span style={{ fontWeight: 700, color: '#1f2937', minWidth: '100px', textAlign: 'right' }}>
-                      {formatPrice(order.total)}
-                    </span>
+                    <span className="seller-order-price">{formatPrice(order.total)}</span>
                   </div>
 
-                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                    <button
-                      onClick={() => setSelectedOrder(order)}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        padding: '8px 14px',
-                        background: 'white',
-                        border: '1px solid #e5e7eb',
-                        borderRadius: '8px',
-                        cursor: 'pointer',
-                        fontSize: '13px',
-                        fontWeight: 500,
-                        color: '#374151'
-                      }}
-                    >
-                      <Eye size={14} />
-                      Détails
+                  <div className="seller-order-actions">
+                    <button className="seller-order-btn seller-order-btn-details" onClick={() => setSelectedOrder(order)}>
+                      <Eye size={12} /> Détails
                     </button>
                     
                     {order.status === 'pending' && (
-                      <button
-                        onClick={() => handleStatusChange(order.id, 'confirmed')}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '6px',
-                          padding: '8px 14px',
-                          background: '#10b981',
-                          border: 'none',
-                          borderRadius: '8px',
-                          cursor: 'pointer',
-                          fontSize: '13px',
-                          fontWeight: 600,
-                          color: 'white'
-                        }}
-                      >
-                        <CheckCircle size={14} />
-                        Confirmer
+                      <button className="seller-order-btn seller-order-btn-confirm" onClick={() => handleStatusChange(order.id, 'confirmed')}>
+                        <CheckCircle size={12} /> Confirmer
                       </button>
                     )}
 
                     {order.status === 'confirmed' && (
-                      <button
-                        onClick={() => handleStatusChange(order.id, 'preparing')}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '6px',
-                          padding: '8px 14px',
-                          background: '#8b5cf6',
-                          border: 'none',
-                          borderRadius: '8px',
-                          cursor: 'pointer',
-                          fontSize: '13px',
-                          fontWeight: 600,
-                          color: 'white'
-                        }}
-                      >
-                        <Package size={14} />
-                        Préparer
+                      <button className="seller-order-btn seller-order-btn-prepare" onClick={() => handleStatusChange(order.id, 'preparing')}>
+                        <Package size={12} /> Préparer
                       </button>
                     )}
 
                     {order.status === 'preparing' && (
-                      <button
-                        onClick={() => handleStatusChange(order.id, 'ready_for_pickup')}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '6px',
-                          padding: '8px 14px',
-                          background: '#06b6d4',
-                          border: 'none',
-                          borderRadius: '8px',
-                          cursor: 'pointer',
-                          fontSize: '13px',
-                          fontWeight: 600,
-                          color: 'white'
-                        }}
-                      >
+                      <button className="seller-order-btn seller-order-btn-ready" onClick={() => handleStatusChange(order.id, 'ready_for_pickup')}>
                         Prête !
                       </button>
                     )}
 
                     {(order.status === 'ready_for_pickup' || order.status === 'in_delivery') && (
-                      <button
-                        onClick={() => handleStatusChange(order.id, 'delivered')}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '6px',
-                          padding: '8px 14px',
-                          background: '#10b981',
-                          border: 'none',
-                          borderRadius: '8px',
-                          cursor: 'pointer',
-                          fontSize: '13px',
-                          fontWeight: 600,
-                          color: 'white'
-                        }}
-                      >
-                        <CheckCircle size={14} />
-                        Livrée
+                      <button className="seller-order-btn seller-order-btn-deliver" onClick={() => handleStatusChange(order.id, 'delivered')}>
+                        <CheckCircle size={12} /> Livrée
                       </button>
                     )}
                   </div>

@@ -1,6 +1,22 @@
-# TODO: Change Mobile Categories Style to Jumia Style
+# Mobile Responsiveness Fix - SellerDashboard
 
-- [x] Modify mobile CSS in Categories.css to switch categories from grid to horizontal scrollable flex layout
-- [x] Update category card styles for mobile: simplify design with orange accents, remove complex gradients and shadows
-- [x] Adjust spacing, sizing, and colors to match Jumia's clean mobile UX
-- [x] Test mobile responsiveness after changes (skipped per user request)
+## Plan
+
+### 1. Update SellerDashboard.css
+- [ ] Improve stats grid layout on mobile
+- [ ] Better order card styling for touch devices
+- [ ] Add responsive styles for all breakpoints (320px - 1024px)
+
+### 2. Update SellerDashboard.tsx
+- [ ] Fix inline styles in the order modal for mobile
+- [ ] Make header notification responsive
+- [ ] Fix button sizing on mobile
+
+### 3. Update SellerLayout.css
+- [ ] Add hamburger menu for mobile navigation
+- [ ] Improve sidebar mobile experience
+- [ ] Add slide-out menu styles
+
+### 4. Update SellerLayout.tsx
+- [ ] Add hamburger menu state and toggle
+- [ ] Implement mobile menu open/close functionality

@@ -759,7 +759,7 @@ export function Home() {
           <div className="categories-grid home-categories-grid">
             {categoriesLoading ? (
               <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px' }}>
-                <div style={{ fontSize: '16px', color: '#6b7280' }}>Chargement des catégories...</div>
+                <div style={{ fontSize: '16px', color: '#6b7280' }}>Chargement des catï¿½gories...</div>
               </div>
             ) : categoriesResult.error ? (
               <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px' }}>
@@ -786,7 +786,7 @@ export function Home() {
                       fontWeight: 700,
                       textDecoration: 'none'
                     }}>
-                      Voir la catégorie <ArrowRight size={16} />
+                      Voir la catï¿½gorie <ArrowRight size={16} />
                     </Link>
                   </div>
                   <div className="products-grid-jumia" style={{ marginBottom: '20px' }}>
@@ -796,7 +796,7 @@ export function Home() {
               ))
             ) : (
               <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px' }}>
-                <div style={{ fontSize: '16px', color: '#6b7280' }}>Aucun produit disponible par catégorie</div>
+                <div style={{ fontSize: '16px', color: '#6b7280' }}>Aucun produit disponible par catï¿½gorie</div>
               </div>
             )}
           </div>

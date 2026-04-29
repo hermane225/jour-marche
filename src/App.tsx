@@ -5,6 +5,7 @@ import { OrderProvider } from './context/OrderContext';
 import { ShopProvider } from './context/ShopContext';
 import { Header, Footer } from './components/layout';
 import { DebugPanel, useDebugPanel } from './components/ui/DebugPanel';
+import { ScrollToTop } from './components/ui/ScrollToTop/ScrollToTop';
 
 // Auth Pages
 import { Login, Signup } from './pages/auth';
@@ -265,6 +266,7 @@ function App() {
           <OrderProvider>
             <ShopProvider>
               <AppRoutes />
+              <ScrollToTop />
               {showDebug && <DebugPanel />}
             </ShopProvider>
           </OrderProvider>

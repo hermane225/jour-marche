@@ -1,8 +1,14 @@
-/* Responsive Design Standards for jour-marche */
+/* ================================================
+   Responsive Design Standards for jour-marche
+   Comprehensive Mobile-First Approach
+   ================================================ */
 
 /* Global box-sizing for all elements */
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html,
@@ -10,6 +16,14 @@ body {
   width: 100%;
   height: 100%;
   overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* Fluid typography base */
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
 }
 
 /* Standard container padding for all viewports */
@@ -20,6 +34,38 @@ body {
   --container-padding-md: 1rem;
   /* Mobile container padding */
   --container-padding-sm: 0.75rem;
+  
+  /* Fluid spacing scale */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  
+  /* Fluid font sizes */
+  --font-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+  --font-sm: clamp(0.875rem, 0.8rem + 0.375vw, 1rem);
+  --font-base: clamp(1rem, 0.9rem + 0.5vw, 1.125rem);
+  --font-lg: clamp(1.125rem, 1rem + 0.625vw, 1.25rem);
+  --font-xl: clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem);
+  --font-2xl: clamp(1.5rem, 1.3rem + 1vw, 1.875rem);
+  --font-3xl: clamp(1.875rem, 1.6rem + 1.375vw, 2.25rem);
+  --font-4xl: clamp(2.25rem, 1.9rem + 1.75vw, 3rem);
+  
+  /* Border radius scale */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-full: 9999px;
+  
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 200ms ease;
+  --transition-slow: 300ms ease;
+  --transition-smooth: 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* All containers with max-width should follow these padding standards */
@@ -47,8 +93,23 @@ footer > * {
   box-sizing: border-box;
 }
 
-/* Tablet and below: Use consistent padding */
+/* ================================================
+   Responsive Breakpoints - Comprehensive
+   ================================================ */
+
+/* Large Desktop: 1280px+ */
+@media (min-width: 1280px) {
+  :root {
+    --container-padding-lg: 1.5rem;
+  }
+}
+
+/* Desktop: 1024px - 1279px */
 @media (max-width: 1024px) {
+  :root {
+    --container-padding-md: 1rem;
+  }
+  
   header [style*="maxWidth"],
   main [style*="maxWidth"],
   footer [style*="maxWidth"],
@@ -58,10 +119,28 @@ footer > * {
     width: 100% !important;
     box-sizing: border-box !important;
   }
+
+  /* Smooth transitions for responsive changes */
+  * {
+    transition: padding var(--transition-fast), margin var(--transition-fast), font-size var(--transition-fast);
+  }
 }
 
-/* Mobile devices */
+/* Tablet Landscape: 900px - 1023px */
+@media (max-width: 900px) {
+  :root {
+    --container-padding-md: 0.875rem;
+  }
+}
+
+/* Tablet Portrait: 768px - 899px */
 @media (max-width: 768px) {
+  :root {
+    --container-padding-md: 0.75rem;
+    --spacing-lg: 1.25rem;
+    --spacing-xl: 1.5rem;
+  }
+
   header [style*="maxWidth"],
   main [style*="maxWidth"],
   footer [style*="maxWidth"],
@@ -71,10 +150,74 @@ footer > * {
     width: 100% !important;
     box-sizing: border-box !important;
   }
+
+  /* Fix for cart drawer on mobile */
+  body {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  
+  /* Improve touch scrolling */
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Remove hover effects on touch devices */
+  :hover {
+    /* These will be overridden for touch */
+  }
 }
 
-/* Small mobile devices */
+/* Large Mobile: 640px - 767px */
+@media (max-width: 640px) {
+  :root {
+    --container-padding-sm: 0.625rem;
+    --spacing-md: 0.875rem;
+    --spacing-lg: 1rem;
+    --spacing-xl: 1.25rem;
+  }
+  
+  html {
+    font-size: 15px;
+  }
+}
+
+/* Mobile: 480px - 639px */
 @media (max-width: 480px) {
+  :root {
+    --container-padding-sm: 0.5rem;
+    --spacing-md: 0.75rem;
+    --spacing-lg: 0.875rem;
+    --spacing-xl: 1rem;
+  }
+
+  header [style*="maxWidth"],
+  main [style*="maxWidth"],
+  footer [style*="maxWidth"],
+  [class*="container"] {
+    padding-left: var(--container-padding-sm) !important;
+    padding-right: var(--container-padding-sm) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
+  html {
+    font-size: 14px;
+  }
+}
+
+/* Small Mobile: 375px - 479px */
+@media (max-width: 375px) {
+  :root {
+    --container-padding-sm: 0.375rem;
+    --spacing-md: 0.625rem;
+    --spacing-lg: 0.75rem;
+  }
+
+  html {
+    font-size: 13px;
+  }
+  
   header [style*="maxWidth"],
   main [style*="maxWidth"],
   footer [style*="maxWidth"],
@@ -86,55 +229,153 @@ footer > * {
   }
 }
 
-/* Prevent content from being squeezed on very narrow viewports */
-@media (max-width: 375px) {
+/* Ultra Small: < 375px */
+@media (max-width: 320px) {
   html {
-    font-size: 14px;
-  }
-  
-  header [style*="maxWidth"],
-  main [style*="maxWidth"],
-  footer [style*="maxWidth"],
-  [class*="container"] {
-    padding-left: 0.5rem !important;
-    padding-right: 0.5rem !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
+    font-size: 12px;
   }
 }
 
-/* Ensure main content takes full width appropriately */
+/* ================================================
+   Ensure main content takes full width appropriately
+   ================================================ */
 main {
   flex: 1;
   width: 100%;
   box-sizing: border-box;
 }
 
-/* Prevent overflow on mobile */
+/* ================================================
+   Prevent overflow on mobile
+   ================================================ */
 body,
 html {
   overflow-x: hidden;
   width: 100%;
+  position: relative;
 }
 
-/* Smooth transitions for responsive changes */
-@media (max-width: 1024px) {
-  * {
-    transition: padding 0.2s ease, margin 0.2s ease;
-  }
-}
-
-/* Fix for cart drawer on mobile */
-@media (max-width: 768px) {
-  body {
-    overflow-y: auto;
-  }
-}
-
-/* Ensure no horizontal scrollbar appears */
+/* ================================================
+   Ensure no horizontal scrollbar appears
+   ================================================ */
 @media (max-width: 1024px) {
   div[style*="maxWidth"] {
     max-width: 100% !important;
     width: 100% !important;
+  }
+  
+  /* Horizontal scroll prevention */
+  [overflow-x="auto"],
+  [style*="overflow-x"] {
+    overflow-x: hidden !important;
+  }
+}
+
+/* ================================================
+   Fluid Grid Utilities
+   ================================================ */
+.grid-fluid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(clamp(200px, 40vw, 300px), 1fr));
+  gap: clamp(0.75rem, 2vw, 1.5rem);
+}
+
+/* ================================================
+   Smooth Scroll to Top Button Styles
+   ================================================ */
+.scroll-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #059669, #10b981);
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(5, 150, 105, 0.4);
+  z-index: 9999;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  transition: all var(--transition-smooth);
+}
+
+.scroll-to-top.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.scroll-to-top:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(5, 150, 105, 0.5);
+}
+
+@media (max-width: 480px) {
+  .scroll-to-top {
+    bottom: 16px;
+    right: 16px;
+    width: 44px;
+    height: 44px;
+  }
+}
+
+@media (max-width: 375px) {
+  .scroll-to-top {
+    bottom: 12px;
+    right: 12px;
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* ================================================
+   Mobile Optimizations for Touch
+   ================================================ */
+@media (hover: none) and (pointer: coarse) {
+  /* Touch device specific styles */
+  button,
+  a,
+  [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Remove hover effects on touch */
+  .product-card:hover {
+    transform: none;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+  
+  /* Show tap feedback */
+  button:active,
+  a:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+}
+
+/* ================================================
+   Performance Optimizations
+   ================================================ */
+/* Use will-change for smooth animations */
+.will-animate {
+  will-change: transform, opacity;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

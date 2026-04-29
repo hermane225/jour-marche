@@ -1,4 +1,7 @@
-/* Product Card Mobile Styles - Jumia-like compact design */
+/* ============================================
+   Product Card Mobile Styles - Jumia-like compact design
+   Optimized for all screen sizes with fluid calculations
+   ============================================ */
 
 /* Card container - compact sur mobile */
 .product-card {
@@ -10,6 +13,8 @@
   position: relative;
   cursor: pointer;
   border: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
 }
 
 .product-card:hover {
@@ -23,6 +28,7 @@
   overflow: hidden;
   position: relative;
   background: #f9fafb;
+  width: 100%;
 }
 
 .product-card__image img {
@@ -129,6 +135,9 @@
 /* Product info - compact version */
 .product-card__info {
   padding: 12px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .product-card__shop {
@@ -175,6 +184,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+  margin-top: auto;
 }
 
 .product-card__price-wrapper {
@@ -362,9 +372,39 @@
     width: 26px;
     height: 26px;
   }
+  
+  .product-card__badge--discount,
+  .product-card__badge--stock {
+    padding: 2px 4px;
+    font-size: 8px;
+  }
 }
 
-/* Products grid adjustments for Jumia-like layout */
+/* Ultra small screens */
+@media (max-width: 320px) {
+  .product-card__info {
+    padding: 4px 5px 5px;
+  }
+
+  .product-card__title {
+    font-size: 9px;
+    min-height: 24px;
+  }
+
+  .product-card__price {
+    font-size: 11px;
+  }
+
+  .product-card__add-btn {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* ============================================
+   Products grid adjustments for Jumia-like layout
+   Fluid calculations for all screen sizes
+   ============================================ */
 .products-grid-jumia {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -392,15 +432,48 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 640px) {
   .products-grid-jumia {
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
   }
 }
 
+@media (max-width: 480px) {
+  .products-grid-jumia {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+}
+
 @media (max-width: 375px) {
   .products-grid-jumia {
-    gap: 6px;
+    gap: 5px;
+  }
+}
+
+@media (max-width: 320px) {
+  .products-grid-jumia {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+/* ============================================
+   Touch-optimized styles for mobile
+   ============================================ */
+@media (hover: none) and (pointer: coarse) {
+  .product-card:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+  
+  .product-card__add-btn:active {
+    transform: scale(0.95);
+  }
+  
+  /* Always show add button on touch devices */
+  .product-card__add-btn {
+    opacity: 1;
   }
 }

@@ -191,7 +191,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://jour-marche-api.onrender.com',
+        target: 'https://jour.marche.blueredc.com/',
         changeOrigin: true,
         secure: true,
       }
@@ -201,7 +201,7 @@ export default defineConfig({
 ```
 
 **En développement :** Les requêtes passent par le proxy Vite  
-**En production :** Les requêtes vont directement vers `https://jour-marche-api.onrender.com`
+**En production :** Les requêtes vont directement vers `https://jour.marche.blueredc.com/`
 
 ---
 
@@ -211,7 +211,7 @@ Testez directement l'API avec PowerShell :
 
 ```powershell
 # Test de l'endpoint /api/shops (GET)
-Invoke-WebRequest -Uri "https://jour-marche-api.onrender.com/api/shops" -UseBasicParsing
+Invoke-WebRequest -Uri "https://jour.marche.blueredc.com/api/shops" -UseBasicParsing
 
 # Test avec authentification (POST)
 $headers = @{
@@ -223,7 +223,7 @@ $body = @{
   category = "ID_CATEGORIE_VALIDE"
 } | ConvertTo-Json
 
-Invoke-WebRequest -Uri "https://jour-marche-api.onrender.com/api/shops" `
+Invoke-WebRequest -Uri "https://jour.marche.blueredc.com/api/shops" `
   -Method POST `
   -Headers $headers `
   -Body $body `
@@ -238,7 +238,7 @@ Invoke-WebRequest -Uri "https://jour-marche-api.onrender.com/api/shops" `
 - [ ] Le token n'est pas expiré
 - [ ] Les catégories sont chargées et un ID valide est utilisé
 - [ ] Les champs requis (`name`, `category`) sont fournis
-- [ ] Le backend est accessible (`https://jour-marche-api.onrender.com`)
+- [ ] Le backend est accessible (`https://jour.marche.blueredc.com/`)
 - [ ] Les logs de la console montrent les données envoyées
 - [ ] Le SDK Google Sign-In est chargé (plus d'avertissement GSI)
 
@@ -250,7 +250,7 @@ Créez un fichier `.env` à la racine du projet :
 
 ```env
 # URL de l'API backend (optionnel en dev grâce au proxy)
-VITE_API_URL=https://jour-marche-api.onrender.com
+VITE_API_URL=https://jour.marche.blueredc.com/
 
 # Google OAuth Client ID
 VITE_GOOGLE_CLIENT_ID=votre-client-id.apps.googleusercontent.com

@@ -1,7 +1,7 @@
 {
   "rewrites": [
-    { "source": "/api/:path*", "destination": "https://jour-marche-api.onrender.com/api/:path*" },
-    { "source": "/uploads/:path*", "destination": "https://jour-marche-api.onrender.com/uploads/:path*" },
+    { "source": "/api/:path*", "destination": "https://jour.marche.blueredc.com/api/:path*" },
+    { "source": "/uploads/:path*", "destination": "https://jour.marche.blueredc.com/uploads/:path*" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
