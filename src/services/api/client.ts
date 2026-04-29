@@ -194,9 +194,13 @@ async function request<T>(
 ): Promise<T> {
   const { body, timeout = 30000, ...fetchOptions } = options;
 
-  const url = endpoint.startsWith('http')
-    ? endpoint
-    : `${config.apiUrl}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+  // Construction d'URL robuste (évite les doubles slashs)
+  let url = endpoint;
+  if (!endpoint.startsWith('http')) {
+    const base = config.apiUrl?.replace(/\/+$/, '') || '';
+    const path = endpoint.replace(/^\/+/, '');
+    url = `${base}/${path}`;
+  }
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);
